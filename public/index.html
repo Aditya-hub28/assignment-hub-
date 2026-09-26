@@ -1,0 +1,1056 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Assignment Hub — Your Assignments. Handled Simply.</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+          },
+          colors: {
+            brand: {
+              primary: '#6C63FF',
+              secondary: '#8B7CFF',
+              accent: '#FFB84D',
+              lavender: '#F3F0FF',
+              text: '#25233A',
+              success: '#55C595',
+              white: '#FFFFFF',
+              cardBg: '#FFFFFF',
+              lavenderLight: '#FAF8FF',
+            }
+          },
+          boxShadow: {
+            'clay-card': '8px 14px 30px rgba(108, 99, 255, 0.12), -6px -6px 18px #FFFFFF, inset 2px 2px 4px rgba(255, 255, 255, 0.95), inset -2px -2px 6px rgba(108, 99, 255, 0.08)',
+            'clay-card-hover': '12px 20px 38px rgba(108, 99, 255, 0.20), -8px -8px 22px #FFFFFF, inset 3px 3px 6px rgba(255, 255, 255, 0.95), inset -3px -3px 8px rgba(108, 99, 255, 0.12)',
+            'clay-button-primary': '0 8px 24px rgba(108, 99, 255, 0.42), inset 0 3px 3px rgba(255, 255, 255, 0.35), inset 0 -4px 6px rgba(0, 0, 0, 0.18)',
+            'clay-button-accent': '0 8px 20px rgba(255, 184, 77, 0.45), inset 0 3px 3px rgba(255, 255, 255, 0.45), inset 0 -4px 6px rgba(0, 0, 0, 0.12)',
+            'clay-button-light': '6px 8px 20px rgba(108, 99, 255, 0.10), -4px -4px 12px #FFFFFF, inset 2px 2px 4px rgba(255, 255, 255, 0.9), inset -2px -2px 5px rgba(108, 99, 255, 0.06)',
+            'clay-inset': 'inset 3px 3px 8px rgba(108, 99, 255, 0.10), inset -3px -3px 8px rgba(255, 255, 255, 0.95)',
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body {
+      background-color: #F3F0FF;
+      color: #25233A;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      overflow-x: hidden;
+    }
+    
+    .clay-surface {
+      background: #FFFFFF;
+      border-radius: 1.75rem;
+      box-shadow: 8px 14px 30px rgba(108, 99, 255, 0.10), -6px -6px 18px #FFFFFF, inset 2px 2px 5px rgba(255, 255, 255, 0.95), inset -3px -3px 7px rgba(108, 99, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.8);
+      transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    .clay-surface-soft {
+      background: #FAF8FF;
+      border-radius: 1.5rem;
+      box-shadow: 6px 10px 22px rgba(108, 99, 255, 0.08), -4px -4px 14px #FFFFFF, inset 2px 2px 4px rgba(255, 255, 255, 0.9), inset -2px -2px 5px rgba(108, 99, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.7);
+    }
+
+    /* Active & Inactive Navigation Item Styling */
+    .nav-item {
+      padding: 0.4rem 1.1rem;
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: rgba(37, 35, 58, 0.72);
+      border-radius: 9999px;
+      transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      text-decoration: none;
+      white-space: nowrap;
+    }
+    .nav-item:hover {
+      color: #6C63FF;
+      background-color: rgba(255, 255, 255, 0.6);
+    }
+    .nav-item.active {
+      color: #6C63FF !important;
+      font-weight: 700 !important;
+      background-color: #FFFFFF !important;
+      box-shadow: 2px 3px 8px rgba(108, 99, 255, 0.12), inset 1px 1px 2px rgba(255, 255, 255, 0.95);
+    }
+
+    @keyframes gentle-float {
+      0%, 100% { transform: translateY(0px) rotate(0deg); }
+      50% { transform: translateY(-7px) rotate(0.5deg); }
+    }
+    @keyframes gentle-float-alt {
+      0%, 100% { transform: translateY(0px) rotate(0deg); }
+      50% { transform: translateY(-9px) rotate(-1deg); }
+    }
+    .animate-float {
+      animation: gentle-float 5s ease-in-out infinite;
+    }
+    .animate-float-alt {
+      animation: gentle-float-alt 6.5s ease-in-out infinite;
+    }
+
+    /* Loading Screen Animation */
+    @keyframes clay-bounce {
+      0%, 100% { transform: scale(1) translateY(0); }
+      50% { transform: scale(1.08) translateY(-14px); }
+    }
+    @keyframes loader-progress {
+      0% { width: 0%; }
+      50% { width: 65%; }
+      100% { width: 100%; }
+    }
+    .clay-bounce-anim {
+      animation: clay-bounce 1.5s cubic-bezier(0.34, 1.56, 0.64, 1) infinite;
+    }
+    .loader-bar-fill {
+      animation: loader-progress 1.5s ease-in-out forwards;
+    }
+
+    .clay-btn {
+      transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    .clay-btn:hover {
+      transform: translateY(-2px);
+    }
+    .clay-btn:active {
+      transform: translateY(2px) scale(0.98);
+      box-shadow: inset 0 4px 8px rgba(0, 0, 0, 0.25) !important;
+    }
+
+    .clay-hover-card {
+      transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    .clay-hover-card:hover {
+      transform: translateY(-6px);
+      box-shadow: 12px 20px 38px rgba(108, 99, 255, 0.18), -8px -8px 22px rgba(255, 255, 255, 1), inset 3px 3px 6px rgba(255, 255, 255, 0.9), inset -3px -3px 8px rgba(108, 99, 255, 0.1);
+    }
+  </style>
+</head>
+<body class="bg-[#F3F0FF] text-[#25233A] antialiased selection:bg-[#6C63FF] selection:text-white">
+
+  <!-- ======================================================== -->
+  <!-- 1. INITIAL LOADING EXPERIENCE (Claymorphic Academic Intro) -->
+  <!-- ======================================================== -->
+  <div id="loader" class="fixed inset-0 z-50 flex flex-col items-center justify-center bg-[#F3F0FF] transition-opacity duration-700 ease-out">
+    <div class="absolute w-96 h-96 rounded-full bg-[#8B7CFF]/15 blur-3xl -top-20 -left-20 pointer-events-none"></div>
+    <div class="absolute w-96 h-96 rounded-full bg-[#FFB84D]/15 blur-3xl -bottom-20 -right-20 pointer-events-none"></div>
+
+    <div class="relative z-10 flex flex-col items-center text-center px-6">
+      <div class="clay-bounce-anim relative w-28 h-28 md:w-32 md:h-32 mb-6 flex items-center justify-center rounded-3xl bg-white p-3 shadow-[10px_16px_32px_rgba(108,99,255,0.2),-6px_-6px_18px_#ffffff,inset_3px_3px_6px_rgba(255,255,255,0.9),inset_-3px_-3px_8px_rgba(108,99,255,0.1)] border border-white/80">
+        <img src="https://lh3.googleusercontent.com/aida/AEtjO1X7S3rvjHLD2T2ZSwRsAwkZbxRDZ3YNIAMeXlPmZ5YGr9s0jmRhVDu9igu3_DdKtupdlp3mEkDiN7knq6FeOvbUtMAJIxKxPM0Q5vKgd3Crfg46CCu6JcYx8-YzIi8xpHxqy7Z-cdIxtXmLNNbaKoSgetaOV7FNhBRQvSqqts2tOh2Oo8VRN_QNKn7MrlxXMtvopLUFksqqXbuO-7ckIfqhBG5mccZLghWmgFvfefJGR8ffAM9YKkdxAT-P" alt="Assignment Hub Logo" class="w-full h-full object-contain filter drop-shadow-sm">
+      </div>
+
+      <div class="flex items-center space-x-2 mb-2">
+        <span class="text-2xl md:text-3xl font-extrabold tracking-tight text-[#25233A]">Assignment<span class="text-[#6C63FF]">Hub</span></span>
+      </div>
+      <p class="text-xs md:text-sm font-semibold text-[#8B7CFF] mb-6 tracking-wide uppercase">Your Academic Work, Simplified</p>
+
+      <div class="w-48 h-3.5 bg-white/80 rounded-full p-1 shadow-[inset_2px_2px_4px_rgba(108,99,255,0.15),inset_-2px_-2px_4px_rgba(255,255,255,0.9)] border border-white/60 overflow-hidden">
+        <div class="loader-bar-fill h-full bg-gradient-to-r from-[#6C63FF] to-[#8B7CFF] rounded-full shadow-[0_2px_6px_rgba(108,99,255,0.4)]"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    window.addEventListener('DOMContentLoaded', () => {
+      setTimeout(() => {
+        const loader = document.getElementById('loader');
+        if (loader) {
+          loader.classList.add('opacity-0', 'pointer-events-none');
+          setTimeout(() => {
+            loader.style.display = 'none';
+            if (window.location.hash) {
+              const target = document.querySelector(window.location.hash);
+              if (target) {
+                target.scrollIntoView({ behavior: 'smooth' });
+              }
+            }
+          }, 700);
+        }
+      }, 900);
+    });
+  </script>
+
+  <!-- ======================================================== -->
+  <!-- 2. NAVBAR (Floating Clay-style Header with Dynamic Active States) -->
+  <!-- ======================================================== -->
+  <header class="sticky top-4 z-40 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+    <nav class="bg-white/95 backdrop-blur-md rounded-2xl md:rounded-full px-5 py-3 md:py-3.5 flex items-center justify-between shadow-[8px_12px_26px_rgba(108,99,255,0.12),-5px_-5px_15px_#ffffff,inset_2px_2px_4px_rgba(255,255,255,0.9),inset_-2px_-2px_5px_rgba(108,99,255,0.06)] border border-white/80 transition-all">
+      
+      <!-- Brand Logo & Name -->
+      <a href="./index.html" class="flex items-center space-x-3 group">
+        <div class="w-10 h-10 md:w-11 md:h-11 rounded-2xl bg-[#F3F0FF] p-1.5 flex items-center justify-center shadow-[inset_1px_1px_3px_rgba(255,255,255,0.9),3px_4px_10px_rgba(108,99,255,0.15)] group-hover:scale-105 transition-transform duration-200">
+          <img src="https://lh3.googleusercontent.com/aida/AEtjO1X7S3rvjHLD2T2ZSwRsAwkZbxRDZ3YNIAMeXlPmZ5YGr9s0jmRhVDu9igu3_DdKtupdlp3mEkDiN7knq6FeOvbUtMAJIxKxPM0Q5vKgd3Crfg46CCu6JcYx8-YzIi8xpHxqy7Z-cdIxtXmLNNbaKoSgetaOV7FNhBRQvSqqts2tOh2Oo8VRN_QNKn7MrlxXMtvopLUFksqqXbuO-7ckIfqhBG5mccZLghWmgFvfefJGR8ffAM9YKkdxAT-P" alt="Assignment Hub Icon" class="w-full h-full object-contain">
+        </div>
+        <div class="flex flex-col">
+          <span class="text-xl font-extrabold tracking-tight text-[#25233A]">Assignment<span class="text-[#6C63FF]">Hub</span></span>
+          <span class="text-[10px] font-bold text-[#8B7CFF] -mt-1 hidden sm:block tracking-wider uppercase">College Solutions</span>
+        </div>
+      </a>
+
+      <!-- Desktop Navigation Links (Line-wise order matching sections) -->
+      <div id="desktop-nav" class="hidden lg:flex items-center space-x-1.5 bg-[#FAF8FF] p-1.5 rounded-full shadow-[inset_2px_2px_5px_rgba(108,99,255,0.08),inset_-2px_-2px_5px_rgba(255,255,255,0.9)] border border-white/50">
+        <a href="#hero" class="nav-item active">Home</a>
+        <a href="#services" class="nav-item">Services</a>
+        <a href="#how-it-works" class="nav-item">How It Works</a>
+        <a href="#benefits" class="nav-item">Benefits</a>
+        <a href="#faqs" class="nav-item">FAQs</a>
+      </div>
+
+      <!-- Action Buttons (Dynamic based on login session) -->
+      <div id="nav-actions" class="hidden sm:flex items-center space-x-3">
+        <a href="./login.html" class="clay-btn px-5 py-2 text-sm font-bold text-[#25233A] bg-white rounded-full shadow-[3px_4px_12px_rgba(108,99,255,0.1),-2px_-2px_8px_#ffffff,inset_1px_1px_2px_rgba(255,255,255,0.9)] hover:text-[#6C63FF] border border-white/60">
+          Login
+        </a>
+        <a href="./signup.html" class="clay-btn px-6 py-2.5 text-sm font-bold text-white bg-[#6C63FF] rounded-full shadow-[0_6px_18px_rgba(108,99,255,0.4),inset_0_2px_3px_rgba(255,255,255,0.35),inset_0_-3px_5px_rgba(0,0,0,0.15)] hover:bg-[#5b52f5] flex items-center space-x-1.5">
+          <span>Sign Up</span>
+          <svg class="w-4 h-4 ml-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
+          </svg>
+        </a>
+      </div>
+
+      <!-- Mobile Hamburger Button -->
+      <div class="flex sm:hidden items-center space-x-2">
+        <a href="./signup.html" class="clay-btn px-3 py-1.5 text-xs font-bold text-white bg-[#6C63FF] rounded-full shadow-[0_4px_12px_rgba(108,99,255,0.35)]">
+          Join
+        </a>
+        <button id="mobile-menu-btn" aria-label="Toggle Navigation Menu" class="p-2.5 rounded-2xl bg-white shadow-[3px_4px_10px_rgba(108,99,255,0.12),inset_1px_1px_2px_#ffffff] text-[#25233A] hover:text-[#6C63FF] focus:outline-none">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 6h16M4 12h16M4 18h16"></path>
+          </svg>
+        </button>
+      </div>
+    </nav>
+
+    <!-- Mobile Dropdown Menu -->
+    <div id="mobile-dropdown" class="hidden lg:hidden mt-2 bg-white rounded-3xl p-5 shadow-[8px_14px_30px_rgba(108,99,255,0.14)] border border-white/80 space-y-3">
+      <div id="mobile-nav" class="flex flex-col space-y-2">
+        <a href="#hero" class="mobile-nav-item px-4 py-2.5 text-sm font-bold text-[#6C63FF] bg-[#F3F0FF] rounded-xl transition-all">Home</a>
+        <a href="#services" class="mobile-nav-item px-4 py-2.5 text-sm font-medium text-[#25233A] hover:bg-[#FAF8FF] rounded-xl transition-all">Services</a>
+        <a href="#how-it-works" class="mobile-nav-item px-4 py-2.5 text-sm font-medium text-[#25233A] hover:bg-[#FAF8FF] rounded-xl transition-all">How It Works</a>
+        <a href="#benefits" class="mobile-nav-item px-4 py-2.5 text-sm font-medium text-[#25233A] hover:bg-[#FAF8FF] rounded-xl transition-all">Benefits</a>
+        <a href="#faqs" class="mobile-nav-item px-4 py-2.5 text-sm font-medium text-[#25233A] hover:bg-[#FAF8FF] rounded-xl transition-all">FAQs</a>
+      </div>
+      <div id="mobile-nav-actions" class="pt-3 border-t border-[#F3F0FF] flex space-x-3">
+        <a href="./login.html" class="w-1/2 text-center py-2.5 text-sm font-bold text-[#25233A] bg-[#FAF8FF] rounded-xl shadow-[inset_1px_1px_2px_#fff]">Login</a>
+        <a href="./signup.html" class="w-1/2 text-center py-2.5 text-sm font-bold text-white bg-[#6C63FF] rounded-xl shadow-[0_4px_12px_rgba(108,99,255,0.35)]">Sign Up</a>
+      </div>
+    </div>
+  </header>
+
+  <!-- ======================================================== -->
+  <!-- 3. SECTION 1: HOME / HERO SECTION -->
+  <!-- ======================================================== -->
+  <section id="hero" class="scroll-mt-36 relative pt-16 sm:pt-24 md:pt-28 lg:pt-32 pb-16 md:pb-24 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto overflow-hidden">
+    
+    <!-- Background Ambient Clay Orbs -->
+    <div class="absolute -top-12 -left-12 w-64 h-64 bg-[#8B7CFF]/15 rounded-full blur-2xl pointer-events-none"></div>
+    <div class="absolute top-1/2 right-0 w-80 h-80 bg-[#FFB84D]/15 rounded-full blur-3xl pointer-events-none"></div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 items-center">
+      
+      <!-- Left Column: Headline, Copy, Action Buttons, Trust Badges -->
+      <div class="lg:col-span-7 flex flex-col items-start z-10">
+        
+        <!-- Student Focused Pill Badge -->
+        <div class="inline-flex items-center space-x-2 px-4 py-1.5 rounded-full bg-white shadow-[4px_6px_14px_rgba(108,99,255,0.1),-2px_-2px_8px_#ffffff,inset_1px_1px_2px_rgba(255,255,255,0.9)] border border-white/70 mb-5">
+          <span class="w-2.5 h-2.5 rounded-full bg-[#55C595] shadow-[0_0_8px_#55C595] animate-pulse"></span>
+          <span class="text-xs font-extrabold uppercase tracking-wider text-[#6C63FF]">Built For College Students</span>
+          <span class="text-xs text-[#25233A]/60 font-semibold">• 100% Confidential</span>
+        </div>
+
+        <!-- Main Headline -->
+        <h1 class="text-4xl sm:text-5xl md:text-6xl font-extrabold text-[#25233A] tracking-tight leading-[1.12] mb-6">
+          Your Assignments.<br>
+          <span class="text-[#6C63FF] relative inline-block">
+            Handled Simply.
+            <svg class="absolute -bottom-2.5 left-0 w-full h-3 text-[#FFB84D]" viewBox="0 0 250 16" fill="none" preserveAspectRatio="none">
+              <path d="M4 12C70 4 180 4 246 12" stroke="currentColor" stroke-width="7" stroke-linecap="round"/>
+            </svg>
+          </span>
+        </h1>
+
+        <!-- Supporting Text -->
+        <p class="text-lg sm:text-xl text-[#25233A]/80 font-medium leading-relaxed max-w-2xl mb-8">
+          Get your college assignments and academic work done with ease — all in one place. From lab files and practicals to engineering drawings and coding projects.
+        </p>
+
+        <!-- CTA Buttons -->
+        <div class="flex flex-col sm:flex-row items-stretch sm:items-center space-y-3.5 sm:space-y-0 sm:space-x-4 w-full sm:w-auto mb-10">
+          <a href="./signup.html" class="clay-btn px-8 py-4 text-base font-extrabold text-white bg-[#6C63FF] rounded-2xl shadow-[0_8px_24px_rgba(108,99,255,0.42),inset_0_3px_3px_rgba(255,255,255,0.35),inset_0_-4px_6px_rgba(0,0,0,0.18)] hover:bg-[#5e54fa] text-center flex items-center justify-center space-x-2">
+            <span>Get Started Free</span>
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 7l5 5m0 0l-5 5m5-5H6"></path>
+            </svg>
+          </a>
+          <a href="#services" class="clay-btn px-8 py-4 text-base font-bold text-[#25233A] bg-white rounded-2xl shadow-[6px_8px_20px_rgba(108,99,255,0.12),-4px_-4px_12px_#ffffff,inset_2px_2px_4px_rgba(255,255,255,0.9),inset_-2px_-2px_5px_rgba(108,99,255,0.06)] hover:text-[#6C63FF] border border-white/80 text-center flex items-center justify-center space-x-2">
+            <span>Explore Services</span>
+            <span class="w-2 h-2 rounded-full bg-[#FFB84D]"></span>
+          </a>
+        </div>
+
+        <!-- Social Proof Student Micro Strip -->
+        <div class="flex items-center space-x-4 pt-2">
+          <div class="flex -space-x-2.5 overflow-hidden p-1">
+            <div class="w-9 h-9 rounded-full bg-[#FFB84D] border-2 border-white shadow-md flex items-center justify-center text-xs font-black text-white">CS</div>
+            <div class="w-9 h-9 rounded-full bg-[#6C63FF] border-2 border-white shadow-md flex items-center justify-center text-xs font-black text-white">ME</div>
+            <div class="w-9 h-9 rounded-full bg-[#55C595] border-2 border-white shadow-md flex items-center justify-center text-xs font-black text-white">EE</div>
+            <div class="w-9 h-9 rounded-full bg-[#8B7CFF] border-2 border-white shadow-md flex items-center justify-center text-xs font-black text-white">+5k</div>
+          </div>
+          <div class="text-xs sm:text-sm font-semibold text-[#25233A]/75">
+            <span class="font-bold text-[#25233A]">5,000+ college students</span> trust us across 40+ universities
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Right Column: 3D Claymorphic Student Workspace Illustration & Floating Badges -->
+      <div class="lg:col-span-5 relative flex items-center justify-center pt-6 sm:pt-8 lg:pt-4">
+        
+        <div class="relative w-full max-w-lg lg:max-w-none rounded-[2.5rem] bg-white p-3 sm:p-4 shadow-[12px_20px_45px_rgba(108,99,255,0.16),-8px_-8px_24px_#ffffff,inset_3px_3px_6px_rgba(255,255,255,0.95),inset_-3px_-3px_8px_rgba(108,99,255,0.08)] border border-white">
+          <div class="relative rounded-[2rem] overflow-hidden bg-[#FAF8FF]">
+            <img src="https://lh3.googleusercontent.com/aida/AEtjO1W_XExp-gwwWxEiGacmZSGWtla7n2fZavoM9OxEk7RZtWxgYjyFuZrP6kh5FhX_dFRBT8I5bbvnzAilE5WqvTZWj0rY7Ttz6PK0-csw4d6Lfzz1lxwpZ8V3DJrHB0t38E58Dw_R_f3bFSdRQMXzciLBk6pGonbg_oiG9Bo__jl2vOj-an2BZvNOCU7GBkzPwWWyk2-a5ZcA0L2MQ4X47sNduxI9Y6t8_-a_5TBh25LryZeLz-gMOQQSh-LC" alt="3D Clay Study Desk" class="w-full h-auto object-cover transform hover:scale-[1.02] transition-transform duration-500 ease-out">
+            <div class="absolute inset-0 bg-gradient-to-t from-[#6C63FF]/10 via-transparent to-white/20 pointer-events-none"></div>
+          </div>
+
+          <!-- Floating Clay Pill: Timely Delivery -->
+          <div class="animate-float absolute -bottom-5 -left-4 sm:-bottom-6 sm:-left-6 bg-white px-4 py-3 rounded-2xl shadow-[8px_12px_24px_rgba(108,99,255,0.16),-4px_-4px_12px_#ffffff,inset_2px_2px_4px_rgba(255,255,255,0.9)] border border-white flex items-center space-x-3 z-20">
+            <div class="w-10 h-10 rounded-xl bg-[#55C595]/20 flex items-center justify-center text-[#55C595]">
+              <span class="material-symbols-outlined text-2xl font-bold">verified</span>
+            </div>
+            <div>
+              <p class="text-xs font-bold text-[#25233A]">On-Time Submissions</p>
+              <p class="text-[11px] font-semibold text-[#55C595]">100% Deadline Guarantee</p>
+            </div>
+          </div>
+
+          <!-- Floating Clay Pill: Top Grade GPA -->
+          <div class="animate-float-alt absolute -top-4 -right-3 sm:-top-5 sm:-right-5 bg-white px-4 py-2.5 rounded-2xl shadow-[8px_12px_24px_rgba(108,99,255,0.16),-4px_-4px_12px_#ffffff,inset_2px_2px_4px_rgba(255,255,255,0.9)] border border-white flex items-center space-x-2.5 z-20">
+            <div class="w-8 h-8 rounded-xl bg-[#FFB84D]/25 flex items-center justify-center text-[#FFB84D] font-extrabold text-sm">
+              ★
+            </div>
+            <div>
+              <p class="text-[11px] font-bold text-[#25233A]">Academic Quality</p>
+              <p class="text-xs font-extrabold text-[#6C63FF]">A Grade (94%)</p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+  </section>
+
+  <!-- ======================================================== -->
+  <!-- 4. SECTION 2: SERVICES ("What Can We Help You With?") -->
+  <!-- ======================================================== -->
+  <section id="services" class="scroll-mt-32 py-16 md:py-24 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+    
+    <!-- Section Header -->
+    <div class="text-center max-w-3xl mx-auto mb-14">
+      <div class="inline-flex items-center space-x-2 px-4 py-1.5 rounded-full bg-white shadow-[3px_4px_10px_rgba(108,99,255,0.08),inset_1px_1px_2px_#ffffff] mb-3">
+        <span class="w-2 h-2 rounded-full bg-[#6C63FF]"></span>
+        <span class="text-xs font-bold uppercase tracking-wider text-[#6C63FF]">Academic Offerings</span>
+      </div>
+      <h2 class="text-3xl sm:text-4xl md:text-5xl font-extrabold text-[#25233A] tracking-tight mb-4">
+        What Can We Help You With?
+      </h2>
+      <p class="text-base sm:text-lg text-[#25233A]/75 font-medium">
+        Tailored support crafted around standard semester coursework, department criteria, and submission deadlines.
+      </p>
+    </div>
+
+    <!-- Grid of 7 Distinct Clay Service Cards -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+      
+      <!-- Card 1: Assignments -->
+      <div class="clay-hover-card clay-surface p-6 flex flex-col justify-between group">
+        <div>
+          <div class="w-14 h-14 rounded-2xl bg-[#FAF8FF] p-3 text-[#6C63FF] shadow-[5px_7px_16px_rgba(108,99,255,0.14),inset_2px_2px_3px_#ffffff,inset_-2px_-2px_4px_rgba(108,99,255,0.06)] mb-5 group-hover:scale-105 transition-transform flex items-center justify-center">
+            <span class="material-symbols-outlined text-3xl">description</span>
+          </div>
+          <span class="inline-block px-2.5 py-0.5 text-[11px] font-bold text-[#6C63FF] bg-[#F3F0FF] rounded-md mb-2">Core Service</span>
+          <h3 class="text-xl font-bold text-[#25233A] mb-2">Assignments</h3>
+          <p class="text-sm font-medium text-[#25233A]/70 leading-relaxed mb-6">
+            Custom theory solutions, analytical essays, topic reviews, and term papers formatted to your department guidelines.
+          </p>
+        </div>
+        <div class="pt-4 border-t border-[#F3F0FF] flex items-center justify-between">
+          <a href="./signup.html" class="text-xs font-bold text-[#6C63FF] group-hover:underline">Request Solution</a>
+          <span class="w-7 h-7 rounded-full bg-[#F3F0FF] text-[#6C63FF] flex items-center justify-center text-xs font-bold shadow-sm">→</span>
+        </div>
+      </div>
+
+      <!-- Card 2: Practical Files -->
+      <div class="clay-hover-card clay-surface p-6 flex flex-col justify-between group">
+        <div>
+          <div class="w-14 h-14 rounded-2xl bg-[#FAF8FF] p-3 text-[#55C595] shadow-[5px_7px_16px_rgba(85,197,149,0.18),inset_2px_2px_3px_#ffffff,inset_-2px_-2px_4px_rgba(85,197,149,0.08)] mb-5 group-hover:scale-105 transition-transform flex items-center justify-center">
+            <span class="material-symbols-outlined text-3xl">science</span>
+          </div>
+          <span class="inline-block px-2.5 py-0.5 text-[11px] font-bold text-[#55C595] bg-[#EDFBF4] rounded-md mb-2">Laboratory</span>
+          <h3 class="text-xl font-bold text-[#25233A] mb-2">Practical Files</h3>
+          <p class="text-sm font-medium text-[#25233A]/70 leading-relaxed mb-6">
+            Detailed lab record writeups, observation tables, graph plotting, result calculations, and viva preparations.
+          </p>
+        </div>
+        <div class="pt-4 border-t border-[#F3F0FF] flex items-center justify-between">
+          <a href="./signup.html" class="text-xs font-bold text-[#55C595] group-hover:underline">Request Solution</a>
+          <span class="w-7 h-7 rounded-full bg-[#EDFBF4] text-[#55C595] flex items-center justify-center text-xs font-bold shadow-sm">→</span>
+        </div>
+      </div>
+
+      <!-- Card 3: Mini Projects -->
+      <div class="clay-hover-card clay-surface p-6 flex flex-col justify-between group">
+        <div>
+          <div class="w-14 h-14 rounded-2xl bg-[#FAF8FF] p-3 text-[#FFB84D] shadow-[5px_7px_16px_rgba(255,184,77,0.2),inset_2px_2px_3px_#ffffff,inset_-2px_-2px_4px_rgba(255,184,77,0.08)] mb-5 group-hover:scale-105 transition-transform flex items-center justify-center">
+            <span class="material-symbols-outlined text-3xl">lightbulb</span>
+          </div>
+          <span class="inline-block px-2.5 py-0.5 text-[11px] font-bold text-[#FFB84D] bg-[#FFF6E9] rounded-md mb-2">Semester Work</span>
+          <h3 class="text-xl font-bold text-[#25233A] mb-2">Mini Projects</h3>
+          <p class="text-sm font-medium text-[#25233A]/70 leading-relaxed mb-6">
+            End-to-end semester prototypes, documentation files, system architecture flowcharts, and presentation decks.
+          </p>
+        </div>
+        <div class="pt-4 border-t border-[#F3F0FF] flex items-center justify-between">
+          <a href="./signup.html" class="text-xs font-bold text-[#FFB84D] group-hover:underline">Request Solution</a>
+          <span class="w-7 h-7 rounded-full bg-[#FFF6E9] text-[#FFB84D] flex items-center justify-center text-xs font-bold shadow-sm">→</span>
+        </div>
+      </div>
+
+      <!-- Card 4: Physics Projects -->
+      <div class="clay-hover-card clay-surface p-6 flex flex-col justify-between group">
+        <div>
+          <div class="w-14 h-14 rounded-2xl bg-[#FAF8FF] p-3 text-[#8B7CFF] shadow-[5px_7px_16px_rgba(139,124,255,0.18),inset_2px_2px_3px_#ffffff,inset_-2px_-2px_4px_rgba(139,124,255,0.08)] mb-5 group-hover:scale-105 transition-transform flex items-center justify-center">
+            <span class="material-symbols-outlined text-3xl">biotech</span>
+          </div>
+          <span class="inline-block px-2.5 py-0.5 text-[11px] font-bold text-[#8B7CFF] bg-[#F3F0FF] rounded-md mb-2">Science Dept</span>
+          <h3 class="text-xl font-bold text-[#25233A] mb-2">Physics Projects</h3>
+          <p class="text-sm font-medium text-[#25233A]/70 leading-relaxed mb-6">
+            Investigatory experiment write-ups, optical & electrical circuit diagrams, apparatus theory, and error analysis.
+          </p>
+        </div>
+        <div class="pt-4 border-t border-[#F3F0FF] flex items-center justify-between">
+          <a href="./signup.html" class="text-xs font-bold text-[#8B7CFF] group-hover:underline">Request Solution</a>
+          <span class="w-7 h-7 rounded-full bg-[#F3F0FF] text-[#8B7CFF] flex items-center justify-center text-xs font-bold shadow-sm">→</span>
+        </div>
+      </div>
+
+      <!-- Card 5: Engineering Drawing -->
+      <div class="clay-hover-card clay-surface p-6 flex flex-col justify-between group">
+        <div>
+          <div class="w-14 h-14 rounded-2xl bg-[#FAF8FF] p-3 text-[#FFB84D] shadow-[5px_7px_16px_rgba(255,184,77,0.2),inset_2px_2px_3px_#ffffff,inset_-2px_-2px_4px_rgba(255,184,77,0.08)] mb-5 group-hover:scale-105 transition-transform flex items-center justify-center">
+            <span class="material-symbols-outlined text-3xl">architecture</span>
+          </div>
+          <span class="inline-block px-2.5 py-0.5 text-[11px] font-bold text-[#FFB84D] bg-[#FFF6E9] rounded-md mb-2">Drafting & CAD</span>
+          <h3 class="text-xl font-bold text-[#25233A] mb-2">Engineering Drawing</h3>
+          <p class="text-sm font-medium text-[#25233A]/70 leading-relaxed mb-6">
+            Orthographic projections, isometric views, machine component sketches, sheet drafting, and 2D/3D CAD models.
+          </p>
+        </div>
+        <div class="pt-4 border-t border-[#F3F0FF] flex items-center justify-between">
+          <a href="./signup.html" class="text-xs font-bold text-[#FFB84D] group-hover:underline">Request Solution</a>
+          <span class="w-7 h-7 rounded-full bg-[#FFF6E9] text-[#FFB84D] flex items-center justify-center text-xs font-bold shadow-sm">→</span>
+        </div>
+      </div>
+
+      <!-- Card 6: Coding Projects -->
+      <div class="clay-hover-card clay-surface p-6 flex flex-col justify-between group">
+        <div>
+          <div class="w-14 h-14 rounded-2xl bg-[#FAF8FF] p-3 text-[#6C63FF] shadow-[5px_7px_16px_rgba(108,99,255,0.14),inset_2px_2px_3px_#ffffff,inset_-2px_-2px_4px_rgba(108,99,255,0.06)] mb-5 group-hover:scale-105 transition-transform flex items-center justify-center">
+            <span class="material-symbols-outlined text-3xl">terminal</span>
+          </div>
+          <span class="inline-block px-2.5 py-0.5 text-[11px] font-bold text-[#6C63FF] bg-[#F3F0FF] rounded-md mb-2">Tech & CS</span>
+          <h3 class="text-xl font-bold text-[#25233A] mb-2">Coding Projects</h3>
+          <p class="text-sm font-medium text-[#25233A]/70 leading-relaxed mb-6">
+            Clean readable code in Python, Java, C++, Web, and SQL, with clean comments, test cases, and setup instructions.
+          </p>
+        </div>
+        <div class="pt-4 border-t border-[#F3F0FF] flex items-center justify-between">
+          <a href="./signup.html" class="text-xs font-bold text-[#6C63FF] group-hover:underline">Request Solution</a>
+          <span class="w-7 h-7 rounded-full bg-[#F3F0FF] text-[#6C63FF] flex items-center justify-center text-xs font-bold shadow-sm">→</span>
+        </div>
+      </div>
+
+      <!-- Card 7: Other College Services (Spans 2 columns on desktop) -->
+      <div class="clay-hover-card clay-surface p-6 flex flex-col justify-between group sm:col-span-2 lg:col-span-3 xl:col-span-2 bg-gradient-to-br from-white to-[#FAF8FF]">
+        <div>
+          <div class="flex items-center space-x-3 mb-5">
+            <div class="w-14 h-14 rounded-2xl bg-[#EDFBF4] p-3 text-[#55C595] shadow-[5px_7px_16px_rgba(85,197,149,0.18),inset_2px_2px_3px_#ffffff] group-hover:scale-105 transition-transform flex items-center justify-center">
+              <span class="material-symbols-outlined text-3xl">auto_awesome</span>
+            </div>
+            <div>
+              <span class="inline-block px-2.5 py-0.5 text-[11px] font-bold text-[#55C595] bg-[#EDFBF4] rounded-md mb-1">Custom Requests</span>
+              <h3 class="text-xl font-bold text-[#25233A]">Other College Services</h3>
+            </div>
+          </div>
+          <p class="text-sm font-medium text-[#25233A]/70 leading-relaxed mb-6">
+            Have a specialized requirement? We handle seminar PPT slides, synopsis reports, LaTeX formatting, case study dossiers, and dataset analysis tailored to unique college requirements.
+          </p>
+        </div>
+        <div class="pt-4 border-t border-[#F3F0FF] flex items-center justify-between">
+          <a href="./signup.html" class="text-xs font-bold text-[#55C595] group-hover:underline">Tell Us What You Need</a>
+          <span class="w-7 h-7 rounded-full bg-[#EDFBF4] text-[#55C595] flex items-center justify-center text-xs font-bold shadow-sm">→</span>
+        </div>
+      </div>
+
+    </div>
+
+  </section>
+
+  <!-- ======================================================== -->
+  <!-- 5. SECTION 3: HOW IT WORKS (3 Simple Steps) -->
+  <!-- ======================================================== -->
+  <section id="how-it-works" class="scroll-mt-32 py-16 md:py-24 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+    
+    <div class="text-center max-w-3xl mx-auto mb-16">
+      <div class="inline-flex items-center space-x-2 px-4 py-1.5 rounded-full bg-white shadow-[3px_4px_10px_rgba(108,99,255,0.08),inset_1px_1px_2px_#ffffff] mb-3">
+        <span class="w-2 h-2 rounded-full bg-[#FFB84D]"></span>
+        <span class="text-xs font-bold uppercase tracking-wider text-[#6C63FF]">Simple 3-Step Process</span>
+      </div>
+      <h2 class="text-3xl sm:text-4xl md:text-5xl font-extrabold text-[#25233A] tracking-tight mb-4">
+        How It Works
+      </h2>
+      <p class="text-base sm:text-lg text-[#25233A]/75 font-medium">
+        Getting college assignments completed doesn’t have to be stressful. Follow three quick steps.
+      </p>
+    </div>
+
+    <!-- Steps Container with connector -->
+    <div class="relative">
+      <div class="hidden md:block absolute top-1/2 left-12 right-12 h-3 -translate-y-8 bg-white/70 rounded-full shadow-[inset_2px_2px_4px_rgba(108,99,255,0.1),inset_-2px_-2px_4px_#ffffff] border border-white/60 z-0"></div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8 relative z-10">
+        
+        <!-- Step 1 -->
+        <div class="clay-hover-card clay-surface p-8 flex flex-col items-center text-center group">
+          <div class="w-16 h-16 rounded-3xl bg-[#6C63FF] text-white flex items-center justify-center font-extrabold text-xl shadow-[0_8px_20px_rgba(108,99,255,0.4),inset_0_3px_3px_rgba(255,255,255,0.4),inset_0_-4px_6px_rgba(0,0,0,0.15)] mb-6 group-hover:scale-110 transition-transform">
+            01
+          </div>
+          <h3 class="text-xl font-extrabold text-[#25233A] mb-3">Choose Your Service</h3>
+          <p class="text-sm font-medium text-[#25233A]/70 leading-relaxed">
+            Select the exact academic category — whether it's an assignment, practical lab file, drawing, or code project.
+          </p>
+        </div>
+
+        <!-- Step 2 -->
+        <div class="clay-hover-card clay-surface p-8 flex flex-col items-center text-center group">
+          <div class="w-16 h-16 rounded-3xl bg-[#FFB84D] text-white flex items-center justify-center font-extrabold text-xl shadow-[0_8px_20px_rgba(255,184,77,0.45),inset_0_3px_3px_rgba(255,255,255,0.45),inset_0_-4px_6px_rgba(0,0,0,0.12)] mb-6 group-hover:scale-110 transition-transform">
+            02
+          </div>
+          <h3 class="text-xl font-extrabold text-[#25233A] mb-3">Submit Your Requirement</h3>
+          <p class="text-sm font-medium text-[#25233A]/70 leading-relaxed">
+            Upload your question sheet, syllabus rubrics, preferred formats, and the exact submission deadline.
+          </p>
+        </div>
+
+        <!-- Step 3 -->
+        <div class="clay-hover-card clay-surface p-8 flex flex-col items-center text-center group">
+          <div class="w-16 h-16 rounded-3xl bg-[#55C595] text-white flex items-center justify-center font-extrabold text-xl shadow-[0_8px_20px_rgba(85,197,149,0.4),inset_0_3px_3px_rgba(255,255,255,0.4),inset_0_-4px_6px_rgba(0,0,0,0.15)] mb-6 group-hover:scale-110 transition-transform">
+            03
+          </div>
+          <h3 class="text-xl font-extrabold text-[#25233A] mb-3">Get Your Work</h3>
+          <p class="text-sm font-medium text-[#25233A]/70 leading-relaxed">
+            Receive thoroughly checked, polished academic files on time, ready for confident college submission.
+          </p>
+        </div>
+
+      </div>
+
+    </div>
+
+  </section>
+
+  <!-- ======================================================== -->
+  <!-- 6. SECTION 4: BENEFITS (Why Choose Assignment Hub) -->
+  <!-- ======================================================== -->
+  <section id="benefits" class="scroll-mt-32 py-16 md:py-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+    
+    <div class="text-center max-w-3xl mx-auto mb-14">
+      <div class="inline-flex items-center space-x-2 px-4 py-1.5 rounded-full bg-white shadow-[3px_4px_10px_rgba(108,99,255,0.08),inset_1px_1px_2px_#ffffff] mb-3">
+        <span class="w-2 h-2 rounded-full bg-[#55C595]"></span>
+        <span class="text-xs font-bold uppercase tracking-wider text-[#55C595]">Platform Advantages</span>
+      </div>
+      <h2 class="text-3xl sm:text-4xl md:text-5xl font-extrabold text-[#25233A] tracking-tight mb-4">
+        Why Students Choose Us
+      </h2>
+      <p class="text-base sm:text-lg text-[#25233A]/75 font-medium">
+        Designed from ground up to solve real college deadline anxiety and grade pressures.
+      </p>
+    </div>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+      
+      <!-- Benefit 1: Easy Registration -->
+      <div class="clay-hover-card clay-surface p-6 flex flex-col items-start relative group">
+        <div class="w-12 h-12 p-2.5 rounded-2xl bg-[#F3F0FF] text-[#6C63FF] shadow-sm mb-4 flex items-center justify-center">
+          <span class="material-symbols-outlined text-2xl">touch_app</span>
+        </div>
+        <h3 class="text-lg font-extrabold text-[#25233A] mb-1.5">Easy Registration</h3>
+        <p class="text-sm font-medium text-[#25233A]/70 leading-relaxed">
+          Sign up with your email, verify your 6-digit OTP code, and access student services in seconds.
+        </p>
+      </div>
+
+      <!-- Benefit 2: Student Focused -->
+      <div class="clay-hover-card clay-surface p-6 flex flex-col items-start relative group">
+        <div class="w-12 h-12 p-2.5 rounded-2xl bg-[#FFF6E9] text-[#FFB84D] shadow-sm mb-4 flex items-center justify-center">
+          <span class="material-symbols-outlined text-2xl">school</span>
+        </div>
+        <h3 class="text-lg font-extrabold text-[#25233A] mb-1.5">Student Focused</h3>
+        <p class="text-sm font-medium text-[#25233A]/70 leading-relaxed">
+          Built tailored specifically for college syllabi, university formats, and student requirements.
+        </p>
+      </div>
+
+      <!-- Benefit 3: Secure & Private -->
+      <div class="clay-hover-card clay-surface p-6 flex flex-col items-start relative group">
+        <div class="w-12 h-12 p-2.5 rounded-2xl bg-[#EDFBF4] text-[#55C595] shadow-sm mb-4 flex items-center justify-center">
+          <span class="material-symbols-outlined text-2xl">security</span>
+        </div>
+        <h3 class="text-lg font-extrabold text-[#25233A] mb-1.5">Secure & Private</h3>
+        <p class="text-sm font-medium text-[#25233A]/70 leading-relaxed">
+          Protected with Row Level Security, encrypted sessions, and 100% academic confidentiality.
+        </p>
+      </div>
+
+      <!-- Benefit 4: Single Sign-On -->
+      <div class="clay-hover-card clay-surface p-6 flex flex-col items-start relative group">
+        <div class="w-12 h-12 p-2.5 rounded-2xl bg-[#F3F0FF] text-[#8B7CFF] shadow-sm mb-4 flex items-center justify-center">
+          <span class="material-symbols-outlined text-2xl">dashboard</span>
+        </div>
+        <h3 class="text-lg font-extrabold text-[#25233A] mb-1.5">Single Sign-On</h3>
+        <p class="text-sm font-medium text-[#25233A]/70 leading-relaxed">
+          Smooth login with your email and password without redundant delays or verification loops.
+        </p>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ======================================================== -->
+  <!-- 7. REAL STUDENT TESTIMONIALS (Clay Cards with Ratings) -->
+  <!-- ======================================================== -->
+  <section class="py-16 md:py-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+    
+    <div class="text-center max-w-3xl mx-auto mb-14">
+      <div class="inline-flex items-center space-x-2 px-4 py-1.5 rounded-full bg-white shadow-[3px_4px_10px_rgba(108,99,255,0.08),inset_1px_1px_2px_#ffffff] mb-3">
+        <span class="w-2 h-2 rounded-full bg-[#55C595]"></span>
+        <span class="text-xs font-bold uppercase tracking-wider text-[#55C595]">Student Stories</span>
+      </div>
+      <h2 class="text-3xl sm:text-4xl md:text-5xl font-extrabold text-[#25233A] tracking-tight mb-4">
+        Trusted Across Campuses
+      </h2>
+      <p class="text-base sm:text-lg text-[#25233A]/75 font-medium">
+        Read how Assignment Hub is helping college students ace their semesters.
+      </p>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+      
+      <!-- Review 1 -->
+      <div class="clay-hover-card clay-surface p-7 flex flex-col justify-between">
+        <div>
+          <div class="flex items-center space-x-1 text-[#FFB84D] mb-4">
+            <span>★</span><span>★</span><span>★</span><span>★</span><span>★</span>
+            <span class="text-xs font-bold text-[#25233A] ml-2">5.0</span>
+          </div>
+          <p class="text-sm font-medium text-[#25233A]/80 leading-relaxed mb-6">
+            "Had a massive practical file deadline for Electrical Machines. The diagrams and observation tables were spot on with zero errors. Scored 28/30 in internal assessment!"
+          </p>
+        </div>
+        <div class="flex items-center space-x-3 pt-4 border-t border-[#F3F0FF]">
+          <div class="w-10 h-10 rounded-full bg-[#6C63FF] text-white flex items-center justify-center font-bold text-sm shadow-sm">
+            RK
+          </div>
+          <div>
+            <h4 class="text-sm font-bold text-[#25233A]">Rohan Kumar</h4>
+            <p class="text-xs text-[#25233A]/60 font-semibold">B.Tech EE • Delhi Tech University</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Review 2 -->
+      <div class="clay-hover-card clay-surface p-7 flex flex-col justify-between">
+        <div>
+          <div class="flex items-center space-x-1 text-[#FFB84D] mb-4">
+            <span>★</span><span>★</span><span>★</span><span>★</span><span>★</span>
+            <span class="text-xs font-bold text-[#25233A] ml-2">5.0</span>
+          </div>
+          <p class="text-sm font-medium text-[#25233A]/80 leading-relaxed mb-6">
+            "The engineering drawing CAD model and orthographic projection views were done super cleanly. Saved me at least 15 hours of manual drafting before submissions."
+          </p>
+        </div>
+        <div class="flex items-center space-x-3 pt-4 border-t border-[#F3F0FF]">
+          <div class="w-10 h-10 rounded-full bg-[#FFB84D] text-white flex items-center justify-center font-bold text-sm shadow-sm">
+            PS
+          </div>
+          <div>
+            <h4 class="text-sm font-bold text-[#25233A]">Priya Sharma</h4>
+            <p class="text-xs text-[#25233A]/60 font-semibold">B.Tech ME • VIT Vellore</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Review 3 -->
+      <div class="clay-hover-card clay-surface p-7 flex flex-col justify-between">
+        <div>
+          <div class="flex items-center space-x-1 text-[#FFB84D] mb-4">
+            <span>★</span><span>★</span><span>★</span><span>★</span><span>★</span>
+            <span class="text-xs font-bold text-[#25233A] ml-2">5.0</span>
+          </div>
+          <p class="text-sm font-medium text-[#25233A]/80 leading-relaxed mb-6">
+            "Got full support for our Web Development mini project. Complete code with comments and clean documentation file. Passed viva smoothly with teacher praise!"
+          </p>
+        </div>
+        <div class="flex items-center space-x-3 pt-4 border-t border-[#F3F0FF]">
+          <div class="w-10 h-10 rounded-full bg-[#55C595] text-white flex items-center justify-center font-bold text-sm shadow-sm">
+            AK
+          </div>
+          <div>
+            <h4 class="text-sm font-bold text-[#25233A]">Ananya Kapoor</h4>
+            <p class="text-xs text-[#25233A]/60 font-semibold">BCA • Mumbai University</p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+  </section>
+
+  <!-- ======================================================== -->
+  <!-- 8. SECTION 5: FAQS (Interactive Clay Accordion) -->
+  <!-- ======================================================== -->
+  <section id="faqs" class="scroll-mt-32 py-16 md:py-20 px-4 sm:px-6 lg:px-8 max-w-4xl mx-auto">
+    
+    <div class="text-center mb-12">
+      <div class="inline-flex items-center space-x-2 px-4 py-1.5 rounded-full bg-white shadow-[3px_4px_10px_rgba(108,99,255,0.08),inset_1px_1px_2px_#ffffff] mb-3">
+        <span class="w-2 h-2 rounded-full bg-[#8B7CFF]"></span>
+        <span class="text-xs font-bold uppercase tracking-wider text-[#6C63FF]">Got Questions?</span>
+      </div>
+      <h2 class="text-3xl sm:text-4xl font-extrabold text-[#25233A] tracking-tight mb-3">
+        Frequently Asked Questions
+      </h2>
+      <p class="text-sm sm:text-base text-[#25233A]/75 font-medium">
+        Everything you need to know about our services and security.
+      </p>
+    </div>
+
+    <div class="space-y-4">
+      
+      <!-- FAQ 1 -->
+      <div class="clay-surface rounded-2xl p-5 border border-white/80 cursor-pointer" onclick="toggleFaq(1)">
+        <div class="flex items-center justify-between">
+          <h3 class="text-base font-bold text-[#25233A]">How does the registration and verification work?</h3>
+          <span id="faq-icon-1" class="material-symbols-outlined text-[#6C63FF] transition-transform duration-200">expand_more</span>
+        </div>
+        <div id="faq-ans-1" class="hidden mt-3 pt-3 border-t border-[#F3F0FF] text-sm text-[#25233A]/75 leading-relaxed">
+          You register with your basic details and email address. A secure 6-digit verification code is instantly emailed to you. Once verified, your student profile is created and linked directly to your campus!
+        </div>
+      </div>
+
+      <!-- FAQ 2 -->
+      <div class="clay-surface rounded-2xl p-5 border border-white/80 cursor-pointer" onclick="toggleFaq(2)">
+        <div class="flex items-center justify-between">
+          <h3 class="text-base font-bold text-[#25233A]">Is my student identity kept confidential?</h3>
+          <span id="faq-icon-2" class="material-symbols-outlined text-[#6C63FF] transition-transform duration-200">expand_more</span>
+        </div>
+        <div id="faq-ans-2" class="hidden mt-3 pt-3 border-t border-[#F3F0FF] text-sm text-[#25233A]/75 leading-relaxed">
+          Yes, 100%. We take privacy extremely seriously. All student data is protected with database-level Row Level Security (RLS) policies. Your identity, email, and files are never shared with anyone.
+        </div>
+      </div>
+
+      <!-- FAQ 3 -->
+      <div class="clay-surface rounded-2xl p-5 border border-white/80 cursor-pointer" onclick="toggleFaq(3)">
+        <div class="flex items-center justify-between">
+          <h3 class="text-base font-bold text-[#25233A]">What happens if I need changes or revisions?</h3>
+          <span id="faq-icon-3" class="material-symbols-outlined text-[#6C63FF] transition-transform duration-200">expand_more</span>
+        </div>
+        <div id="faq-ans-3" class="hidden mt-3 pt-3 border-t border-[#F3F0FF] text-sm text-[#25233A]/75 leading-relaxed">
+          Every assignment solution includes free revisions within the scope of your original requirements to ensure total alignment with your professor's instructions.
+        </div>
+      </div>
+
+      <!-- FAQ 4 -->
+      <div class="clay-surface rounded-2xl p-5 border border-white/80 cursor-pointer" onclick="toggleFaq(4)">
+        <div class="flex items-center justify-between">
+          <h3 class="text-base font-bold text-[#25233A]">Can I log in without entering an OTP every time?</h3>
+          <span id="faq-icon-4" class="material-symbols-outlined text-[#6C63FF] transition-transform duration-200">expand_more</span>
+        </div>
+        <div id="faq-ans-4" class="hidden mt-3 pt-3 border-t border-[#F3F0FF] text-sm text-[#25233A]/75 leading-relaxed">
+          Yes! The OTP verification is only a one-time step during initial account creation. Subsequent logins only require your registered email and password.
+        </div>
+      </div>
+
+    </div>
+
+  </section>
+
+  <script>
+    function toggleFaq(id) {
+      const ans = document.getElementById(`faq-ans-${id}`);
+      const icon = document.getElementById(`faq-icon-${id}`);
+      if (ans) {
+        const isHidden = ans.classList.contains('hidden');
+        ans.classList.toggle('hidden');
+        if (icon) {
+          icon.style.transform = isHidden ? 'rotate(180deg)' : 'rotate(0deg)';
+        }
+      }
+    }
+  </script>
+
+  <!-- ======================================================== -->
+  <!-- 9. STUDENT CTA SECTION (Large Rounded Clay Banner) -->
+  <!-- ======================================================== -->
+  <section id="cta" class="py-12 md:py-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+    
+    <div class="relative rounded-[2.5rem] bg-gradient-to-b from-white to-[#FAF8FF] p-8 sm:p-12 md:p-16 text-center shadow-[14px_22px_45px_rgba(108,99,255,0.16),-8px_-8px_24px_#ffffff,inset_3px_3px_6px_rgba(255,255,255,0.95),inset_-3px_-3px_8px_rgba(108,99,255,0.06)] border border-white overflow-hidden">
+      
+      <div class="absolute -top-16 -left-16 w-60 h-60 bg-[#6C63FF]/10 rounded-full blur-2xl pointer-events-none"></div>
+      <div class="absolute -bottom-16 -right-16 w-60 h-60 bg-[#FFB84D]/15 rounded-full blur-2xl pointer-events-none"></div>
+
+      <div class="w-16 h-16 mx-auto mb-6 rounded-2xl bg-white p-2.5 shadow-[4px_6px_16px_rgba(108,99,255,0.15),inset_2px_2px_4px_#ffffff] border border-white">
+        <img src="https://lh3.googleusercontent.com/aida/AEtjO1X7S3rvjHLD2T2ZSwRsAwkZbxRDZ3YNIAMeXlPmZ5YGr9s0jmRhVDu9igu3_DdKtupdlp3mEkDiN7knq6FeOvbUtMAJIxKxPM0Q5vKgd3Crfg46CCu6JcYx8-YzIi8xpHxqy7Z-cdIxtXmLNNbaKoSgetaOV7FNhBRQvSqqts2tOh2Oo8VRN_QNKn7MrlxXMtvopLUFksqqXbuO-7ckIfqhBG5mccZLghWmgFvfefJGR8ffAM9YKkdxAT-P" alt="Logo" class="w-full h-full object-contain">
+      </div>
+
+      <h2 class="text-3xl sm:text-4xl md:text-5xl font-extrabold text-[#25233A] tracking-tight mb-4">
+        Ready to Ace Your Semester?
+      </h2>
+
+      <p class="text-base sm:text-lg md:text-xl text-[#25233A]/80 font-medium max-w-2xl mx-auto mb-9 leading-relaxed">
+        Save time on your college work and get started with Assignment Hub today. Never stress over tight deadlines again.
+      </p>
+
+      <div class="flex flex-col sm:flex-row items-center justify-center space-y-4 sm:space-y-0 sm:space-x-5 max-w-md mx-auto">
+        <a href="./signup.html" class="clay-btn w-full sm:w-auto px-9 py-4 text-base font-extrabold text-white bg-[#6C63FF] rounded-2xl shadow-[0_8px_24px_rgba(108,99,255,0.45),inset_0_3px_3px_rgba(255,255,255,0.35),inset_0_-4px_6px_rgba(0,0,0,0.18)] hover:bg-[#5e54fa] flex items-center justify-center space-x-2">
+          <span>Create Your Account</span>
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
+          </svg>
+        </a>
+      </div>
+
+      <p class="mt-6 text-sm font-semibold text-[#25233A]/70">
+        Already have an account? 
+        <a href="./login.html" class="text-[#6C63FF] font-bold hover:underline ml-1">Login here</a>
+      </p>
+
+      <div class="mt-10 pt-8 border-t border-[#F3F0FF] flex flex-wrap items-center justify-center gap-6 sm:gap-10 text-xs font-bold text-[#25233A]/60">
+        <span class="flex items-center space-x-1.5">
+          <svg class="w-4 h-4 text-[#55C595]" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg>
+          <span>100% Confidential</span>
+        </span>
+        <span class="flex items-center space-x-1.5">
+          <svg class="w-4 h-4 text-[#55C595]" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg>
+          <span>University Rubric Aligned</span>
+        </span>
+        <span class="flex items-center space-x-1.5">
+          <svg class="w-4 h-4 text-[#55C595]" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg>
+          <span>Direct Student Support</span>
+        </span>
+      </div>
+
+    </div>
+
+  </section>
+
+  <!-- ======================================================== -->
+  <!-- 10. FOOTER (Clean Claymorphic Footer) -->
+  <!-- ======================================================== -->
+  <footer class="pt-12 pb-10 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+    <div class="clay-surface p-8 sm:p-12 mb-8">
+      
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8 sm:gap-10">
+        
+        <!-- Brand & Description (2 cols on large screen) -->
+        <div class="lg:col-span-2 flex flex-col items-start">
+          <a href="./index.html" class="flex items-center space-x-3 mb-4">
+            <div class="w-10 h-10 rounded-2xl bg-[#F3F0FF] p-1.5 flex items-center justify-center shadow-[inset_1px_1px_2px_#ffffff]">
+              <img src="https://lh3.googleusercontent.com/aida/AEtjO1X7S3rvjHLD2T2ZSwRsAwkZbxRDZ3YNIAMeXlPmZ5YGr9s0jmRhVDu9igu3_DdKtupdlp3mEkDiN7knq6FeOvbUtMAJIxKxPM0Q5vKgd3Crfg46CCu6JcYx8-YzIi8xpHxqy7Z-cdIxtXmLNNbaKoSgetaOV7FNhBRQvSqqts2tOh2Oo8VRN_QNKn7MrlxXMtvopLUFksqqXbuO-7ckIfqhBG5mccZLghWmgFvfefJGR8ffAM9YKkdxAT-P" alt="Logo" class="w-full h-full object-contain">
+            </div>
+            <span class="text-xl font-extrabold tracking-tight text-[#25233A]">Assignment<span class="text-[#6C63FF]">Hub</span></span>
+          </a>
+          <p class="text-sm font-medium text-[#25233A]/70 leading-relaxed mb-6 max-w-sm">
+            Assignment Hub is dedicated to helping college students manage academic deadlines with top-notch assignment guidance, practical files, and project assistance.
+          </p>
+          <div class="inline-flex items-center space-x-2 px-3 py-1.5 rounded-full bg-[#FAF8FF] border border-white text-xs font-bold text-[#6C63FF]">
+            <span class="w-2 h-2 rounded-full bg-[#55C595]"></span>
+            <span>24/7 Student Academic Desk</span>
+          </div>
+        </div>
+
+        <!-- Quick Links -->
+        <div>
+          <h4 class="text-sm font-extrabold uppercase tracking-wider text-[#25233A] mb-4">Quick Links</h4>
+          <ul class="space-y-2.5 text-sm font-semibold text-[#25233A]/75">
+            <li><a href="#hero" class="hover:text-[#6C63FF] transition-colors">Home</a></li>
+            <li><a href="#services" class="hover:text-[#6C63FF] transition-colors">Services</a></li>
+            <li><a href="#how-it-works" class="hover:text-[#6C63FF] transition-colors">How It Works</a></li>
+            <li><a href="#benefits" class="hover:text-[#6C63FF] transition-colors">Benefits</a></li>
+            <li><a href="#faqs" class="hover:text-[#6C63FF] transition-colors">FAQs</a></li>
+          </ul>
+        </div>
+
+        <!-- Academic Services -->
+        <div>
+          <h4 class="text-sm font-extrabold uppercase tracking-wider text-[#25233A] mb-4">Services</h4>
+          <ul class="space-y-2.5 text-sm font-semibold text-[#25233A]/75">
+            <li><a href="#services" class="hover:text-[#6C63FF] transition-colors">Assignments</a></li>
+            <li><a href="#services" class="hover:text-[#6C63FF] transition-colors">Practical Files</a></li>
+            <li><a href="#services" class="hover:text-[#6C63FF] transition-colors">Mini Projects</a></li>
+            <li><a href="#services" class="hover:text-[#6C63FF] transition-colors">Engineering Drawing</a></li>
+            <li><a href="#services" class="hover:text-[#6C63FF] transition-colors">Coding Projects</a></li>
+          </ul>
+        </div>
+
+        <!-- Account & Help -->
+        <div>
+          <h4 class="text-sm font-extrabold uppercase tracking-wider text-[#25233A] mb-4">Account & Help</h4>
+          <ul class="space-y-2.5 text-sm font-semibold text-[#25233A]/75">
+            <li><a href="./login.html" class="hover:text-[#6C63FF] transition-colors">Student Login</a></li>
+            <li><a href="./signup.html" class="hover:text-[#6C63FF] transition-colors">Create Account</a></li>
+            <li><a href="./dashboard.html" class="hover:text-[#6C63FF] transition-colors">Student Dashboard</a></li>
+            <li><a href="#faqs" class="hover:text-[#6C63FF] transition-colors">Student FAQs</a></li>
+          </ul>
+        </div>
+
+      </div>
+
+      <!-- Copyright Bottom Bar -->
+      <div class="mt-10 pt-6 border-t border-[#F3F0FF] flex flex-col sm:flex-row items-center justify-between text-xs font-semibold text-[#25233A]/60">
+        <p>© 2026 Assignment Hub. Built exclusively for college students.</p>
+        <div class="flex items-center space-x-4 mt-3 sm:mt-0">
+          <a href="#" class="hover:text-[#6C63FF]">Academic Honor Code</a>
+          <span>•</span>
+          <a href="#" class="hover:text-[#6C63FF]">Terms of Service</a>
+          <span>•</span>
+          <a href="#" class="hover:text-[#6C63FF]">Privacy Policy</a>
+        </div>
+      </div>
+
+    </div>
+  </footer>
+
+  <script src="./js/api.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      // 1. Session-aware navbar update
+      if (typeof authStore !== 'undefined' && authStore.isLoggedIn()) {
+        const navActions = document.getElementById('nav-actions');
+        if (navActions) {
+          navActions.innerHTML = `
+            <a href="./dashboard.html" class="clay-btn px-6 py-2.5 text-sm font-bold text-white bg-[#6C63FF] rounded-full shadow-[0_6px_18px_rgba(108,99,255,0.4)] flex items-center space-x-2">
+              <span>My Dashboard</span>
+              <span class="material-symbols-outlined text-base">dashboard</span>
+            </a>
+          `;
+        }
+        const mobileNavActions = document.getElementById('mobile-nav-actions');
+        if (mobileNavActions) {
+          mobileNavActions.innerHTML = `
+            <a href="./dashboard.html" class="w-full text-center py-2.5 text-sm font-bold text-white bg-[#6C63FF] rounded-xl shadow-[0_4px_12px_rgba(108,99,255,0.35)]">
+              Go to Dashboard
+            </a>
+          `;
+        }
+      }
+
+      // 2. Dynamic Scrollspy and Active Nav Pill Controller
+      const navLinks = document.querySelectorAll('#desktop-nav .nav-item');
+      const mobileNavLinks = document.querySelectorAll('#mobile-nav .mobile-nav-item');
+      const sectionIds = ['hero', 'services', 'how-it-works', 'benefits', 'faqs'];
+      const sections = sectionIds.map(id => document.getElementById(id)).filter(Boolean);
+
+      function setActiveNav(targetId) {
+        // Desktop items
+        navLinks.forEach(link => {
+          if (link.getAttribute('href') === `#${targetId}`) {
+            link.classList.add('active');
+          } else {
+            link.classList.remove('active');
+          }
+        });
+
+        // Mobile dropdown items
+        mobileNavLinks.forEach(link => {
+          if (link.getAttribute('href') === `#${targetId}`) {
+            link.classList.add('bg-[#F3F0FF]', 'text-[#6C63FF]', 'font-bold');
+            link.classList.remove('text-[#25233A]', 'font-medium');
+          } else {
+            link.classList.remove('bg-[#F3F0FF]', 'text-[#6C63FF]', 'font-bold');
+            link.classList.add('text-[#25233A]', 'font-medium');
+          }
+        });
+      }
+
+      // Instant click activation + smooth scroll
+      navLinks.forEach(link => {
+        link.addEventListener('click', (e) => {
+          const href = link.getAttribute('href');
+          if (href && href.startsWith('#')) {
+            e.preventDefault();
+            const targetId = href.substring(1);
+            const targetEl = document.getElementById(targetId);
+            if (targetEl) {
+              setActiveNav(targetId);
+              targetEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+              history.pushState(null, null, href);
+            }
+          }
+        });
+      });
+
+      mobileNavLinks.forEach(link => {
+        link.addEventListener('click', (e) => {
+          const href = link.getAttribute('href');
+          if (href && href.startsWith('#')) {
+            e.preventDefault();
+            const targetId = href.substring(1);
+            const targetEl = document.getElementById(targetId);
+            if (targetEl) {
+              setActiveNav(targetId);
+              document.getElementById('mobile-dropdown')?.classList.add('hidden');
+              targetEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+              history.pushState(null, null, href);
+            }
+          }
+        });
+      });
+
+      // Scrollspy detection on scroll
+      let isScrollingTimeout;
+      window.addEventListener('scroll', () => {
+        clearTimeout(isScrollingTimeout);
+        isScrollingTimeout = setTimeout(() => {
+          const scrollPos = window.scrollY + 180;
+          for (let i = sections.length - 1; i >= 0; i--) {
+            const section = sections[i];
+            if (section && section.offsetTop <= scrollPos) {
+              setActiveNav(section.id);
+              break;
+            }
+          }
+        }, 40);
+      }, { passive: true });
+    });
+  </script>
+</body>
+</html>

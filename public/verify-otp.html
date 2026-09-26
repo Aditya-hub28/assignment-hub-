@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+  <title>Verify Mobile OTP — Assignment Hub</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com" rel="preconnect">
+  <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+          },
+          colors: {
+            brand: {
+              primary: '#6C63FF',
+              secondary: '#8B7CFF',
+              accent: '#FFB84D',
+              lavender: '#F3F0FF',
+              text: '#25233A',
+              success: '#55C595',
+            }
+          },
+          boxShadow: {
+            'clay-card': '0 20px 40px -15px rgba(108, 99, 255, 0.15), 0 0 0 1px rgba(255, 255, 255, 0.8) inset, 0 10px 25px -5px rgba(37, 35, 58, 0.06)',
+            'clay-btn': '0 10px 20px -5px rgba(108, 99, 255, 0.45), inset 0 2px 3px rgba(255, 255, 255, 0.35), inset 0 -3px 6px rgba(0, 0, 0, 0.18)',
+            'clay-input': 'inset 0 3px 6px rgba(108, 99, 255, 0.08), inset 0 -1px 2px rgba(255, 255, 255, 0.9), 0 2px 5px rgba(0,0,0,0.02)',
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body {
+      background-color: #F3F0FF;
+      color: #25233A;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+    .clay-surface {
+      background: #FFFFFF;
+      border: 2px solid rgba(255, 255, 255, 0.9);
+      box-shadow: 
+        0 24px 48px -12px rgba(108, 99, 255, 0.16),
+        0 12px 24px -8px rgba(37, 35, 58, 0.06),
+        inset 0 2px 4px rgba(255, 255, 255, 0.9),
+        inset 0 -4px 8px rgba(219, 214, 245, 0.3);
+    }
+    .clay-otp-digit {
+      background: #FAF8FF;
+      border: 2px solid #E2DCFF;
+      box-shadow: 
+        inset 0 2px 5px rgba(108, 99, 255, 0.08),
+        inset 0 -1px 2px rgba(255, 255, 255, 0.95);
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .clay-otp-digit:focus {
+      background: #FFFFFF;
+      border-color: #6C63FF;
+      box-shadow: 
+        0 0 0 4px rgba(108, 99, 255, 0.15),
+        inset 0 1px 3px rgba(108, 99, 255, 0.06);
+    }
+    .clay-button-primary {
+      background: linear-gradient(180deg, #7A72FF 0%, #6C63FF 100%);
+      box-shadow: 
+        0 12px 24px -6px rgba(108, 99, 255, 0.5),
+        inset 0 2px 3px rgba(255, 255, 255, 0.4),
+        inset 0 -3px 6px rgba(0, 0, 0, 0.18);
+      transition: all 0.15s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .clay-button-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 
+        0 16px 28px -6px rgba(108, 99, 255, 0.6),
+        inset 0 2px 3px rgba(255, 255, 255, 0.45);
+    }
+    .clay-button-primary:active {
+      transform: translateY(1px);
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between relative overflow-x-hidden">
+
+  <!-- Floating Ambient Glows -->
+  <div class="fixed w-96 h-96 bg-[#8B7CFF]/20 -top-20 -left-20 rounded-full blur-3xl pointer-events-none"></div>
+  <div class="fixed w-[450px] h-[450px] bg-[#FFB84D]/15 top-1/3 -right-24 rounded-full blur-3xl pointer-events-none"></div>
+
+  <!-- Header -->
+  <header class="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 pb-2 relative z-10">
+    <div class="flex items-center justify-between">
+      <a class="flex items-center gap-3 group transition-transform active:scale-95" href="./index.html">
+        <div class="w-11 h-11 rounded-2xl bg-white flex items-center justify-center p-1.5 shadow-[0_8px_18px_-4px_rgba(108,99,255,0.25),inset_0_2px_3px_rgba(255,255,255,0.9)] border border-white">
+          <img alt="Assignment Hub Logo" class="w-full h-full object-contain" src="https://lh3.googleusercontent.com/aida/AEtjO1X7S3rvjHLD2T2ZSwRsAwkZbxRDZ3YNIAMeXlPmZ5YGr9s0jmRhVDu9igu3_DdKtupdlp3mEkDiN7knq6FeOvbUtMAJIxKxPM0Q5vKgd3Crfg46CCu6JcYx8-YzIi8xpHxqy7Z-cdIxtXmLNNbaKoSgetaOV7FNhBRQvSqqts2tOh2Oo8VRN_QNKn7MrlxXMtvopLUFksqqXbuO-7ckIfqhBG5mccZLghWmgFvfefJGR8ffAM9YKkdxAT-P">
+        </div>
+        <div class="flex flex-col">
+          <span class="text-xl font-extrabold tracking-tight text-[#25233A] leading-none">Assignment<span class="text-[#6C63FF]">Hub</span></span>
+          <span class="text-[10px] font-bold text-[#8B7CFF] uppercase tracking-wider mt-0.5">College Solutions</span>
+        </div>
+      </a>
+      <div class="flex items-center gap-3">
+        <a class="px-4 py-2 rounded-full text-xs sm:text-sm font-bold text-[#6C63FF] bg-white shadow-sm hover:shadow transition-all flex items-center gap-1.5 border border-white" href="./signup.html">
+          <span class="material-symbols-outlined text-sm">arrow_back</span>
+          <span>Back to Signup</span>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 lg:py-10 flex-grow flex items-center justify-center relative z-10">
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-center w-full">
+      
+      <!-- Left Column: Clay Illustration -->
+      <div class="hidden lg:flex lg:col-span-5 flex-col items-center justify-center text-center p-8 clay-surface rounded-3xl">
+        <div class="w-full max-w-sm overflow-hidden rounded-2xl mb-6">
+          <img src="https://lh3.googleusercontent.com/aida/AEtjO1UBohWYb31HbQnrUWeVvGvMfsojt6s8gs0TsB9EQHY-cPyvYMGSfkEuyNWyU4Cx8Cup6dImiEFo3-yjZmpneFYlRNgVo4sqetqsC2N68XS-1u5H_KpQSAXzkxhwPER-7b9U3csKOnjU2dvdD36-lb6ea3y6--cYsx8qBND7QPFmPTlUI9Ssgl1JtKE9iYkYU-fs6_5OOr87TRn0jQbKOfVt55nrVYoT5YHwXhAl_U5tIbM6VQcbFt2_eT_c" alt="OTP Mobile Phone 3D Clay" class="w-full h-auto object-contain">
+        </div>
+        <h3 class="text-2xl font-extrabold text-[#25233A] mb-2">Instant Mobile Verification</h3>
+        <p class="text-sm font-medium text-[#25233A]/70 max-w-xs leading-relaxed">
+          We protect your student account with 2-step verification. Enter the 6-digit code received on your mobile.
+        </p>
+      </div>
+
+      <!-- Right Column: OTP Input Card -->
+      <div class="lg:col-span-7">
+        <div class="clay-surface rounded-3xl p-6 sm:p-10">
+          
+          <div class="flex items-center justify-between mb-6">
+            <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#FAF8FF] border border-[#E2DCFF]">
+              <span class="text-xs font-bold text-[#6C63FF] uppercase tracking-wider">STEP 2 OF 2 • EMAIL VERIFICATION</span>
+            </div>
+            <div id="otp-timer-badge" class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#FFB84D]/15 text-[#25233A]">
+              <span class="material-symbols-outlined text-xs text-[#FFB84D]">timer</span>
+              <span id="timer-display" class="text-xs font-bold text-[#7F5300]">05:00</span>
+            </div>
+          </div>
+
+          <div class="space-y-1 mb-6">
+            <h2 class="text-3xl font-extrabold text-[#25233A] tracking-tight">Enter 6-Digit Code</h2>
+            <p class="text-sm text-[#25233A]/70">
+              Code sent to <span id="display-email" class="font-bold text-[#25233A]">your email</span> 
+              <a href="./signup.html" class="text-[#6C63FF] text-xs font-bold ml-1 hover:underline">Change</a>
+            </p>
+          </div>
+
+          <!-- Dev Mode OTP Display Banner -->
+          <div id="dev-otp-banner" class="hidden mb-5 p-3.5 rounded-2xl bg-[#E3DFFF] border border-[#C4C0FF] text-[#100069] text-xs font-semibold flex items-center justify-between">
+            <div class="flex items-center gap-2">
+              <span class="material-symbols-outlined text-base text-[#4D41DF]">developer_mode</span>
+              <span><strong>[Dev Mode Code]:</strong> <span id="dev-otp-val" class="font-black text-sm tracking-widest text-[#4D41DF]">123456</span></span>
+            </div>
+            <div class="flex items-center gap-2">
+              <a id="preview-email-btn" href="#" target="_blank" class="hidden px-2 py-1 rounded-xl bg-[#4D41DF] text-white text-[11px] font-bold hover:bg-[#3B2FC7]">View Email ↗</a>
+              <button type="button" onclick="autoFillOtp()" class="px-2.5 py-1 rounded-xl bg-white text-[#4D41DF] text-[11px] font-bold shadow-xs hover:bg-[#F0EBFF]">Auto-fill</button>
+            </div>
+          </div>
+
+          <!-- Alert Box -->
+          <div id="otp-alert" class="hidden mb-6 p-4 rounded-2xl bg-[#FFDAD6] text-[#93000A] flex items-center gap-3">
+            <span class="material-symbols-outlined text-xl">error</span>
+            <span id="otp-alert-msg" class="text-sm font-semibold">Invalid OTP code entered.</span>
+          </div>
+
+          <!-- Form -->
+          <form id="otp-form" class="flex flex-col gap-6" onsubmit="handleVerifyOtp(event)">
+            
+            <!-- 6-digit OTP Inputs -->
+            <div class="flex items-center justify-between gap-2 sm:gap-3 my-2">
+              <input type="text" maxlength="1" pattern="\d*" inputmode="numeric" class="clay-otp-digit w-12 h-14 sm:w-14 sm:h-16 rounded-2xl text-center text-2xl font-black text-[#25233A] outline-none" id="otp-1" required>
+              <input type="text" maxlength="1" pattern="\d*" inputmode="numeric" class="clay-otp-digit w-12 h-14 sm:w-14 sm:h-16 rounded-2xl text-center text-2xl font-black text-[#25233A] outline-none" id="otp-2" required>
+              <input type="text" maxlength="1" pattern="\d*" inputmode="numeric" class="clay-otp-digit w-12 h-14 sm:w-14 sm:h-16 rounded-2xl text-center text-2xl font-black text-[#25233A] outline-none" id="otp-3" required>
+              <input type="text" maxlength="1" pattern="\d*" inputmode="numeric" class="clay-otp-digit w-12 h-14 sm:w-14 sm:h-16 rounded-2xl text-center text-2xl font-black text-[#25233A] outline-none" id="otp-4" required>
+              <input type="text" maxlength="1" pattern="\d*" inputmode="numeric" class="clay-otp-digit w-12 h-14 sm:w-14 sm:h-16 rounded-2xl text-center text-2xl font-black text-[#25233A] outline-none" id="otp-5" required>
+              <input type="text" maxlength="1" pattern="\d*" inputmode="numeric" class="clay-otp-digit w-12 h-14 sm:w-14 sm:h-16 rounded-2xl text-center text-2xl font-black text-[#25233A] outline-none" id="otp-6" required>
+            </div>
+
+            <!-- Submit Button -->
+            <div class="pt-2">
+              <button id="verify-btn" class="clay-button-primary w-full py-4 px-6 rounded-2xl text-white font-extrabold text-base tracking-wide flex items-center justify-center gap-2 cursor-pointer" type="submit">
+                <span id="btn-text">Verify & Complete Registration</span>
+                <span id="btn-icon" class="material-symbols-outlined text-lg">check_circle</span>
+                <svg id="btn-spinner" class="hidden animate-spin h-5 w-5 text-white" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" fill="currentColor"></path></svg>
+              </button>
+            </div>
+
+            <!-- Resend Strip -->
+            <div class="flex items-center justify-between text-xs font-semibold pt-2 border-t border-[#E2DCFF]/50">
+              <span class="text-[#25233A]/70">Didn't receive the email?</span>
+              <button id="resend-btn" type="button" onclick="handleResendOtp()" class="text-[#6C63FF] hover:text-[#5846c8] font-bold disabled:opacity-50 disabled:cursor-not-allowed">
+                Resend Code (<span id="resend-cooldown">60</span>s)
+              </button>
+            </div>
+
+          </form>
+
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <footer class="py-6 text-center text-xs font-medium text-[#25233A]/60">
+    © 2026 Assignment Hub. Built for college students.
+  </footer>
+
+  <script src="./js/api.js"></script>
+  <script>
+    const verificationId = sessionStorage.getItem('ah_verification_id');
+    const mobile = sessionStorage.getItem('ah_reg_mobile');
+    const email = sessionStorage.getItem('ah_reg_email');
+
+    if (!verificationId) {
+      showToast('No pending registration found. Please sign up first.', 'warning');
+      setTimeout(() => {
+        window.location.href = './signup.html';
+      }, 1000);
+    }
+
+    const devOtp = sessionStorage.getItem('ah_dev_otp');
+    if (devOtp) {
+      document.getElementById('dev-otp-banner').classList.remove('hidden');
+      document.getElementById('dev-otp-val').textContent = devOtp;
+    }
+
+    const previewUrl = sessionStorage.getItem('ah_preview_url');
+    if (previewUrl) {
+      const pBtn = document.getElementById('preview-email-btn');
+      if (pBtn) {
+        pBtn.href = previewUrl;
+        pBtn.classList.remove('hidden');
+      }
+    }
+
+    function autoFillOtp() {
+      const code = sessionStorage.getItem('ah_dev_otp');
+      if (code) {
+        code.split('').forEach((char, i) => {
+          if (otpInputs[i]) otpInputs[i].value = char;
+        });
+        otpInputs[5].focus();
+      }
+    }
+
+    if (email) {
+      document.getElementById('display-email').textContent = email;
+    }
+
+    // OTP Inputs Auto Advance & Backspace Logic
+    const otpInputs = [
+      document.getElementById('otp-1'),
+      document.getElementById('otp-2'),
+      document.getElementById('otp-3'),
+      document.getElementById('otp-4'),
+      document.getElementById('otp-5'),
+      document.getElementById('otp-6')
+    ];
+
+    otpInputs[0].focus();
+
+    otpInputs.forEach((input, index) => {
+      input.addEventListener('input', (e) => {
+        const val = e.target.value.replace(/\D/g, '');
+        e.target.value = val.slice(0, 1);
+        if (val && index < 5) {
+          otpInputs[index + 1].focus();
+        }
+      });
+
+      input.addEventListener('keydown', (e) => {
+        if (e.key === 'Backspace' && !e.target.value && index > 0) {
+          otpInputs[index - 1].focus();
+        }
+      });
+
+      input.addEventListener('paste', (e) => {
+        e.preventDefault();
+        const pasteData = (e.clipboardData || window.clipboardData).getData('text').replace(/\D/g, '').slice(0, 6);
+        if (pasteData) {
+          pasteData.split('').forEach((char, i) => {
+            if (otpInputs[i]) {
+              otpInputs[i].value = char;
+            }
+          });
+          const nextIndex = Math.min(pasteData.length, 5);
+          otpInputs[nextIndex].focus();
+        }
+      });
+    });
+
+    // 5-minute Countdown Timer
+    let totalSeconds = 300;
+    const timerDisplay = document.getElementById('timer-display');
+    const timerInterval = setInterval(() => {
+      totalSeconds--;
+      if (totalSeconds <= 0) {
+        clearInterval(timerInterval);
+        timerDisplay.textContent = '00:00 (Expired)';
+        document.getElementById('otp-alert-msg').textContent = 'OTP has expired. Please click Resend OTP.';
+        document.getElementById('otp-alert').classList.remove('hidden');
+      } else {
+        const mins = Math.floor(totalSeconds / 60).toString().padStart(2, '0');
+        const secs = (totalSeconds % 60).toString().padStart(2, '0');
+        timerDisplay.textContent = `${mins}:${secs}`;
+      }
+    }, 1000);
+
+    // 60-second Resend Cooldown
+    let resendCooldown = 60;
+    const resendBtn = document.getElementById('resend-btn');
+    const resendCooldownSpan = document.getElementById('resend-cooldown');
+    resendBtn.disabled = true;
+
+    const resendInterval = setInterval(() => {
+      resendCooldown--;
+      if (resendCooldown <= 0) {
+        clearInterval(resendInterval);
+        resendBtn.disabled = false;
+        resendBtn.textContent = 'Resend OTP';
+      } else {
+        resendCooldownSpan.textContent = resendCooldown;
+      }
+    }, 1000);
+
+    async function handleResendOtp() {
+      resendBtn.disabled = true;
+      resendBtn.textContent = 'Sending...';
+
+      try {
+        const response = await api.auth.resendOtp({
+          verification_id: verificationId
+        });
+
+        showToast(response.data.message || 'New verification code sent to your email!', 'success');
+        
+        if (response.data.devOtp) {
+          sessionStorage.setItem('ah_dev_otp', response.data.devOtp);
+          document.getElementById('dev-otp-banner').classList.remove('hidden');
+          document.getElementById('dev-otp-val').textContent = response.data.devOtp;
+        }
+
+        if (response.data.previewUrl) {
+          sessionStorage.setItem('ah_preview_url', response.data.previewUrl);
+          const pBtn = document.getElementById('preview-email-btn');
+          if (pBtn) {
+            pBtn.href = response.data.previewUrl;
+            pBtn.classList.remove('hidden');
+          }
+        }
+
+        // Reset timer
+        totalSeconds = 300;
+        resendCooldown = 60;
+        resendBtn.innerHTML = 'Resend Code (<span id="resend-cooldown">60</span>s)';
+        
+        // Clear input boxes
+        otpInputs.forEach(input => input.value = '');
+        otpInputs[0].focus();
+      } catch (err) {
+        showToast(err.message || 'Failed to resend code.', 'error');
+        resendBtn.disabled = false;
+        resendBtn.textContent = 'Resend Code';
+      }
+    }
+
+    async function handleVerifyOtp(e) {
+      e.preventDefault();
+      const alertBox = document.getElementById('otp-alert');
+      const alertMsg = document.getElementById('otp-alert-msg');
+      const btn = document.getElementById('verify-btn');
+      const btnText = document.getElementById('btn-text');
+      const btnIcon = document.getElementById('btn-icon');
+      const btnSpinner = document.getElementById('btn-spinner');
+
+      alertBox.classList.add('hidden');
+
+      const otp = otpInputs.map(i => i.value).join('');
+      if (otp.length !== 6) {
+        alertMsg.textContent = 'Please enter all 6 digits of the OTP.';
+        alertBox.classList.remove('hidden');
+        return;
+      }
+
+      btn.disabled = true;
+      btnText.textContent = 'Verifying...';
+      btnIcon.classList.add('hidden');
+      btnSpinner.classList.remove('hidden');
+
+      try {
+        const response = await api.auth.verifyOtp({
+          verification_id: verificationId,
+          otp
+        });
+
+        showToast('Verification successful! Logging you in...', 'success');
+        
+        // Auto-login or redirect to login
+        setTimeout(() => {
+          window.location.href = './login.html?registered=true';
+        }, 1000);
+      } catch (err) {
+        alertMsg.textContent = err.message || 'OTP verification failed.';
+        alertBox.classList.remove('hidden');
+      } finally {
+        btn.disabled = false;
+        btnText.textContent = 'Verify & Complete Registration';
+        btnIcon.classList.remove('hidden');
+        btnSpinner.classList.add('hidden');
+      }
+    }
+  </script>
+</body>
+</html>

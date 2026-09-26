@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+  <title>Sign Up — Assignment Hub</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com" rel="preconnect">
+  <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+          },
+          colors: {
+            brand: {
+              primary: '#6C63FF',
+              secondary: '#8B7CFF',
+              accent: '#FFB84D',
+              lavender: '#F3F0FF',
+              text: '#25233A',
+              success: '#55C595',
+            }
+          },
+          boxShadow: {
+            'clay-card': '0 20px 40px -15px rgba(108, 99, 255, 0.15), 0 0 0 1px rgba(255, 255, 255, 0.8) inset, 0 10px 25px -5px rgba(37, 35, 58, 0.06)',
+            'clay-btn': '0 10px 20px -5px rgba(108, 99, 255, 0.45), inset 0 2px 3px rgba(255, 255, 255, 0.35), inset 0 -3px 6px rgba(0, 0, 0, 0.18)',
+            'clay-input': 'inset 0 3px 6px rgba(108, 99, 255, 0.08), inset 0 -1px 2px rgba(255, 255, 255, 0.9), 0 2px 5px rgba(0,0,0,0.02)',
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body {
+      background-color: #F3F0FF;
+      color: #25233A;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+    .clay-surface {
+      background: #FFFFFF;
+      border: 2px solid rgba(255, 255, 255, 0.9);
+      box-shadow: 
+        0 24px 48px -12px rgba(108, 99, 255, 0.16),
+        0 12px 24px -8px rgba(37, 35, 58, 0.06),
+        inset 0 2px 4px rgba(255, 255, 255, 0.9),
+        inset 0 -4px 8px rgba(219, 214, 245, 0.3);
+    }
+    .clay-input-box {
+      background: #FAF8FF;
+      border: 1.5px solid #E2DCFF;
+      box-shadow: 
+        inset 0 2px 5px rgba(108, 99, 255, 0.08),
+        inset 0 -1px 2px rgba(255, 255, 255, 0.95);
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .clay-input-box:focus-within {
+      background: #FFFFFF;
+      border-color: #6C63FF;
+      box-shadow: 
+        0 0 0 4px rgba(108, 99, 255, 0.15),
+        inset 0 1px 3px rgba(108, 99, 255, 0.06);
+    }
+    .clay-button-primary {
+      background: linear-gradient(180deg, #7A72FF 0%, #6C63FF 100%);
+      box-shadow: 
+        0 12px 24px -6px rgba(108, 99, 255, 0.5),
+        inset 0 2px 3px rgba(255, 255, 255, 0.4),
+        inset 0 -3px 6px rgba(0, 0, 0, 0.18);
+      transition: all 0.15s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .clay-button-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 
+        0 16px 28px -6px rgba(108, 99, 255, 0.6),
+        inset 0 2px 3px rgba(255, 255, 255, 0.45);
+    }
+    .clay-button-primary:active {
+      transform: translateY(1px);
+    }
+    .req-valid {
+      background: #E3DFFF !important;
+      color: #3622CA !important;
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between relative overflow-x-hidden">
+
+  <!-- Floating Ambient Glows -->
+  <div class="fixed w-96 h-96 bg-[#8B7CFF]/20 -top-20 -left-20 rounded-full blur-3xl pointer-events-none"></div>
+  <div class="fixed w-[450px] h-[450px] bg-[#FFB84D]/15 top-1/3 -right-24 rounded-full blur-3xl pointer-events-none"></div>
+
+  <!-- Header -->
+  <header class="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 pb-2 relative z-10">
+    <div class="flex items-center justify-between">
+      <a class="flex items-center gap-3 group transition-transform active:scale-95" href="./index.html">
+        <div class="w-11 h-11 rounded-2xl bg-white flex items-center justify-center p-1.5 shadow-[0_8px_18px_-4px_rgba(108,99,255,0.25),inset_0_2px_3px_rgba(255,255,255,0.9)] border border-white">
+          <img alt="Assignment Hub Logo" class="w-full h-full object-contain" src="https://lh3.googleusercontent.com/aida/AEtjO1X7S3rvjHLD2T2ZSwRsAwkZbxRDZ3YNIAMeXlPmZ5YGr9s0jmRhVDu9igu3_DdKtupdlp3mEkDiN7knq6FeOvbUtMAJIxKxPM0Q5vKgd3Crfg46CCu6JcYx8-YzIi8xpHxqy7Z-cdIxtXmLNNbaKoSgetaOV7FNhBRQvSqqts2tOh2Oo8VRN_QNKn7MrlxXMtvopLUFksqqXbuO-7ckIfqhBG5mccZLghWmgFvfefJGR8ffAM9YKkdxAT-P">
+        </div>
+        <div class="flex flex-col">
+          <span class="text-xl font-extrabold tracking-tight text-[#25233A] leading-none">Assignment<span class="text-[#6C63FF]">Hub</span></span>
+          <span class="text-[10px] font-bold text-[#8B7CFF] uppercase tracking-wider mt-0.5">College Solutions</span>
+        </div>
+      </a>
+      <div class="flex items-center gap-3">
+        <span class="hidden sm:inline-block text-sm font-medium text-[#25233A]/70">Already registered?</span>
+        <a class="px-4 py-2 rounded-full text-xs sm:text-sm font-bold text-[#6C63FF] bg-white shadow-sm hover:shadow transition-all flex items-center gap-1.5 border border-white" href="./login.html">
+          <span>Log In</span>
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M14 5l7 7m0 0l-7 7m7-7H3" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"></path></svg>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 lg:py-10 flex-grow flex items-center justify-center relative z-10">
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-center w-full">
+      
+      <!-- Left Column: Clay Illustration & Benefits -->
+      <div class="hidden lg:flex lg:col-span-5 flex-col items-center justify-center text-center p-8 clay-surface rounded-3xl">
+        <div class="w-full max-w-sm overflow-hidden rounded-2xl mb-6">
+          <img src="https://lh3.googleusercontent.com/aida/AEtjO1WLgx6xQH6y5EApJgLdclwWkE7NPSSGoxzikZfrUyXvU0ZE2C--9bXjOSX0Di39Vwv-b3u1iNo1mau64_q0y-93R6VxS1mFTV-bQjAlalx6nK5lxeKHMYm-8W8_SVqELuP6WKgRWtSKjMZPvpEeNIH42M79v_fSmRD7xCyl21OuhZLwYJAPAsCCehvgnc094QLhNxP9j77XTU7bXONTzzrjZ_4ngm2ThdEaJyta_2O4ma4kL5dOH4mKL28" alt="Student Registration Illustration" class="w-full h-auto object-contain">
+        </div>
+        <h3 class="text-2xl font-extrabold text-[#25233A] mb-2">Join Your Campus Hub</h3>
+        <p class="text-sm font-medium text-[#25233A]/70 max-w-xs leading-relaxed">
+          Create your account in seconds with your phone number and email to access assignment solutions and academic support.
+        </p>
+      </div>
+
+      <!-- Right Column: Registration Form -->
+      <div class="lg:col-span-7">
+        <div class="clay-surface rounded-3xl p-6 sm:p-10">
+          
+          <div class="flex items-center justify-between mb-6">
+            <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#FAF8FF] border border-[#E2DCFF]">
+              <span class="text-xs font-bold text-[#6C63FF] uppercase tracking-wider">STUDENT REGISTRATION</span>
+            </div>
+            <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#55C595]/15 text-[#25233A]">
+              <span class="w-2 h-2 rounded-full bg-[#55C595]"></span>
+              <span class="text-xs font-bold text-[#55C595]">Quick 2-Step Signup</span>
+            </div>
+          </div>
+
+          <div class="space-y-1 mb-6">
+            <h2 class="text-3xl font-extrabold text-[#25233A] tracking-tight">Create Your Account</h2>
+            <p class="text-sm text-[#25233A]/70">Step 1 of 2: Fill your basic info. 6-digit Email OTP follows.</p>
+          </div>
+
+          <!-- Alert Box -->
+          <div id="signup-alert" class="hidden mb-6 p-4 rounded-2xl bg-[#FFDAD6] text-[#93000A] flex items-center gap-3">
+            <span class="material-symbols-outlined text-xl">error</span>
+            <span id="signup-alert-msg" class="text-sm font-semibold">Please check your details.</span>
+          </div>
+
+          <!-- Form -->
+          <form id="signup-form" class="flex flex-col gap-5" onsubmit="handleSignup(event)">
+            
+            <!-- Full Name -->
+            <div class="flex flex-col gap-1.5">
+              <label class="text-sm font-bold text-[#25233A]" for="fullname-input">Full Name *</label>
+              <div class="clay-input-box flex items-center gap-3 px-4 py-3.5 rounded-2xl">
+                <span class="material-symbols-outlined text-[#777587]">badge</span>
+                <input class="w-full bg-transparent outline-none text-sm font-medium text-[#25233A] placeholder-[#777587]/60" id="fullname-input" placeholder="e.g. Aditya Kumar Jha" type="text" required>
+              </div>
+            </div>
+
+            <!-- Email Address -->
+            <div class="flex flex-col gap-1.5">
+              <label class="text-sm font-bold text-[#25233A]" for="email-input">Email Address *</label>
+              <div class="clay-input-box flex items-center gap-3 px-4 py-3.5 rounded-2xl">
+                <span class="material-symbols-outlined text-[#777587]">mail</span>
+                <input class="w-full bg-transparent outline-none text-sm font-medium text-[#25233A] placeholder-[#777587]/60" id="email-input" placeholder="e.g. aditya@gmail.com" type="email" required>
+              </div>
+            </div>
+
+            <!-- Mobile Number -->
+            <div class="flex flex-col gap-1.5">
+              <label class="text-sm font-bold text-[#25233A]" for="mobile-input">Mobile Number *</label>
+              <div class="clay-input-box flex items-center gap-3 px-4 py-3.5 rounded-2xl">
+                <div class="flex items-center gap-1 font-bold text-sm border-r border-[#777587]/30 pr-2">
+                  <span>🇮🇳</span>
+                  <span>+91</span>
+                </div>
+                <input class="w-full bg-transparent outline-none text-sm font-medium text-[#25233A] placeholder-[#777587]/60" id="mobile-input" maxlength="10" placeholder="10-digit mobile number" type="tel" required>
+              </div>
+            </div>
+
+            <!-- Password -->
+            <div class="flex flex-col gap-1.5">
+              <label class="text-sm font-bold text-[#25233A]" for="password-input">Password *</label>
+              <div class="clay-input-box flex items-center gap-3 px-4 py-3.5 rounded-2xl">
+                <span class="material-symbols-outlined text-[#777587]">lock</span>
+                <input class="w-full bg-transparent outline-none text-sm font-medium text-[#25233A] placeholder-[#777587]/60" id="password-input" oninput="checkPasswordRequirements()" placeholder="Enter your password (e.g. Aditya123)" type="password" required>
+                <button type="button" onclick="togglePwd()" class="text-[#777587] hover:text-[#25233A]">
+                  <span id="pwd-eye-icon" class="material-symbols-outlined text-lg">visibility</span>
+                </button>
+              </div>
+
+              <!-- Password Requirements Checklist -->
+              <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 mt-1.5 text-xs font-semibold">
+                <div id="req-len" class="px-2.5 py-1.5 rounded-xl bg-[#F0EBFF] text-[#464555] flex items-center gap-1.5 transition-all">
+                  <span class="material-symbols-outlined text-xs">circle</span>
+                  <span>Min 6 Chars</span>
+                </div>
+                <div id="req-upper" class="px-2.5 py-1.5 rounded-xl bg-[#F0EBFF] text-[#464555] flex items-center gap-1.5 transition-all">
+                  <span class="material-symbols-outlined text-xs">circle</span>
+                  <span>1 Uppercase</span>
+                </div>
+                <div id="req-lower" class="px-2.5 py-1.5 rounded-xl bg-[#F0EBFF] text-[#464555] flex items-center gap-1.5 transition-all">
+                  <span class="material-symbols-outlined text-xs">circle</span>
+                  <span>1 Lowercase</span>
+                </div>
+                <div id="req-num" class="px-2.5 py-1.5 rounded-xl bg-[#F0EBFF] text-[#464555] flex items-center gap-1.5 transition-all">
+                  <span class="material-symbols-outlined text-xs">circle</span>
+                  <span>1 Number</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Submit Button -->
+            <div class="pt-2">
+              <button id="signup-btn" class="clay-button-primary w-full py-4 px-6 rounded-2xl text-white font-extrabold text-base tracking-wide flex items-center justify-center gap-2 cursor-pointer" type="submit">
+                <span id="btn-text">Send Verification OTP</span>
+                <span id="btn-icon" class="material-symbols-outlined text-lg">arrow_forward</span>
+                <svg id="btn-spinner" class="hidden animate-spin h-5 w-5 text-white" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" fill="currentColor"></path></svg>
+              </button>
+              <p class="text-center text-xs text-[#25233A]/60 font-medium mt-2">Next step: 6-digit SMS OTP Verification</p>
+            </div>
+
+            <div class="text-center py-1">
+              <span class="text-sm text-[#25233A]/70">Already have an account? </span>
+              <a class="text-sm text-[#6C63FF] font-bold hover:underline" href="./login.html">Log In</a>
+            </div>
+
+          </form>
+
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <footer class="py-6 text-center text-xs font-medium text-[#25233A]/60">
+    © 2026 Assignment Hub. Built for college students.
+  </footer>
+
+  <script src="./js/api.js"></script>
+  <script>
+    function togglePwd() {
+      const input = document.getElementById('password-input');
+      const icon = document.getElementById('pwd-eye-icon');
+      if (input.type === 'password') {
+        input.type = 'text';
+        icon.textContent = 'visibility_off';
+      } else {
+        input.type = 'password';
+        icon.textContent = 'visibility';
+      }
+    }
+
+    function checkPasswordRequirements() {
+      const pwd = document.getElementById('password-input').value;
+      const hasLen = pwd.length >= 6;
+      const hasUpper = /[A-Z]/.test(pwd);
+      const hasLower = /[a-z]/.test(pwd);
+      const hasNum = /[0-9]/.test(pwd);
+
+      updateReqBadge('req-len', hasLen);
+      updateReqBadge('req-upper', hasUpper);
+      updateReqBadge('req-lower', hasLower);
+      updateReqBadge('req-num', hasNum);
+    }
+
+    function updateReqBadge(id, valid) {
+      const el = document.getElementById(id);
+      const icon = el.querySelector('.material-symbols-outlined');
+      if (valid) {
+        el.classList.add('req-valid');
+        icon.textContent = 'check_circle';
+      } else {
+        el.classList.remove('req-valid');
+        icon.textContent = 'circle';
+      }
+    }
+
+    async function handleSignup(e) {
+      e.preventDefault();
+      const alertBox = document.getElementById('signup-alert');
+      const alertMsg = document.getElementById('signup-alert-msg');
+      const btn = document.getElementById('signup-btn');
+      const btnText = document.getElementById('btn-text');
+      const btnIcon = document.getElementById('btn-icon');
+      const btnSpinner = document.getElementById('btn-spinner');
+
+      alertBox.classList.add('hidden');
+
+      const fullName = document.getElementById('fullname-input').value.trim();
+      const email = document.getElementById('email-input').value.trim();
+      const mobile = document.getElementById('mobile-input').value.trim();
+      const password = document.getElementById('password-input').value;
+
+      // Local quick check
+      if (!fullName || !email || !mobile || !password) {
+        alertMsg.textContent = 'Please fill in all required fields.';
+        alertBox.classList.remove('hidden');
+        return;
+      }
+
+      if (password.length < 6 || !/[A-Z]/.test(password) || !/[a-z]/.test(password) || !/[0-9]/.test(password)) {
+        alertMsg.textContent = 'Password must be at least 6 characters and contain uppercase, lowercase, and a number.';
+        alertBox.classList.remove('hidden');
+        return;
+      }
+
+      // UI Loading state
+      btn.disabled = true;
+      btnText.textContent = 'Sending OTP...';
+      btnIcon.classList.add('hidden');
+      btnSpinner.classList.remove('hidden');
+
+      try {
+        const response = await api.auth.initiateRegistration({
+          full_name: fullName,
+          email: email.toLowerCase(),
+          mobile,
+          password
+        });
+
+        // Store verification context
+        sessionStorage.setItem('ah_verification_id', response.data.verificationId);
+        sessionStorage.setItem('ah_reg_mobile', mobile);
+        sessionStorage.setItem('ah_reg_email', email);
+        if (response.data.devOtp) {
+          sessionStorage.setItem('ah_dev_otp', response.data.devOtp);
+        }
+        if (response.data.previewUrl) {
+          sessionStorage.setItem('ah_preview_url', response.data.previewUrl);
+        }
+
+        showToast('Verification code sent to your email!', 'success');
+        setTimeout(() => {
+          window.location.href = './verify-otp.html';
+        }, 800);
+      } catch (err) {
+        alertMsg.textContent = err.message || 'Failed to send OTP. Please try again.';
+        alertBox.classList.remove('hidden');
+      } finally {
+        btn.disabled = false;
+        btnText.textContent = 'Send Verification Code';
+        btnIcon.classList.remove('hidden');
+        btnSpinner.classList.add('hidden');
+      }
+    }
+  </script>
+</body>
+</html>

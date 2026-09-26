@@ -1,0 +1,943 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <title>Student Dashboard — Assignment Hub</title>
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin=""/>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+
+  <script src="./js/api.js"></script>
+  <script>
+    // Strict Auth Guard: Dashboard is strictly accessible AFTER login
+    if (!authStore.isLoggedIn()) {
+      window.location.replace('./login.html');
+    }
+  </script>
+
+  <style>
+    @layer base {
+      html, body {
+        margin: 0;
+        padding: 0;
+      }
+      body {
+        overscroll-behavior: none;
+      }
+      main > :first-child {
+        margin-top: 0 !important;
+      }
+      main > :last-child {
+        margin-bottom: 0 !important;
+      }
+    }
+    ::-webkit-scrollbar {
+      display: none;
+    }
+    .clay-card {
+      box-shadow: 12px 16px 32px rgba(108, 99, 255, 0.08), -8px -8px 24px rgba(255, 255, 255, 0.9), inset 3px 3px 6px rgba(255, 255, 255, 0.8), inset -3px -3px 6px rgba(108, 99, 255, 0.08);
+    }
+    .clay-btn-primary {
+      box-shadow: 6px 10px 20px rgba(108, 99, 255, 0.35), inset 2px 2px 4px rgba(255, 255, 255, 0.45), inset -2px -2px 4px rgba(0, 0, 0, 0.1);
+    }
+    .clay-pill-inset {
+      box-shadow: inset 2px 2px 5px rgba(108, 99, 255, 0.1), inset -2px -2px 5px rgba(255, 255, 255, 0.9);
+    }
+    .clay-nav-shell {
+      box-shadow: 0 12px 28px rgba(108, 99, 255, 0.06), inset 0 1px 2px rgba(255, 255, 255, 0.8);
+    }
+    .clay-surface {
+      background: #FFFFFF;
+      border: 2px solid rgba(255, 255, 255, 0.9);
+      box-shadow: 
+        0 24px 48px -12px rgba(108, 99, 255, 0.16),
+        0 12px 24px -8px rgba(37, 35, 58, 0.06),
+        inset 0 2px 4px rgba(255, 255, 255, 0.9),
+        inset 0 -4px 8px rgba(219, 214, 245, 0.3);
+    }
+  </style>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "tertiary-fixed-dim": "#ffb951",
+            "surface-container-highest": "#e4dffe",
+            "surface-bright": "#fcf8ff",
+            "primary": "#4d41df",
+            "tertiary-fixed": "#ffddb3",
+            "primary-fixed": "#e3dfff",
+            "on-error": "#ffffff",
+            "secondary": "#5846c8",
+            "secondary-fixed": "#e4dffe",
+            "surface-dim": "#dbd6f5",
+            "on-tertiary-container": "#fffbff",
+            "outline-variant": "#c7c4d8",
+            "primary-fixed-dim": "#c4c0ff",
+            "secondary-container": "#7161e3",
+            "inverse-surface": "#302e45",
+            "on-tertiary-fixed": "#291800",
+            "secondary-fixed-dim": "#c7bfff",
+            "tertiary": "#7f5300",
+            "primary-container": "#675df9",
+            "on-secondary-fixed-variant": "#422db2",
+            "surface-tint": "#4f44e2",
+            "on-secondary-container": "#fffbff",
+            "surface-container-low": "#f6f1ff",
+            "on-secondary": "#ffffff",
+            "background": "#fcf8ff",
+            "inverse-primary": "#c4c0ff",
+            "surface-variant": "#e4dffe",
+            "surface-container-lowest": "#ffffff",
+            "surface": "#fcf8ff",
+            "on-error-container": "#93000a",
+            "on-tertiary": "#ffffff",
+            "error-container": "#ffdad6",
+            "tertiary-container": "#a06900",
+            "on-surface": "#1b192f",
+            "on-primary-container": "#fffbff",
+            "on-tertiary-fixed-variant": "#633f00",
+            "outline": "#777587",
+            "on-background": "#1b192f",
+            "error": "#ba1a1a",
+            "surface-container": "#f0ebff",
+            "on-primary-fixed-variant": "#3622ca",
+            "surface-container-high": "#eae5ff",
+            "on-primary-fixed": "#100069",
+            "on-surface-variant": "#464555",
+            "on-primary": "#ffffff",
+            "on-secondary-fixed": "#170065",
+            "inverse-on-surface": "#f3eeff"
+          },
+          borderRadius: {
+            DEFAULT: "1rem",
+            lg: "2rem",
+            xl: "3rem",
+            full: "9999px"
+          },
+          spacing: {
+            "space-lg": "1.5rem",
+            "gutter": "1.5rem",
+            "gutter-mobile": "1rem",
+            "margin": "3rem",
+            "space-xs": "0.25rem",
+            "space-xl": "2.5rem",
+            "space-sm": "0.5rem",
+            "margin-mobile": "1.25rem",
+            "space-md": "1rem"
+          },
+          fontFamily: {
+            sans: ["Plus Jakarta Sans", "sans-serif"]
+          }
+        }
+      }
+    };
+  </script>
+</head>
+<body class="bg-surface font-sans text-on-surface antialiased selection:bg-[#6C63FF] selection:text-white">
+
+  <!-- ======================================================== -->
+  <!-- 1. REFINED NAVBAR (Student Workspace Header) -->
+  <!-- ======================================================== -->
+  <header class="fixed top-0 left-0 right-0 z-50 bg-surface/90 backdrop-blur-xl clay-nav-shell">
+    <div class="h-20 max-w-7xl mx-auto px-4 md:px-6 lg:px-8 flex items-center justify-between gap-4">
+      
+      <!-- Brand Logo -->
+      <div class="flex items-center gap-3">
+        <a class="flex items-center gap-3 transition-transform hover:scale-105" href="#dashboard-home">
+          <img alt="Assignment Hub Logo" class="h-9 w-auto object-contain" src="https://lh3.googleusercontent.com/aida/AEtjO1X7S3rvjHLD2T2ZSwRsAwkZbxRDZ3YNIAMeXlPmZ5YGr9s0jmRhVDu9igu3_DdKtupdlp3mEkDiN7knq6FeOvbUtMAJIxKxPM0Q5vKgd3Crfg46CCu6JcYx8-YzIi8xpHxqy7Z-cdIxtXmLNNbaKoSgetaOV7FNhBRQvSqqts2tOh2Oo8VRN_QNKn7MrlxXMtvopLUFksqqXbuO-7ckIfqhBG5mccZLghWmgFvfefJGR8ffAM9YKkdxAT-P"/>
+          <span class="hidden sm:inline-block text-xl font-bold text-on-surface tracking-tight">Assignment <span class="text-[#6C63FF]">Hub</span></span>
+        </a>
+        <span class="hidden md:inline-flex items-center px-space-md py-space-xs rounded-full bg-surface-container text-on-surface-variant text-xs font-semibold clay-pill-inset">
+          Student Workspace
+        </span>
+      </div>
+
+      <!-- Refined Navigation Links (Connected directly to Dashboard sections) -->
+      <nav id="dashboard-desktop-nav" class="hidden lg:flex items-center gap-1.5 px-space-sm py-space-xs bg-surface-container-low rounded-full clay-pill-inset">
+        <a href="#dashboard-home" class="dash-nav-item px-space-md py-2 rounded-full font-bold text-sm bg-surface-container-highest text-primary shadow-sm transition-all" data-target="dashboard-home">Home</a>
+        <a href="#services-section" class="dash-nav-item px-space-md py-2 rounded-full font-bold text-sm text-on-surface-variant hover:text-on-surface transition-all" data-target="services-section">Services</a>
+        <a href="#my-requests-section" class="dash-nav-item px-space-md py-2 rounded-full font-bold text-sm text-on-surface-variant hover:text-on-surface transition-all" data-target="my-requests-section">My Requests</a>
+        <a href="#support-section" class="dash-nav-item px-space-md py-2 rounded-full font-bold text-sm text-on-surface-variant hover:text-on-surface transition-all" data-target="support-section">Inquiries</a>
+      </nav>
+
+      <!-- Right Header Actions: Notifications & User Profile Menu -->
+      <div class="flex items-center gap-3">
+        
+        <!-- Notifications Bell -->
+        <button aria-label="Notifications" onclick="showToast('You have 2 pending order updates.', 'info')" class="relative p-2.5 rounded-full bg-surface-container-lowest text-on-surface-variant hover:text-primary transition-all clay-card cursor-pointer" type="button">
+          <span class="material-symbols-outlined text-[20px]">notifications</span>
+          <span class="absolute top-1.5 right-1.5 flex h-4 w-4 items-center justify-center rounded-full bg-tertiary-fixed-dim text-on-tertiary-fixed text-[10px] font-bold ring-2 ring-surface-container-lowest">2</span>
+        </button>
+
+        <!-- User Dropdown Menu -->
+        <div class="relative group" id="user-menu-dropdown-container">
+          <button aria-expanded="false" class="flex items-center gap-2 p-1.5 pr-3 rounded-full bg-surface-container-lowest clay-card hover:bg-surface-container-low transition-all cursor-pointer" type="button">
+            <div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-white font-bold text-sm" id="nav-avatar-initial">
+              A
+            </div>
+            <span class="hidden md:inline-block text-sm text-on-surface font-semibold" id="nav-user-name">Student</span>
+            <span class="material-symbols-outlined text-[18px] text-on-surface-variant group-hover:translate-y-0.5 transition-transform">expand_more</span>
+          </button>
+
+          <!-- Dropdown List -->
+          <div class="absolute right-0 mt-2 w-56 rounded-2xl bg-surface-container-lowest p-2 hidden group-hover:block hover:block z-50 clay-card shadow-2xl border border-white">
+            <div class="px-3 py-2 border-b border-surface-container-high mb-1">
+              <p class="text-xs text-on-surface-variant font-medium">Signed in as</p>
+              <p class="text-sm font-bold text-on-surface truncate" id="dropdown-user-email">student@college.edu</p>
+            </div>
+            <button onclick="openProfileModal()" class="w-full text-left flex items-center gap-2.5 px-space-md py-2.5 rounded-xl text-xs font-semibold text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-all cursor-pointer">
+              <span class="material-symbols-outlined text-[18px] text-primary">person</span>
+              <span>My Profile</span>
+            </button>
+            <button onclick="openProfileModal()" class="w-full text-left flex items-center gap-2.5 px-space-md py-2.5 rounded-xl text-xs font-semibold text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-all cursor-pointer">
+              <span class="material-symbols-outlined text-[18px] text-secondary">settings</span>
+              <span>Account Settings</span>
+            </button>
+            <div class="my-1 h-px bg-surface-container-high"></div>
+            <button onclick="handleLogout()" class="w-full text-left flex items-center gap-2.5 px-space-md py-2.5 rounded-xl text-xs font-semibold text-error hover:bg-error-container hover:text-on-error-container transition-all cursor-pointer">
+              <span class="material-symbols-outlined text-[18px]">logout</span>
+              <span>Logout</span>
+            </button>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </header>
+
+  <!-- ======================================================== -->
+  <!-- 2. MAIN DASHBOARD CONTENT -->
+  <!-- ======================================================== -->
+  <main class="w-full pt-28 pb-24 md:pb-12 bg-surface min-h-[calc(100vh-200px)]">
+    <div class="max-w-7xl mx-auto px-4 md:px-6 lg:px-8 py-4 md:py-6">
+      <div class="flex flex-col w-full gap-10">
+
+        <!-- ==================================================== -->
+        <!-- STATE A: ACTIVE REQUESTS CONTAINER (Default) -->
+        <!-- ==================================================== -->
+        <div class="flex flex-col w-full gap-10" id="state-active-container">
+          
+          <!-- Welcome Greeting & Instant Action -->
+          <section id="dashboard-home" class="scroll-mt-28 w-full flex flex-col md:flex-row md:items-center justify-between gap-6 p-6 md:p-8 bg-surface-container-lowest rounded-3xl clay-card relative overflow-hidden">
+            <div class="absolute -right-16 -top-16 w-56 h-56 bg-primary-container/10 rounded-full blur-3xl pointer-events-none"></div>
+            <div class="flex flex-col gap-1.5 max-w-xl z-10">
+              <div class="inline-flex items-center gap-2 self-start px-3 py-1 rounded-full bg-surface-container text-secondary text-xs uppercase tracking-wider font-bold">
+                <span class="w-2 h-2 rounded-full bg-secondary-container animate-pulse"></span> Academic Workspace
+              </div>
+              <h1 class="text-3xl sm:text-4xl font-extrabold text-on-surface tracking-tight">
+                Good morning, <span id="header-user-firstname">Aditya</span> <span class="inline-block hover:rotate-12 transition-transform cursor-default">👋</span>
+              </h1>
+              <p class="text-base sm:text-lg text-on-surface-variant font-medium">
+                What work would you like us to handle for you today?
+              </p>
+            </div>
+            <div class="flex flex-col items-start md:items-end gap-2.5 z-10">
+              <div class="flex items-center gap-1.5 text-on-surface-variant text-xs font-semibold">
+                <span class="material-symbols-outlined text-[16px] text-secondary">verified_user</span>
+                <span>Guaranteed confidential & on-time delivery</span>
+              </div>
+              <button onclick="openProfileModal()" class="px-4 py-2 rounded-full bg-surface-container-low hover:bg-surface-container text-primary text-xs font-bold clay-card transition-all flex items-center gap-1.5 cursor-pointer">
+                <span class="material-symbols-outlined text-[16px]">badge</span>
+                <span id="header-college-pill">Default College Campus</span>
+              </button>
+            </div>
+          </section>
+
+        <!-- Zero Active Submissions / Empty State Section (Default for New Students) -->
+        <section id="my-requests-section" class="scroll-mt-28 flex flex-col items-center justify-center text-center p-8 sm:p-12 md:p-16 rounded-3xl bg-surface-container-lowest clay-card w-full relative overflow-hidden">
+          
+          <!-- Tactile Clay Placeholder Illustration -->
+          <div class="w-20 h-20 sm:w-24 sm:h-24 rounded-3xl bg-surface-container-high flex items-center justify-center clay-card text-primary mb-6 shadow-md">
+            <span class="material-symbols-outlined text-[42px] sm:text-[48px]">library_books</span>
+          </div>
+
+          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-surface-container-low text-on-surface-variant text-xs font-bold mb-3 clay-pill-inset">
+            Zero Active Submissions
+          </div>
+
+          <h2 class="text-2xl sm:text-3xl font-extrabold text-on-surface tracking-tight">
+            No requests yet
+          </h2>
+
+          <p class="text-sm sm:text-base text-on-surface-variant max-w-lg mt-2 leading-relaxed font-medium">
+            Send us your work and our team will take care of it. Sit back, relax, and let our academic specialists handle your deadlines.
+          </p>
+
+          <!-- 3-Step Trust Highlights -->
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 w-full max-w-2xl my-8">
+            <div class="p-4 rounded-2xl bg-surface-container-low clay-pill-inset flex flex-col items-center text-center gap-1.5">
+              <span class="material-symbols-outlined text-primary text-[26px]">task</span>
+              <span class="text-sm font-bold text-on-surface">1. Submit Work</span>
+              <span class="text-xs text-on-surface-variant">Upload prompt or files</span>
+            </div>
+            <div class="p-4 rounded-2xl bg-surface-container-low clay-pill-inset flex flex-col items-center text-center gap-1.5">
+              <span class="material-symbols-outlined text-secondary text-[26px]">engineering</span>
+              <span class="text-sm font-bold text-on-surface">2. We Execute</span>
+              <span class="text-xs text-on-surface-variant">Specialists craft solutions</span>
+            </div>
+            <div class="p-4 rounded-2xl bg-surface-container-low clay-pill-inset flex flex-col items-center text-center gap-1.5">
+              <span class="material-symbols-outlined text-[26px]" style="color: #55C595;">cloud_done</span>
+              <span class="text-sm font-bold text-on-surface">3. Download</span>
+              <span class="text-xs text-on-surface-variant">On-time guaranteed delivery</span>
+            </div>
+          </div>
+
+          <!-- Action Buttons -->
+          <div class="flex flex-col sm:flex-row items-center gap-4">
+            <button onclick="openRequestModal()" class="px-8 py-3.5 rounded-full bg-primary text-white text-sm font-bold clay-btn-primary hover:scale-105 active:scale-95 transition-all text-center cursor-pointer shadow-lg">
+              + New Request
+            </button>
+            <a href="#services-section" class="px-7 py-3.5 rounded-full bg-surface-container text-primary text-sm font-bold clay-card hover:bg-surface-container-high transition-all">
+              Explore Services
+            </a>
+          </div>
+
+        </section>
+
+          <!-- Services Preview Grid ('What Can We Do For You?') -->
+          <section id="services-section" class="scroll-mt-28 flex flex-col gap-6">
+            <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-3">
+              <div class="flex flex-col gap-1">
+                <h2 class="text-2xl sm:text-3xl text-on-surface font-bold tracking-tight">What Can We Do For You?</h2>
+                <p class="text-sm text-on-surface-variant">
+                  Choose a service and send us your work. We'll handle the rest.
+                </p>
+              </div>
+              <button onclick="openRequestModal()" class="text-sm font-bold text-primary hover:text-secondary flex items-center gap-1 transition-colors self-start sm:self-auto cursor-pointer">
+                <span>Request Custom Service</span>
+                <span class="material-symbols-outlined text-[18px]">add_circle</span>
+              </button>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+              
+              <!-- Service 1: Assignments -->
+              <div role="button" tabindex="0" onclick="openRequestModal('Assignments')" class="group flex flex-col p-5 rounded-3xl bg-surface-container-lowest clay-card hover:-translate-y-1.5 transition-all duration-200 cursor-pointer">
+                <div class="w-12 h-12 rounded-2xl bg-surface-container-high flex items-center justify-center text-primary clay-card mb-4 group-hover:scale-105 transition-transform">
+                  <span class="material-symbols-outlined text-[26px]">edit_note</span>
+                </div>
+                <h3 class="text-lg font-bold text-on-surface group-hover:text-primary transition-colors">Assignments</h3>
+                <p class="text-xs text-on-surface-variant mt-1.5 leading-relaxed">
+                  Handwritten & typed collegiate coursework formatted to standard.
+                </p>
+                <div class="mt-4 pt-2 flex items-center gap-1 text-primary text-xs font-semibold opacity-0 group-hover:opacity-100 transition-opacity">
+                  <span>Request Service</span>
+                  <span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+                </div>
+              </div>
+
+              <!-- Service 2: Practical Files -->
+              <div role="button" tabindex="0" onclick="openRequestModal('Practical Files')" class="group flex flex-col p-5 rounded-3xl bg-surface-container-lowest clay-card hover:-translate-y-1.5 transition-all duration-200 cursor-pointer">
+                <div class="w-12 h-12 rounded-2xl bg-secondary-fixed flex items-center justify-center text-secondary clay-card mb-4 group-hover:scale-105 transition-transform">
+                  <span class="material-symbols-outlined text-[26px]">folder_copy</span>
+                </div>
+                <h3 class="text-lg font-bold text-on-surface group-hover:text-secondary transition-colors">Practical Files</h3>
+                <p class="text-xs text-on-surface-variant mt-1.5 leading-relaxed">
+                  Complete lab records with calculations, clean flowcharts & graphs.
+                </p>
+                <div class="mt-4 pt-2 flex items-center gap-1 text-secondary text-xs font-semibold opacity-0 group-hover:opacity-100 transition-opacity">
+                  <span>Request Service</span>
+                  <span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+                </div>
+              </div>
+
+              <!-- Service 3: Mini Projects -->
+              <div role="button" tabindex="0" onclick="openRequestModal('Mini Projects')" class="group flex flex-col p-5 rounded-3xl bg-surface-container-lowest clay-card hover:-translate-y-1.5 transition-all duration-200 cursor-pointer">
+                <div class="w-12 h-12 rounded-2xl flex items-center justify-center clay-card mb-4 group-hover:scale-105 transition-transform" style="background-color: #FFF3DD; color: #FFB84D;">
+                  <span class="material-symbols-outlined text-[26px]">memory</span>
+                </div>
+                <h3 class="text-lg font-bold text-on-surface group-hover:text-tertiary transition-colors">Mini Projects</h3>
+                <p class="text-xs text-on-surface-variant mt-1.5 leading-relaxed">
+                  Turnkey hardware & software working prototypes with docs.
+                </p>
+                <div class="mt-4 pt-2 flex items-center gap-1 text-tertiary text-xs font-semibold opacity-0 group-hover:opacity-100 transition-opacity">
+                  <span>Request Service</span>
+                  <span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+                </div>
+              </div>
+
+              <!-- Service 4: Physics Projects -->
+              <div role="button" tabindex="0" onclick="openRequestModal('Physics Projects')" class="group flex flex-col p-5 rounded-3xl bg-surface-container-lowest clay-card hover:-translate-y-1.5 transition-all duration-200 cursor-pointer">
+                <div class="w-12 h-12 rounded-2xl bg-surface-container flex items-center justify-center text-primary clay-card mb-4 group-hover:scale-105 transition-transform">
+                  <span class="material-symbols-outlined text-[26px]">biotech</span>
+                </div>
+                <h3 class="text-lg font-bold text-on-surface group-hover:text-primary transition-colors">Physics Projects</h3>
+                <p class="text-xs text-on-surface-variant mt-1.5 leading-relaxed">
+                  Derivations, experimental setups, circuit diagrams & theory notes.
+                </p>
+                <div class="mt-4 pt-2 flex items-center gap-1 text-primary text-xs font-semibold opacity-0 group-hover:opacity-100 transition-opacity">
+                  <span>Request Service</span>
+                  <span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+                </div>
+              </div>
+
+              <!-- Service 5: Engineering Drawing -->
+              <div role="button" tabindex="0" onclick="openRequestModal('Engineering Drawing')" class="group flex flex-col p-5 rounded-3xl bg-surface-container-lowest clay-card hover:-translate-y-1.5 transition-all duration-200 cursor-pointer">
+                <div class="w-12 h-12 rounded-2xl bg-surface-container-low flex items-center justify-center text-secondary clay-card mb-4 group-hover:scale-105 transition-transform">
+                  <span class="material-symbols-outlined text-[26px]">architecture</span>
+                </div>
+                <h3 class="text-lg font-bold text-on-surface group-hover:text-secondary transition-colors">Engineering Drawing</h3>
+                <p class="text-xs text-on-surface-variant mt-1.5 leading-relaxed">
+                  Accurate CAD sheets, isometric views & orthographic projections.
+                </p>
+                <div class="mt-4 pt-2 flex items-center gap-1 text-secondary text-xs font-semibold opacity-0 group-hover:opacity-100 transition-opacity">
+                  <span>Request Service</span>
+                  <span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+                </div>
+              </div>
+
+              <!-- Service 6: Coding Projects -->
+              <div role="button" tabindex="0" onclick="openRequestModal('Coding Projects')" class="group flex flex-col p-5 rounded-3xl bg-surface-container-lowest clay-card hover:-translate-y-1.5 transition-all duration-200 cursor-pointer">
+                <div class="w-12 h-12 rounded-2xl bg-surface-container-high flex items-center justify-center text-primary clay-card mb-4 group-hover:scale-105 transition-transform">
+                  <span class="material-symbols-outlined text-[26px]">terminal</span>
+                </div>
+                <h3 class="text-lg font-bold text-on-surface group-hover:text-primary transition-colors">Coding Projects</h3>
+                <p class="text-xs text-on-surface-variant mt-1.5 leading-relaxed">
+                  Full-stack apps, clean bug-free algorithms & database schemas.
+                </p>
+                <div class="mt-4 pt-2 flex items-center gap-1 text-primary text-xs font-semibold opacity-0 group-hover:opacity-100 transition-opacity">
+                  <span>Request Service</span>
+                  <span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+                </div>
+              </div>
+
+              <!-- Service 7: Other College Services -->
+              <div role="button" tabindex="0" onclick="openRequestModal('Other College Services')" class="group flex flex-col p-5 rounded-3xl bg-surface-container-lowest clay-card hover:-translate-y-1.5 transition-all duration-200 cursor-pointer">
+                <div class="w-12 h-12 rounded-2xl flex items-center justify-center clay-card mb-4 group-hover:scale-105 transition-transform" style="background-color: #E8F8F0; color: #55C595;">
+                  <span class="material-symbols-outlined text-[26px]">school</span>
+                </div>
+                <h3 class="text-lg font-bold text-on-surface group-hover:text-on-surface transition-colors">Other College Services</h3>
+                <p class="text-xs text-on-surface-variant mt-1.5 leading-relaxed">
+                  Synopses, presentations, research essays & tailored viva prep.
+                </p>
+                <div class="mt-4 pt-2 flex items-center gap-1 text-on-surface text-xs font-semibold opacity-0 group-hover:opacity-100 transition-opacity">
+                  <span>Request Service</span>
+                  <span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+                </div>
+              </div>
+
+              <!-- Service 8: Custom & More -->
+              <div role="button" tabindex="0" onclick="openRequestModal('Custom Academic Request')" class="group flex flex-col p-5 rounded-3xl bg-surface-container-lowest clay-card hover:-translate-y-1.5 transition-all duration-200 cursor-pointer">
+                <div class="w-12 h-12 rounded-2xl bg-surface-container-high flex items-center justify-center text-primary clay-card mb-4 group-hover:scale-105 transition-transform">
+                  <span class="material-symbols-outlined text-[26px]">more_horiz</span>
+                </div>
+                <h3 class="text-lg font-bold text-on-surface group-hover:text-primary transition-colors">Custom &amp; More</h3>
+                <p class="text-xs text-on-surface-variant mt-1.5 leading-relaxed">
+                  Custom rubrics, research formatting, or specialized university requests.
+                </p>
+                <div class="mt-4 pt-2 flex items-center gap-1 text-primary text-xs font-semibold opacity-0 group-hover:opacity-100 transition-opacity">
+                  <span>Request Service</span>
+                  <span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+                </div>
+              </div>
+
+            </div>
+          </section>
+
+          <!-- Refined Single CTA Banner ("Unburden Your Schedule") -->
+          <section class="w-full rounded-3xl bg-gradient-to-br from-surface-container to-surface-container-high p-8 md:p-10 clay-card relative overflow-hidden">
+            <div class="flex flex-col md:flex-row items-center justify-between gap-8 relative z-10">
+              <div class="flex flex-col gap-3 text-center md:text-left max-w-xl">
+                <span class="text-xs uppercase tracking-wider text-primary font-bold">Unburden Your Schedule</span>
+                <h2 class="text-3xl sm:text-4xl font-extrabold text-on-surface tracking-tight">
+                  Have work you need done?
+                </h2>
+                <p class="text-base text-on-surface-variant font-medium">
+                  Send us your requirements and files. Our team will take care of the rest.
+                </p>
+
+                <!-- Trust Badges -->
+                <div class="flex flex-wrap items-center justify-center md:justify-start gap-3 mt-2">
+                  <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-surface-container-lowest clay-pill-inset text-xs text-on-surface font-semibold">
+                    <span class="material-symbols-outlined text-[16px] text-primary">verified</span> 100% Confidential
+                  </span>
+                  <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-surface-container-lowest clay-pill-inset text-xs text-on-surface font-semibold">
+                    <span class="material-symbols-outlined text-[16px] text-primary">rule</span> Rubric Compliant
+                  </span>
+                  <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-surface-container-lowest clay-pill-inset text-xs text-on-surface font-semibold">
+                    <span class="material-symbols-outlined text-[16px] text-primary">bolt</span> Fast Turnaround
+                  </span>
+                </div>
+              </div>
+
+              <!-- Refined Single CTA Actions -->
+              <div class="flex flex-col sm:flex-row items-center gap-4 shrink-0">
+                <button onclick="openRequestModal()" class="px-8 py-4 rounded-full bg-primary text-white text-sm font-bold clay-btn-primary hover:scale-105 active:scale-95 transition-all text-center cursor-pointer shadow-lg">
+                  + New Request
+                </button>
+                <a class="px-7 py-4 rounded-full bg-surface-container-lowest text-primary text-sm font-bold clay-card hover:bg-surface-container-low transition-all text-center" href="#services-section">
+                  Explore Services
+                </a>
+              </div>
+            </div>
+          </section>
+
+          <!-- Support / Inquiries Compact Box -->
+          <section id="support-section" class="scroll-mt-28 flex flex-col md:flex-row items-center justify-between gap-6 p-6 md:p-8 rounded-3xl bg-surface-container-lowest clay-card">
+            <div class="flex items-center gap-4">
+              <div class="w-14 h-14 rounded-2xl bg-secondary-fixed flex items-center justify-center text-secondary clay-card shrink-0">
+                <span class="material-symbols-outlined text-[28px]">support_agent</span>
+              </div>
+              <div class="flex flex-col">
+                <h3 class="text-xl font-bold text-on-surface">Need help with a request?</h3>
+                <p class="text-xs sm:text-sm text-on-surface-variant mt-0.5 leading-relaxed">
+                  Have a question about your work, payment, or delivery? Our academic coordinators are available 24/7.
+                </p>
+              </div>
+            </div>
+            <button onclick="showToast('Academic coordinator live desk: support@assignmenthub.in (24/7 Support)', 'info')" class="px-6 py-3 rounded-full bg-surface-container text-primary text-sm font-bold clay-card hover:bg-surface-container-high transition-all shrink-0 cursor-pointer">
+              View Inquiries →
+            </button>
+          </section>
+
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- ======================================================== -->
+  <!-- 3. MOBILE BOTTOM NAVIGATION (Fixed) -->
+  <!-- ======================================================== -->
+  <nav id="mobile-bottom-nav" class="fixed bottom-0 left-0 right-0 z-50 lg:hidden bg-surface/95 backdrop-blur-xl border-t border-surface-container-high shadow-lg px-2 py-2 flex items-center justify-around">
+    <a href="#dashboard-home" class="mobile-dash-item flex flex-col items-center gap-1 py-1 px-3 rounded-xl text-xs text-primary font-bold transition-colors" data-target="dashboard-home">
+      <span class="material-symbols-outlined text-[22px]">home</span>
+      <span>Home</span>
+    </a>
+    <a href="#services-section" class="mobile-dash-item flex flex-col items-center gap-1 py-1 px-3 rounded-xl text-xs text-on-surface-variant font-medium transition-colors" data-target="services-section">
+      <span class="material-symbols-outlined text-[22px]">category</span>
+      <span>Services</span>
+    </a>
+    <a href="#my-requests-section" class="mobile-dash-item flex flex-col items-center gap-1 py-1 px-3 rounded-xl text-xs text-on-surface-variant font-medium transition-colors" data-target="my-requests-section">
+      <span class="material-symbols-outlined text-[22px]">task</span>
+      <span>Requests</span>
+    </a>
+    <a href="#support-section" class="mobile-dash-item flex flex-col items-center gap-1 py-1 px-3 rounded-xl text-xs text-on-surface-variant font-medium transition-colors" data-target="support-section">
+      <span class="material-symbols-outlined text-[22px]">chat</span>
+      <span>Inquiries</span>
+    </a>
+    <button onclick="openProfileModal()" class="flex flex-col items-center gap-1 py-1 px-3 rounded-xl text-xs text-on-surface-variant font-medium transition-colors cursor-pointer">
+      <span class="material-symbols-outlined text-[22px]">person</span>
+      <span>Profile</span>
+    </button>
+  </nav>
+
+  <!-- ======================================================== -->
+  <!-- 4. NEW REQUEST MODAL (Claymorphic) -->
+  <!-- ======================================================== -->
+  <div id="request-modal" class="hidden fixed inset-0 z-50 bg-black/40 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="clay-surface rounded-3xl p-6 sm:p-8 max-w-lg w-full relative">
+      <div class="flex items-center justify-between mb-5">
+        <div class="flex items-center gap-3">
+          <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-[#6C63FF] to-[#8B7CFF] text-white flex items-center justify-center shadow-md">
+            <span class="material-symbols-outlined text-[26px]">post_add</span>
+          </div>
+          <div>
+            <h3 class="text-xl font-extrabold text-[#25233A]">New Academic Request</h3>
+            <span class="text-xs font-semibold text-[#6C63FF] uppercase tracking-wider">Fast Turnaround & Guaranteed Quality</span>
+          </div>
+        </div>
+        <button onclick="closeRequestModal()" class="w-8 h-8 rounded-full bg-[#FAF8FF] hover:bg-[#F0EBFF] text-[#25233A] flex items-center justify-center text-lg font-bold transition-colors cursor-pointer">
+          ✕
+        </button>
+      </div>
+
+      <form onsubmit="handleRequestSubmit(event)" class="space-y-4">
+        <div>
+          <label class="block text-xs font-bold text-[#25233A]/70 mb-1.5">Academic Discipline / Service</label>
+          <div class="p-3 rounded-2xl bg-[#FAF8FF] border border-[#E2DCFF] flex items-center">
+            <select id="req-service-select" class="w-full bg-transparent text-sm font-bold text-[#25233A] outline-none cursor-pointer">
+              <option value="Assignments">Assignments (Coursework / Written)</option>
+              <option value="Practical Files">Practical Files & Lab Records</option>
+              <option value="Mini Projects">Mini Projects (Hardware & Software)</option>
+              <option value="Physics Projects">Physics Projects & Experimental Setups</option>
+              <option value="Engineering Drawing">Engineering Drawing & CAD Sheets</option>
+              <option value="Coding Projects">Coding Projects & Development</option>
+              <option value="Other College Services">Other College Services (Presentations, Synopses)</option>
+              <option value="Custom Academic Request">Custom Academic Request</option>
+            </select>
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-[#25233A]/70 mb-1.5">Subject / Topic Name</label>
+          <div class="p-3 rounded-2xl bg-[#FAF8FF] border border-[#E2DCFF] flex items-center">
+            <input type="text" id="req-topic-input" placeholder="e.g. Data Structures & Algorithms Lab File" class="w-full bg-transparent text-sm font-semibold text-[#25233A] outline-none" required>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-bold text-[#25233A]/70 mb-1.5">Target Deadline</label>
+            <div class="p-3 rounded-2xl bg-[#FAF8FF] border border-[#E2DCFF] flex items-center">
+              <input type="date" id="req-deadline-input" class="w-full bg-transparent text-xs font-semibold text-[#25233A] outline-none" required>
+            </div>
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-[#25233A]/70 mb-1.5">Delivery Format</label>
+            <div class="p-3 rounded-2xl bg-[#FAF8FF] border border-[#E2DCFF] flex items-center">
+              <select id="req-format-select" class="w-full bg-transparent text-xs font-semibold text-[#25233A] outline-none cursor-pointer">
+                <option value="Digital PDF / Docs">Digital (PDF / Word / ZIP)</option>
+                <option value="Handwritten Hardcopy">Handwritten Hardcopy</option>
+                <option value="Both Soft & Hardcopy">Both Digital & Hardcopy</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-[#25233A]/70 mb-1.5">Instructions & Requirements</label>
+          <div class="p-3 rounded-2xl bg-[#FAF8FF] border border-[#E2DCFF]">
+            <textarea id="req-notes-input" rows="3" placeholder="Describe instructions, page count, reference links, specific guidelines..." class="w-full bg-transparent text-xs font-medium text-[#25233A] outline-none resize-none"></textarea>
+          </div>
+        </div>
+
+        <div class="flex items-center justify-between pt-3 border-t border-[#F0EBFF]">
+          <span class="text-[11px] text-[#25233A]/60 flex items-center gap-1 font-medium">
+            <span class="material-symbols-outlined text-[15px] text-[#55C595]">shield</span>
+            100% Confidential
+          </span>
+          <div class="flex items-center gap-2">
+            <button type="button" onclick="closeRequestModal()" class="px-4 py-2 rounded-xl text-xs font-bold text-[#25233A]/70 hover:bg-[#FAF8FF] cursor-pointer">
+              Cancel
+            </button>
+            <button type="submit" class="px-5 py-2.5 rounded-xl bg-primary text-white text-xs font-bold clay-btn-primary hover:bg-[#5b52f5] transition-all cursor-pointer">
+              Submit Request
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ======================================================== -->
+  <!-- 5. PROFILE & ACCOUNT MODAL (Claymorphic) -->
+  <!-- ======================================================== -->
+  <div id="profile-modal" class="hidden fixed inset-0 z-50 bg-black/40 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="clay-surface rounded-3xl p-6 sm:p-8 max-w-lg w-full relative">
+      <div class="flex items-center justify-between mb-5">
+        <div class="flex items-center gap-3">
+          <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-[#6C63FF] to-[#8B7CFF] text-white flex items-center justify-center font-extrabold text-xl shadow-md" id="modal-avatar-initial">
+            A
+          </div>
+          <div>
+            <h3 class="text-xl font-extrabold text-[#25233A]" id="modal-user-fullname">Student Profile</h3>
+            <span class="text-xs font-semibold text-[#55C595] uppercase tracking-wider">Verified Student Account</span>
+          </div>
+        </div>
+        <button onclick="closeProfileModal()" class="w-8 h-8 rounded-full bg-[#FAF8FF] hover:bg-[#F0EBFF] text-[#25233A] flex items-center justify-center text-lg font-bold transition-colors">
+          ✕
+        </button>
+      </div>
+
+      <!-- Profile Details Form -->
+      <form onsubmit="handleUpdateProfile(event)" class="space-y-4">
+        <div>
+          <label class="block text-xs font-bold text-[#25233A]/70 mb-1.5">Full Name</label>
+          <div class="p-3.5 rounded-2xl bg-[#FAF8FF] border border-[#E2DCFF] flex items-center">
+            <input type="text" id="edit-fullname-input" class="w-full bg-transparent text-sm font-bold text-[#25233A] outline-none" required>
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-[#25233A]/70 mb-1.5">Email Address</label>
+          <div class="p-3.5 rounded-2xl bg-[#FAF8FF] border border-[#E2DCFF]/60 flex items-center justify-between">
+            <span id="modal-email-val" class="text-sm font-semibold text-[#25233A]">-</span>
+            <span class="text-[10px] font-bold text-[#55C595] bg-[#EDFBF4] px-2 py-0.5 rounded-md">Verified</span>
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-[#25233A]/70 mb-1.5">Mobile Number</label>
+          <div class="p-3.5 rounded-2xl bg-[#FAF8FF] border border-[#E2DCFF]/60 flex items-center justify-between">
+            <span id="modal-mobile-val" class="text-sm font-semibold text-[#25233A]">-</span>
+            <span class="text-[10px] font-bold text-[#6C63FF] bg-[#F3F0FF] px-2 py-0.5 rounded-md">Registered</span>
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-[#25233A]/70 mb-1.5">Assigned College Campus</label>
+          <div class="p-3.5 rounded-2xl bg-[#FAF8FF] border border-[#E2DCFF]/60 flex items-center">
+            <span id="modal-college-val" class="text-sm font-bold text-[#6C63FF]">Default College Campus</span>
+          </div>
+        </div>
+
+        <div class="flex items-center justify-between pt-4 border-t border-[#F0EBFF]">
+          <button type="button" onclick="handleLogout()" class="text-xs font-bold text-error hover:underline flex items-center gap-1 cursor-pointer">
+            <span class="material-symbols-outlined text-[16px]">logout</span>
+            <span>Sign out of this session</span>
+          </button>
+
+          <div class="flex items-center gap-2">
+            <button type="button" onclick="closeProfileModal()" class="px-4 py-2 rounded-xl text-xs font-bold text-[#25233A]/70 hover:bg-[#FAF8FF] cursor-pointer">
+              Close
+            </button>
+            <button type="submit" id="save-profile-btn" class="px-5 py-2.5 rounded-xl bg-primary text-white text-xs font-bold clay-btn-primary hover:bg-[#5b52f5] transition-all cursor-pointer">
+              Save Changes
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ======================================================== -->
+  <!-- 6. FOOTER -->
+  <!-- ======================================================== -->
+  <footer class="w-full bg-surface-container-low py-10 md:py-12">
+    <div class="max-w-7xl mx-auto px-4 md:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between gap-6">
+      <div class="flex flex-col items-center md:items-start gap-1">
+        <p class="text-sm text-on-surface font-semibold">Assignment Hub © 2026</p>
+        <p class="text-xs text-on-surface-variant text-center md:text-left">You give us your work — we take care of the rest.</p>
+      </div>
+      <div class="flex flex-wrap items-center justify-center gap-6">
+        <a class="text-xs text-on-surface-variant hover:text-primary transition-colors" href="#dashboard-home">Dashboard Home</a>
+        <a class="text-xs text-on-surface-variant hover:text-primary transition-colors" href="#services-section">Services</a>
+        <a class="text-xs text-on-surface-variant hover:text-primary transition-colors" href="#my-requests-section">My Requests</a>
+        <a class="text-xs text-on-surface-variant hover:text-primary transition-colors" href="#support-section">Inquiries & Support</a>
+        <a class="text-xs text-on-surface-variant hover:text-primary transition-colors" href="./index.html" target="_blank">Landing Page ↗</a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script>
+    // 1. Helper to render user profile data across all dashboard widgets
+    function renderProfileData(profile) {
+      if (!profile) return;
+      const fullName = profile.fullName || 'Student';
+      const firstName = fullName.split(' ')[0] || 'Student';
+      const initial = (fullName.charAt(0) || 'A').toUpperCase();
+      const collegeName = profile.college?.name || 'Default College Campus';
+      const email = profile.email || 'student@college.edu';
+      const mobile = profile.mobile ? `+91 ${profile.mobile}` : '-';
+
+      // Update Top Navigation
+      const navUserName = document.getElementById('nav-user-name');
+      if (navUserName) navUserName.textContent = fullName;
+      const navAvatar = document.getElementById('nav-avatar-initial');
+      if (navAvatar) navAvatar.textContent = initial;
+      const dropEmail = document.getElementById('dropdown-user-email');
+      if (dropEmail) dropEmail.textContent = email;
+
+      // Update Greeting & Banner
+      const headerFirst = document.getElementById('header-user-firstname');
+      if (headerFirst) headerFirst.textContent = firstName;
+      const headerCollege = document.getElementById('header-college-pill');
+      if (headerCollege) headerCollege.textContent = collegeName;
+
+      // Update Profile Modal
+      const modalAvatar = document.getElementById('modal-avatar-initial');
+      if (modalAvatar) modalAvatar.textContent = initial;
+      const modalFullName = document.getElementById('modal-user-fullname');
+      if (modalFullName) modalFullName.textContent = fullName;
+      const editInput = document.getElementById('edit-fullname-input');
+      if (editInput && !editInput.matches(':focus')) editInput.value = fullName;
+      const modalEmail = document.getElementById('modal-email-val');
+      if (modalEmail) modalEmail.textContent = email;
+      const modalMobile = document.getElementById('modal-mobile-val');
+      if (modalMobile) modalMobile.textContent = mobile;
+      const modalCollege = document.getElementById('modal-college-val');
+      if (modalCollege) modalCollege.textContent = collegeName;
+    }
+
+    // 2. Authentication & Instant Profile Population
+    async function loadUserProfile() {
+      // Step A: Instant synchronous hydration from stored session
+      const cachedProfile = authStore.getProfile();
+      if (cachedProfile) {
+        renderProfileData(cachedProfile);
+      } else {
+        const cachedUser = authStore.getUser();
+        if (cachedUser) {
+          renderProfileData({ email: cachedUser.email, fullName: cachedUser.email.split('@')[0] });
+        }
+      }
+
+      // Step B: Live API sync from backend
+      try {
+        const response = await api.user.getProfile();
+        if (response?.data?.profile) {
+          renderProfileData(response.data.profile);
+          // Keep cached profile fresh
+          const currentSession = {
+            accessToken: authStore.getAccessToken(),
+            refreshToken: authStore.getRefreshToken()
+          };
+          authStore.setSession({
+            session: currentSession,
+            user: authStore.getUser(),
+            profile: response.data.profile
+          });
+        }
+      } catch (err) {
+        console.warn('Live profile fetch sync:', err.message);
+        if (err.status === 401) {
+          showToast('Session expired. Please log in again.', 'error');
+          authStore.clearSession();
+          window.location.replace('./login.html');
+        }
+      }
+    }
+
+    loadUserProfile();
+
+    // 3. New Request Modal Handlers
+    function openRequestModal(serviceName) {
+      const modal = document.getElementById('request-modal');
+      const select = document.getElementById('req-service-select');
+      if (serviceName && select) {
+        for (let i = 0; i < select.options.length; i++) {
+          if (select.options[i].value === serviceName) {
+            select.selectedIndex = i;
+            break;
+          }
+        }
+      }
+      // Set min date to tomorrow
+      const deadlineInput = document.getElementById('req-deadline-input');
+      if (deadlineInput && !deadlineInput.value) {
+        const tomorrow = new Date();
+        tomorrow.setDate(tomorrow.getDate() + 2);
+        deadlineInput.value = tomorrow.toISOString().split('T')[0];
+        deadlineInput.min = new Date().toISOString().split('T')[0];
+      }
+      if (modal) modal.classList.remove('hidden');
+    }
+
+    function closeRequestModal() {
+      const modal = document.getElementById('request-modal');
+      if (modal) modal.classList.add('hidden');
+    }
+
+    function handleRequestSubmit(e) {
+      e.preventDefault();
+      const service = document.getElementById('req-service-select')?.value || 'Academic Service';
+      const topic = document.getElementById('req-topic-input')?.value || 'Topic';
+      showToast(`Request submitted for "${service}: ${topic}"! Our coordinator will contact you shortly.`, 'success');
+      closeRequestModal();
+      e.target.reset();
+    }
+
+    // 4. Profile Modal Handlers
+    function openProfileModal() {
+      document.getElementById('profile-modal').classList.remove('hidden');
+    }
+
+    function closeProfileModal() {
+      document.getElementById('profile-modal').classList.add('hidden');
+    }
+
+    async function handleUpdateProfile(e) {
+      e.preventDefault();
+      const newName = document.getElementById('edit-fullname-input').value.trim();
+      const btn = document.getElementById('save-profile-btn');
+
+      if (!newName) return;
+
+      btn.disabled = true;
+      btn.textContent = 'Saving...';
+
+      try {
+        await api.user.updateProfile({ full_name: newName });
+        showToast('Profile name updated successfully!', 'success');
+        closeProfileModal();
+        loadUserProfile();
+      } catch (err) {
+        showToast(err.message || 'Failed to update profile.', 'error');
+      } finally {
+        btn.disabled = false;
+        btn.textContent = 'Save Changes';
+      }
+    }
+
+    // 5. Logout Action
+    async function handleLogout() {
+      try {
+        await api.auth.logout();
+      } finally {
+        authStore.clearSession();
+        showToast('Logged out successfully.', 'info');
+        setTimeout(() => {
+          window.location.href = './login.html';
+        }, 500);
+      }
+    }
+
+    // 6. Interactive Tab Indicator & Scrollspy for Dashboard Navigation
+    document.addEventListener('DOMContentLoaded', () => {
+      const desktopLinks = document.querySelectorAll('#dashboard-desktop-nav .dash-nav-item');
+      const mobileLinks = document.querySelectorAll('#mobile-bottom-nav .mobile-dash-item');
+
+      const sections = [
+        document.getElementById('dashboard-home'),
+        document.getElementById('services-section'),
+        document.getElementById('my-requests-section'),
+        document.getElementById('support-section')
+      ].filter(Boolean);
+
+      function setActiveNav(targetId) {
+        // Desktop nav update
+        desktopLinks.forEach(link => {
+          const isTarget = link.getAttribute('data-target') === targetId || link.getAttribute('href') === `#${targetId}`;
+          if (isTarget) {
+            link.className = 'dash-nav-item px-space-md py-2 rounded-full font-bold text-sm bg-surface-container-highest text-primary shadow-sm transition-all';
+          } else {
+            link.className = 'dash-nav-item px-space-md py-2 rounded-full font-bold text-sm text-on-surface-variant hover:text-on-surface transition-all';
+          }
+        });
+
+        // Mobile bottom nav update
+        mobileLinks.forEach(link => {
+          const isTarget = link.getAttribute('data-target') === targetId || link.getAttribute('href') === `#${targetId}`;
+          if (isTarget) {
+            link.className = 'mobile-dash-item flex flex-col items-center gap-1 py-1 px-3 rounded-xl text-xs text-primary font-bold transition-colors';
+          } else {
+            link.className = 'mobile-dash-item flex flex-col items-center gap-1 py-1 px-3 rounded-xl text-xs text-on-surface-variant font-medium transition-colors';
+          }
+        });
+      }
+
+      // Smooth click handling
+      [...desktopLinks, ...mobileLinks].forEach(link => {
+        link.addEventListener('click', (e) => {
+          const href = link.getAttribute('href');
+          if (href && href.startsWith('#')) {
+            e.preventDefault();
+            const targetId = href.substring(1);
+            const targetEl = document.getElementById(targetId);
+            if (targetEl) {
+              setActiveNav(targetId);
+              targetEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+              history.pushState(null, null, href);
+            }
+          }
+        });
+      });
+
+      // Scrollspy detection
+      let isScrollingTimeout;
+      window.addEventListener('scroll', () => {
+        clearTimeout(isScrollingTimeout);
+        isScrollingTimeout = setTimeout(() => {
+          const scrollPos = window.scrollY + 160;
+          for (let i = sections.length - 1; i >= 0; i--) {
+            const section = sections[i];
+            if (section && section.offsetTop <= scrollPos) {
+              setActiveNav(section.id);
+              break;
+            }
+          }
+        }, 35);
+      }, { passive: true });
+    });
+  </script>
+</body>
+</html>
