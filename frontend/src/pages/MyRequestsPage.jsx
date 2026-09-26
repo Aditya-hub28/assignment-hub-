@@ -2,6 +2,7 @@ import React, { useState, useMemo } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
+import { MobileBottomNav } from '../components/MobileBottomNav';
 
 // Comprehensive dataset matching Stitch Screen 37d3a96fee0f40fa9cb599ac62a83700 (12 Total, 3 Pending, 5 In Progress, 4 Completed, 1 Cancelled)
 const INITIAL_REQUESTS = [
@@ -763,8 +764,8 @@ export function MyRequestsPage() {
       {/* ======================================================== */}
       {/* 2. MAIN WORK TRACKING CENTER VIEW                         */}
       {/* ======================================================== */}
-      <main className="w-full pt-28 pb-20 bg-[#FCF8FF] min-h-[calc(100vh-140px)] flex-grow">
-        <div className="max-w-7xl mx-auto px-4 md:px-6 lg:px-8 space-y-8">
+      <main className="w-full pt-24 sm:pt-28 pb-24 lg:pb-20 bg-[#FCF8FF] min-h-[calc(100vh-140px)] flex-grow">
+        <div className="max-w-7xl mx-auto px-3.5 sm:px-6 lg:px-8 space-y-6 sm:space-y-8">
           
           {/* Page Heading & Refined Subtitle */}
           <div className="space-y-1">
@@ -1699,42 +1700,7 @@ export function MyRequestsPage() {
       {/* ======================================================== */}
       {/* 6. MOBILE BOTTOM NAVIGATION                               */}
       {/* ======================================================== */}
-      <nav className="fixed bottom-0 left-0 right-0 z-40 lg:hidden bg-[#FCF8FF]/95 backdrop-blur-xl border-t border-[#EAE5FF] shadow-lg px-2 py-2 flex items-center justify-around">
-        <Link
-          to="/dashboard"
-          className="flex flex-col items-center gap-1 py-1 px-3 rounded-xl text-xs font-semibold text-[#464555] hover:text-[#4D41DF] transition-colors"
-        >
-          <span className="material-symbols-outlined text-[22px]">home</span>
-          <span>Home</span>
-        </Link>
-        <Link
-          to="/services"
-          className="flex flex-col items-center gap-1 py-1 px-3 rounded-xl text-xs font-semibold text-[#464555] hover:text-[#4D41DF] transition-colors"
-        >
-          <span className="material-symbols-outlined text-[22px]">category</span>
-          <span>Services</span>
-        </Link>
-        <span
-          className="flex flex-col items-center gap-1 py-1 px-3 rounded-xl text-xs font-bold text-[#4D41DF] cursor-default"
-        >
-          <span className="material-symbols-outlined text-[22px]">task</span>
-          <span>My Requests</span>
-        </span>
-        <Link
-          to="/inquiries"
-          className="flex flex-col items-center gap-1 py-1 px-3 rounded-xl text-xs font-semibold text-[#464555] hover:text-[#4D41DF] transition-colors"
-        >
-          <span className="material-symbols-outlined text-[22px]">chat</span>
-          <span>Inquiries</span>
-        </Link>
-        <button
-          onClick={() => setProfileModalOpen(true)}
-          className="flex flex-col items-center gap-1 py-1 px-3 rounded-xl text-xs font-semibold text-[#464555] hover:text-[#4D41DF] transition-colors cursor-pointer"
-        >
-          <span className="material-symbols-outlined text-[22px]">person</span>
-          <span>Profile</span>
-        </button>
-      </nav>
+      <MobileBottomNav activeTab="requests" />
 
       {/* ======================================================== */}
       {/* 7. FOOTER                                                */}

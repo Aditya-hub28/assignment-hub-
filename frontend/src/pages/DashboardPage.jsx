@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
+import { MobileBottomNav } from '../components/MobileBottomNav';
 
 export function DashboardPage() {
   const { user, profile, logout, updateProfile } = useAuth();
@@ -227,7 +228,7 @@ export function DashboardPage() {
       {/* ======================================================== */}
       {/* 2. MAIN DASHBOARD CONTENT                                */}
       {/* ======================================================== */}
-      <main className="w-full pt-28 pb-16 px-4 md:px-6 lg:px-8 max-w-7xl mx-auto flex-grow">
+      <main className="w-full pt-24 sm:pt-28 pb-24 lg:pb-16 px-3.5 sm:px-6 lg:px-8 max-w-7xl mx-auto flex-grow">
         <div className="flex flex-col w-full gap-10 animate-in fade-in duration-300">
           
           {/* Greeting Banner */}
@@ -686,6 +687,7 @@ export function DashboardPage() {
           </div>
         </div>
       </footer>
+      <MobileBottomNav activeTab="home" />
     </div>
   );
 }

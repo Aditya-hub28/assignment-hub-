@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
+import { MobileBottomNav } from '../components/MobileBottomNav';
 
 // Comprehensive Service Catalog Database matching Stitch Screen d164ad1e463a4bd6bbda046d5a455aa5
 const serviceDetailsData = {
@@ -439,7 +440,7 @@ export function ServicesPage() {
       {/* ======================================================== */}
       {/* 2. DEDICATED ACADEMIC SERVICES PAGE CONTENT              */}
       {/* ======================================================== */}
-      <main className="w-full pt-28 pb-16 px-4 md:px-6 lg:px-8 max-w-7xl mx-auto flex-grow">
+      <main className="w-full pt-24 sm:pt-28 pb-24 lg:pb-16 px-3.5 sm:px-6 lg:px-8 max-w-7xl mx-auto flex-grow">
         <div className="flex flex-col w-full relative animate-in fade-in duration-300">
           
           {/* Ambient Background Glows */}
@@ -945,6 +946,7 @@ export function ServicesPage() {
           </div>
         </div>
       </footer>
+      <MobileBottomNav activeTab="services" />
     </div>
   );
 }
