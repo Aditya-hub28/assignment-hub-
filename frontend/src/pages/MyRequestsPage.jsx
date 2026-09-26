@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
 import { MobileBottomNav } from '../components/MobileBottomNav';
+import { NotificationBell } from '../components/NotificationBell';
 
 // Comprehensive dataset matching Stitch Screen 37d3a96fee0f40fa9cb599ac62a83700 (12 Total, 3 Pending, 5 In Progress, 4 Completed, 1 Cancelled)
 const INITIAL_REQUESTS = [
@@ -679,17 +680,8 @@ export function MyRequestsPage() {
               <span>New Request</span>
             </button>
 
-            {/* Notification Bell Badge */}
-            <button
-              onClick={() => showToast('You have 2 pending updates on your tracking center.', 'info')}
-              aria-label="Notifications"
-              className="relative p-2.5 rounded-full bg-white text-[#464555] hover:text-[#4D41DF] transition-all clay-card cursor-pointer border border-white"
-            >
-              <span className="material-symbols-outlined text-[20px]">notifications</span>
-              <span className="absolute top-1.5 right-1.5 flex h-4 w-4 items-center justify-center rounded-full bg-[#FFB951] text-[#291800] text-[10px] font-bold ring-2 ring-white">
-                2
-              </span>
-            </button>
+            {/* Notification Bell Badge with interactive Claymorphic Popup */}
+            <NotificationBell />
 
             {/* User Profile Pill */}
             <div className="relative">

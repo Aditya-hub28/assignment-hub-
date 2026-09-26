@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
 import { MobileBottomNav } from '../components/MobileBottomNav';
+import { NotificationBell } from '../components/NotificationBell';
 
 export function DashboardPage() {
   const { user, profile, logout, updateProfile } = useAuth();
@@ -157,17 +158,8 @@ export function DashboardPage() {
               <span>New Request</span>
             </button>
 
-            {/* Notification Bell */}
-            <button
-              onClick={() => showToast('You have 2 pending notifications.', 'info')}
-              aria-label="Notifications"
-              className="relative p-2 rounded-full bg-white text-[#6E6A8A] hover:text-[#6C63FF] transition-all clay-card cursor-pointer border border-white"
-            >
-              <span className="material-symbols-outlined text-[20px]">notifications</span>
-              <span className="absolute top-1 right-1 flex h-4 w-4 items-center justify-center rounded-full bg-[#FF5A5F] text-white text-[10px] font-extrabold ring-2 ring-white">
-                2
-              </span>
-            </button>
+            {/* Notification Bell with Dropdown Popup */}
+            <NotificationBell />
 
             {/* User Profile Pill & Dropdown */}
             <div className="relative">
