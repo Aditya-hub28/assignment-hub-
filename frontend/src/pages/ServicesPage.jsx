@@ -297,13 +297,13 @@ export function ServicesPage() {
   });
 
   return (
-    <div className="min-h-screen bg-[#FAF8FF] flex flex-col justify-between font-sans text-[#25233A] relative">
+    <div className="min-h-screen bg-[#FAF8FF] flex flex-col justify-between font-sans text-[#25233A] relative overflow-x-hidden w-full">
       
       {/* ======================================================== */}
       {/* 1. TOP NAVBAR (Matching media_1790421420852.png 1:1)     */}
       {/* ======================================================== */}
       <header className="fixed top-0 left-0 right-0 z-50 bg-[#FAF8FF]/95 backdrop-blur-xl border-b border-[#E2DCFF]/50 shadow-[0_4px_20px_rgba(108,99,255,0.04)]">
-        <div className="h-20 max-w-7xl mx-auto px-4 md:px-6 lg:px-8 flex items-center justify-between gap-4">
+        <div className="h-16 sm:h-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between gap-4">
           
           {/* Left: Logo & Student Workspace Badge */}
           <div className="flex items-center gap-3">
@@ -440,13 +440,15 @@ export function ServicesPage() {
       {/* ======================================================== */}
       {/* 2. DEDICATED ACADEMIC SERVICES PAGE CONTENT              */}
       {/* ======================================================== */}
-      <main className="w-full pt-24 sm:pt-28 pb-24 lg:pb-16 px-3.5 sm:px-6 lg:px-8 max-w-7xl mx-auto flex-grow">
-        <div className="flex flex-col w-full relative animate-in fade-in duration-300">
+      <main className="w-full pt-20 sm:pt-28 pb-24 lg:pb-16 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto flex-grow flex flex-col items-center">
+        <div className="flex flex-col items-center w-full relative animate-in fade-in duration-300">
           
-          {/* Ambient Background Glows */}
-          <div className="absolute -top-12 -left-16 w-80 h-80 bg-[#6C63FF]/10 rounded-full blur-3xl pointer-events-none -z-10"></div>
-          <div className="absolute top-1/3 -right-20 w-96 h-96 bg-[#FFB84D]/15 rounded-full blur-3xl pointer-events-none -z-10"></div>
-          <div className="absolute bottom-10 left-1/4 w-72 h-72 bg-[#5846c8]/10 rounded-full blur-3xl pointer-events-none -z-10"></div>
+          {/* Ambient Background Glows (Contained to prevent horizontal layout shift) */}
+          <div className="absolute inset-0 overflow-hidden pointer-events-none -z-10">
+            <div className="absolute -top-12 -left-16 w-80 h-80 bg-[#6C63FF]/10 rounded-full blur-3xl"></div>
+            <div className="absolute top-1/3 -right-20 w-96 h-96 bg-[#FFB84D]/15 rounded-full blur-3xl"></div>
+            <div className="absolute bottom-10 left-1/4 w-72 h-72 bg-[#5846c8]/10 rounded-full blur-3xl"></div>
+          </div>
 
           {/* Header & Hero Intro */}
           <div className="flex flex-col items-center text-center w-full max-w-3xl mx-auto mb-4">
@@ -486,7 +488,7 @@ export function ServicesPage() {
           </div>
 
           {/* 7 SERVICES GRID */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 md:gap-8 mb-12">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 md:gap-8 mb-12 w-full max-w-7xl mx-auto">
             {filteredServices.map((svc) => {
               const isFullSpan = svc.id === 'other';
               return (
@@ -573,7 +575,7 @@ export function ServicesPage() {
           </div>
 
           {/* Reassurance & Quality Trust Section */}
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 sm:gap-6 mb-4">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 sm:gap-6 mb-4 w-full max-w-7xl mx-auto">
             {/* Trust Reassurances */}
             <div className="lg:col-span-8 p-4 sm:p-6 md:p-8 rounded-2xl sm:rounded-3xl bg-white clay-card flex flex-col justify-between">
               <div>
