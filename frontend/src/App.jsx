@@ -21,12 +21,36 @@ function App() {
             <Route path="/signup" element={<SignupPage />} />
             <Route path="/forgot-password" element={<ForgotPasswordPage />} />
             
-            {/* Protected Student Dashboard Route */}
+            {/* Student Dashboard Routes */}
             <Route
               path="/dashboard"
               element={
                 <ProtectedRoute>
-                  <DashboardPage />
+                  <DashboardPage defaultTab="home" />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/services"
+              element={
+                <ProtectedRoute>
+                  <DashboardPage defaultTab="services" />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/my-requests"
+              element={
+                <ProtectedRoute>
+                  <DashboardPage defaultTab="my-requests" />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/inquiries"
+              element={
+                <ProtectedRoute>
+                  <DashboardPage defaultTab="inquiries" />
                 </ProtectedRoute>
               }
             />
@@ -41,4 +65,3 @@ function App() {
 }
 
 export default App;
-

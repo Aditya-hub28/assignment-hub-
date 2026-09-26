@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
 
-// Comprehensive Service Catalog Database for the Interactive Modal & Grid
+// Comprehensive Service Catalog Database for the Academic Services Screen
 const serviceDetailsData = {
   writing: {
     id: 'writing',
@@ -197,13 +197,28 @@ const serviceDetailsData = {
   }
 };
 
-export function DashboardPage() {
+export function DashboardPage({ defaultTab = 'home' }) {
   const { user, profile, logout, updateProfile } = useAuth();
   const { showToast } = useToast();
   const navigate = useNavigate();
+  const location = useLocation();
 
-  // Active section for scrollspy
-  const [activeTab, setActiveTab] = useState('dashboard-home');
+  // Tab State: 'home' | 'services' | 'my-requests' | 'inquiries'
+  const [activeTab, setActiveTab] = useState(() => {
+    if (location.pathname === '/services') return 'services';
+    if (location.pathname === '/my-requests') return 'my-requests';
+    if (location.pathname === '/inquiries') return 'inquiries';
+    return defaultTab;
+  });
+
+  // Synchronize tab state with router pathname changes
+  useEffect(() => {
+    if (location.pathname === '/services') setActiveTab('services');
+    else if (location.pathname === '/my-requests') setActiveTab('my-requests');
+    else if (location.pathname === '/inquiries') setActiveTab('inquiries');
+    else if (location.pathname === '/dashboard') setActiveTab('home');
+  }, [location.pathname]);
+
   const [userDropdownOpen, setUserDropdownOpen] = useState(false);
   const [profileModalOpen, setProfileModalOpen] = useState(false);
   const [requestModalOpen, setRequestModalOpen] = useState(false);
@@ -226,7 +241,7 @@ export function DashboardPage() {
   const [reqFormat, setReqFormat] = useState('Digital PDF / Docs');
   const [reqNotes, setReqNotes] = useState('');
 
-  // Fallback defaults
+  // Fallback student details
   const fullName = profile?.fullName || user?.email?.split('@')[0] || 'Student';
   const firstName = fullName.split(' ')[0] || 'Student';
   const initial = (fullName.charAt(0) || 'A').toUpperCase();
@@ -248,39 +263,6 @@ export function DashboardPage() {
     setReqDeadline(d.toISOString().split('T')[0]);
   }, []);
 
-  // Check URL hash on initial render (e.g. #services-section)
-  useEffect(() => {
-    const hash = window.location.hash.replace('#', '');
-    if (hash) {
-      const targetId = hash === 'services' ? 'services-section' : hash;
-      const el = document.getElementById(targetId);
-      if (el) {
-        setTimeout(() => {
-          el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-          setActiveTab(targetId);
-        }, 150);
-      }
-    }
-  }, []);
-
-  // Scrollspy detection
-  useEffect(() => {
-    const handleScroll = () => {
-      const scrollPos = window.scrollY + 160;
-      const sectionIds = ['dashboard-home', 'services-section', 'my-requests-section', 'support-section'];
-      for (let i = sectionIds.length - 1; i >= 0; i--) {
-        const el = document.getElementById(sectionIds[i]);
-        if (el && el.offsetTop <= scrollPos) {
-          setActiveTab(sectionIds[i]);
-          break;
-        }
-      }
-    };
-
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
-
   // Close modals on Escape key
   useEffect(() => {
     const handleKeyDown = (e) => {
@@ -295,14 +277,14 @@ export function DashboardPage() {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [serviceModalOpen, requestModalOpen, profileModalOpen, userDropdownOpen]);
 
-  const scrollToTab = (e, tabId) => {
-    e.preventDefault();
+  // Handle Tab Switch (both state and URL sync)
+  const handleTabChange = (tabId) => {
     setActiveTab(tabId);
-    const el = document.getElementById(tabId);
-    if (el) {
-      el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      window.history.pushState(null, null, `#${tabId}`);
-    }
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    if (tabId === 'home') navigate('/dashboard');
+    else if (tabId === 'services') navigate('/services');
+    else if (tabId === 'my-requests') navigate('/my-requests');
+    else if (tabId === 'inquiries') navigate('/inquiries');
   };
 
   const handleOpenRequestModal = (serviceName = 'Assignment Writing') => {
@@ -348,14 +330,15 @@ export function DashboardPage() {
     navigate('/login', { replace: true });
   };
 
-  const navLinks = [
-    { id: 'dashboard-home', label: 'Home' },
-    { id: 'services-section', label: 'Services' },
-    { id: 'my-requests-section', label: 'My Requests' },
-    { id: 'support-section', label: 'Inquiries' }
+  // Nav Links matching screenshot media_1790421420852.png
+  const navItems = [
+    { id: 'home', label: 'Home' },
+    { id: 'services', label: 'Services' },
+    { id: 'my-requests', label: 'My Requests' },
+    { id: 'inquiries', label: 'Inquiries' }
   ];
 
-  // Category filters
+  // Category filters for Academic Services
   const categoryFilters = [
     { id: 'all', label: 'All Services (7)' },
     { id: 'writing', label: 'Writing & Reports' },
@@ -377,15 +360,20 @@ export function DashboardPage() {
 
   return (
     <div className="min-h-screen bg-[#FAF8FF] flex flex-col justify-between font-sans text-[#25233A] relative">
+      
       {/* ======================================================== */}
-      {/* 1. TOP NAVBAR (Refined Navbar & Single CTA) */}
+      {/* 1. TOP NAVBAR (Matching media_1790421420852.png 1:1)     */}
       {/* ======================================================== */}
-      <header className="fixed top-0 left-0 right-0 z-50 bg-[#FAF8FF]/90 backdrop-blur-xl border-b border-[#E2DCFF]/50 shadow-[0_4px_20px_rgba(108,99,255,0.04)]">
+      <header className="fixed top-0 left-0 right-0 z-50 bg-[#FAF8FF]/95 backdrop-blur-xl border-b border-[#E2DCFF]/50 shadow-[0_4px_20px_rgba(108,99,255,0.04)]">
         <div className="h-20 max-w-7xl mx-auto px-4 md:px-6 lg:px-8 flex items-center justify-between gap-4">
           
-          {/* Logo & Student Workspace Badge */}
+          {/* Left: Logo & Student Workspace Badge */}
           <div className="flex items-center gap-3">
-            <Link to="/" className="flex items-center gap-3 transition-transform hover:scale-105 active:scale-95">
+            <Link
+              to="/dashboard"
+              onClick={() => handleTabChange('home')}
+              className="flex items-center gap-3 transition-transform hover:scale-105 active:scale-95"
+            >
               <div className="w-10 h-10 rounded-2xl bg-white p-1.5 flex items-center justify-center clay-card shadow-sm border border-white">
                 <img
                   src="https://lh3.googleusercontent.com/aida/AEtjO1X7S3rvjHLD2T2ZSwRsAwkZbxRDZ3YNIAMeXlPmZ5YGr9s0jmRhVDu9igu3_DdKtupdlp3mEkDiN7knq6FeOvbUtMAJIxKxPM0Q5vKgd3Crfg46CCu6JcYx8-YzIi8xpHxqy7Z-cdIxtXmLNNbaKoSgetaOV7FNhBRQvSqqts2tOh2Oo8VRN_QNKn7MrlxXMtvopLUFksqqXbuO-7ckIfqhBG5mccZLghWmgFvfefJGR8ffAM9YKkdxAT-P"
@@ -398,51 +386,51 @@ export function DashboardPage() {
               </span>
             </Link>
 
-            <span className="hidden md:inline-flex items-center px-3 py-1 rounded-full bg-[#F3F0FF] text-[#6E6A8A] text-xs font-semibold clay-pill-inset">
+            <span className="hidden md:inline-flex items-center px-3.5 py-1 rounded-full bg-[#EDE8FA] text-[#6E6A8A] text-xs font-semibold clay-pill-inset">
               Student Workspace
             </span>
           </div>
 
-          {/* Desktop Navigation Links */}
-          <nav className="hidden lg:flex items-center gap-1.5 px-3 py-1.5 bg-[#F3F0FF] rounded-full clay-pill-inset">
-            {navLinks.map((link) => {
-              const isActive = activeTab === link.id;
+          {/* Center: Interactive Nav Pills matching screenshot media_1790421420852.png */}
+          <nav className="hidden lg:flex items-center gap-1.5 px-3 py-1.5 bg-[#EDE8FA] rounded-full clay-pill-inset">
+            {navItems.map((item) => {
+              const isActive = activeTab === item.id;
               return (
-                <a
-                  key={link.id}
-                  href={`#${link.id}`}
-                  onClick={(e) => scrollToTab(e, link.id)}
-                  className={`px-4 py-2 rounded-full text-xs font-bold transition-all duration-200 cursor-pointer ${
+                <button
+                  key={item.id}
+                  type="button"
+                  onClick={() => handleTabChange(item.id)}
+                  className={`px-5 py-2 rounded-full text-sm font-semibold transition-all duration-200 cursor-pointer ${
                     isActive
-                      ? 'bg-white text-[#6C63FF] shadow-sm'
-                      : 'text-[#6E6A8A] hover:text-[#25233A]'
+                      ? 'bg-[#DCD6FF] text-[#4D41DF] font-bold shadow-sm'
+                      : 'text-[#464555] hover:text-[#1B192F]'
                   }`}
                 >
-                  {link.label}
-                </a>
+                  {item.label}
+                </button>
               );
             })}
           </nav>
 
-          {/* Right Header Actions */}
+          {/* Right: Notification Bell & Profile Dropdown */}
           <div className="flex items-center gap-3">
-            {/* Primary CTA: + New Request */}
+            {/* Quick Action: New Request on Home & Services */}
             <button
               onClick={() => handleOpenRequestModal()}
-              className="hidden sm:inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-[#6C63FF] text-white text-xs font-bold clay-btn-primary hover:bg-[#5b52f5] transition-all cursor-pointer shadow-md"
+              className="hidden sm:inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-[#6C63FF] text-white text-xs font-bold clay-btn-primary hover:bg-[#5b52f5] transition-all cursor-pointer shadow-md"
             >
               <span className="material-symbols-outlined text-[16px]">add</span>
               <span>New Request</span>
             </button>
 
-            {/* Notification Bell */}
+            {/* Notification Bell with Badge '2' */}
             <button
               onClick={() => showToast('You have 2 pending notifications.', 'info')}
               aria-label="Notifications"
-              className="relative p-2 rounded-full bg-white text-[#6E6A8A] hover:text-[#6C63FF] transition-all clay-card cursor-pointer"
+              className="relative p-2 rounded-full bg-white text-[#6E6A8A] hover:text-[#6C63FF] transition-all clay-card cursor-pointer border border-white"
             >
               <span className="material-symbols-outlined text-[20px]">notifications</span>
-              <span className="absolute top-1.5 right-1.5 flex h-4 w-4 items-center justify-center rounded-full bg-[#FFB84D] text-[#25233A] text-[10px] font-extrabold ring-2 ring-white">
+              <span className="absolute top-1 right-1 flex h-4 w-4 items-center justify-center rounded-full bg-[#FF5A5F] text-white text-[10px] font-extrabold ring-2 ring-white">
                 2
               </span>
             </button>
@@ -504,121 +492,29 @@ export function DashboardPage() {
       </header>
 
       {/* ======================================================== */}
-      {/* 2. MAIN DASHBOARD CONTENT */}
+      {/* 2. MAIN CONTENT AREA (Tabbed by Navbar Selection)         */}
       {/* ======================================================== */}
-      <main className="w-full pt-28 pb-16 px-4 md:px-6 lg:px-8 max-w-7xl mx-auto">
-        <div className="flex flex-col w-full gap-12">
-          
-          {/* Greeting Banner */}
-          <section
-            id="dashboard-home"
-            className="scroll-mt-28 w-full flex flex-col md:flex-row md:items-center justify-between gap-6 p-6 md:p-8 bg-white rounded-3xl clay-card relative overflow-hidden"
-          >
-            <div className="absolute -right-16 -top-16 w-56 h-56 bg-[#8B7CFF]/10 rounded-full blur-3xl pointer-events-none"></div>
-            <div className="flex flex-col gap-1.5 max-w-xl z-10">
-              <div className="inline-flex items-center gap-2 self-start px-3 py-1 rounded-full bg-[#F3F0FF] text-[#FFB84D] text-xs uppercase tracking-wider font-bold">
-                <span className="w-2 h-2 rounded-full bg-[#FFB84D] animate-pulse"></span> Academic Workspace
-              </div>
-              <h1 className="text-3xl sm:text-4xl font-extrabold text-[#25233A] tracking-tight">
-                Good morning, <span>{firstName}</span> <span className="inline-block hover:rotate-12 transition-transform cursor-default">👋</span>
-              </h1>
-              <p className="text-base sm:text-lg text-[#6E6A8A] font-medium">
-                What work would you like us to handle for you today?
-              </p>
-            </div>
-
-            <div className="flex flex-col items-start md:items-end gap-2.5 z-10">
-              <div className="flex items-center gap-1.5 text-[#6E6A8A] text-xs font-semibold">
-                <span className="material-symbols-outlined text-[16px] text-[#55C595]">verified_user</span>
-                <span>Guaranteed confidential & on-time delivery</span>
-              </div>
-              <button
-                onClick={() => setProfileModalOpen(true)}
-                className="px-4 py-2 rounded-full bg-[#F3F0FF] hover:bg-[#EBE5FF] text-[#6C63FF] text-xs font-bold clay-card transition-all flex items-center gap-1.5 cursor-pointer"
-              >
-                <span className="material-symbols-outlined text-[16px]">badge</span>
-                <span>{collegeName}</span>
-              </button>
-            </div>
-          </section>
-
-          {/* Zero Active Submissions / Empty State Section */}
-          <section
-            id="my-requests-section"
-            className="scroll-mt-28 flex flex-col items-center justify-center text-center p-8 sm:p-12 md:p-16 rounded-3xl bg-white clay-card w-full relative overflow-hidden"
-          >
-            <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-3xl bg-[#E2DCFF] flex items-center justify-center clay-card text-[#6C63FF] mb-6 shadow-md">
-              <span className="material-symbols-outlined text-[42px] sm:text-[48px]">library_books</span>
-            </div>
-
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#F3F0FF] text-[#6E6A8A] text-xs font-bold mb-3 clay-pill-inset">
-              Zero Active Submissions
-            </div>
-
-            <h2 className="text-2xl sm:text-3xl font-extrabold text-[#25233A] tracking-tight">
-              No requests yet
-            </h2>
-
-            <p className="text-sm sm:text-base text-[#6E6A8A] max-w-lg mt-2 leading-relaxed font-medium">
-              Send us your work and our team will take care of it. Sit back, relax, and let our academic specialists handle your deadlines.
-            </p>
-
-            {/* 3-Step Trust Highlights */}
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 w-full max-w-2xl my-8">
-              <div className="p-4 rounded-2xl bg-[#F3F0FF] clay-pill-inset flex flex-col items-center text-center gap-1.5">
-                <span className="material-symbols-outlined text-[#6C63FF] text-[26px]">task</span>
-                <span className="text-sm font-bold text-[#25233A]">1. Submit Work</span>
-                <span className="text-xs text-[#6E6A8A]">Upload prompt or files</span>
-              </div>
-              <div className="p-4 rounded-2xl bg-[#F3F0FF] clay-pill-inset flex flex-col items-center text-center gap-1.5">
-                <span className="material-symbols-outlined text-[#FFB84D] text-[26px]">engineering</span>
-                <span className="text-sm font-bold text-[#25233A]">2. We Execute</span>
-                <span className="text-xs text-[#6E6A8A]">Specialists craft solutions</span>
-              </div>
-              <div className="p-4 rounded-2xl bg-[#F3F0FF] clay-pill-inset flex flex-col items-center text-center gap-1.5">
-                <span className="material-symbols-outlined text-[#55C595] text-[26px]">cloud_done</span>
-                <span className="text-sm font-bold text-[#25233A]">3. Download</span>
-                <span className="text-xs text-[#6E6A8A]">On-time guaranteed delivery</span>
-              </div>
-            </div>
-
-            {/* Action Buttons */}
-            <div className="flex flex-col sm:flex-row items-center gap-4">
-              <button
-                onClick={() => handleOpenRequestModal()}
-                className="px-8 py-3.5 rounded-full bg-[#6C63FF] text-white text-sm font-bold clay-btn-primary hover:scale-105 active:scale-95 transition-all text-center cursor-pointer shadow-lg"
-              >
-                + New Request
-              </button>
-              <a
-                href="#services-section"
-                onClick={(e) => scrollToTab(e, 'services-section')}
-                className="px-7 py-3.5 rounded-full bg-[#EBE5FF] text-[#6C63FF] text-sm font-bold clay-card hover:bg-[#E2DCFF] transition-all cursor-pointer"
-              >
-                Explore Services
-              </a>
-            </div>
-          </section>
-
-          {/* ======================================================== */}
-          {/* SECTION: ACADEMIC SERVICES (Full-Width Category Bar) */}
-          {/* ======================================================== */}
-          <section id="services-section" className="scroll-mt-28 flex flex-col w-full relative">
-            
-            {/* Ambient Glows */}
+      <main className="w-full pt-28 pb-16 px-4 md:px-6 lg:px-8 max-w-7xl mx-auto flex-grow">
+        
+        {/* ====================================================== */}
+        {/* VIEW A: SERVICES TAB (Assignment Hub — Academic Services)*/}
+        {/* ====================================================== */}
+        {activeTab === 'services' && (
+          <div className="flex flex-col w-full relative animate-in fade-in duration-300">
+            {/* Ambient Background Glows */}
             <div className="absolute -top-12 -left-16 w-80 h-80 bg-[#6C63FF]/10 rounded-full blur-3xl pointer-events-none -z-10"></div>
             <div className="absolute top-1/3 -right-20 w-96 h-96 bg-[#FFB84D]/15 rounded-full blur-3xl pointer-events-none -z-10"></div>
             <div className="absolute bottom-10 left-1/4 w-72 h-72 bg-[#5846c8]/10 rounded-full blur-3xl pointer-events-none -z-10"></div>
 
-            {/* Section Header & Hero Intro */}
+            {/* Header & Hero Intro */}
             <div className="flex flex-col items-center text-center w-full max-w-3xl mx-auto mb-4">
-              <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#F3F0FF] text-[#6C63FF] text-xs font-bold clay-pill-inset mb-3">
+              <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#EDE8FA] text-[#6C63FF] text-xs font-bold clay-pill-inset mb-3">
                 <span className="material-symbols-outlined text-[16px] text-[#FFB84D]">auto_awesome</span>
                 <span>CATALOGUE & DELIVERABLES</span>
               </div>
-              <h2 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-[#25233A] tracking-tight mb-3">
+              <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-[#25233A] tracking-tight mb-3">
                 Academic Services
-              </h2>
+              </h1>
               <p className="text-sm sm:text-base text-[#6E6A8A] max-w-2xl leading-relaxed font-medium">
                 Get your academic work completed with clear requirements, transparent timelines, and organized university-grade delivery.
               </p>
@@ -647,7 +543,7 @@ export function DashboardPage() {
               </div>
             </div>
 
-            {/* SERVICES GRID (7 Cards) */}
+            {/* 7 SERVICES GRID */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8 mb-12">
               {filteredServices.map((svc) => {
                 const isFullSpan = svc.id === 'other';
@@ -659,7 +555,7 @@ export function DashboardPage() {
                     }`}
                   >
                     <div className={isFullSpan ? 'flex-1' : ''}>
-                      {/* Top Header of Card */}
+                      {/* Card Header */}
                       <div className="flex items-start justify-between gap-4 mb-4">
                         <div className="flex items-center gap-3">
                           <div className="w-14 h-14 rounded-2xl bg-[#F3F0FF] flex items-center justify-center clay-pill-inset group-hover:scale-105 transition-transform">
@@ -710,7 +606,7 @@ export function DashboardPage() {
                       </div>
                     </div>
 
-                    {/* Card Actions */}
+                    {/* Card CTAs */}
                     <div className={isFullSpan ? 'flex lg:flex-col justify-end items-center gap-3 lg:w-56 shrink-0 pt-4 lg:pt-0' : 'flex flex-col gap-2 mt-auto'}>
                       <button
                         type="button"
@@ -734,10 +630,9 @@ export function DashboardPage() {
               })}
             </div>
 
-            {/* REASSURANCE & QUALITY TRUST SECTION */}
+            {/* Reassurance & Quality Trust Section */}
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 mb-4">
-              
-              {/* Trust Card */}
+              {/* Trust Reassurances */}
               <div className="lg:col-span-8 p-6 md:p-8 rounded-3xl bg-white clay-card flex flex-col justify-between">
                 <div>
                   <div className="flex items-center gap-2.5 mb-3">
@@ -785,7 +680,7 @@ export function DashboardPage() {
                 </div>
               </div>
 
-              {/* Quick Assistance Clay Card */}
+              {/* Quick Assistance Card */}
               <div className="lg:col-span-4 p-6 md:p-8 rounded-3xl bg-[#6C63FF] text-white clay-card flex flex-col justify-between shadow-xl">
                 <div>
                   <div className="w-12 h-12 rounded-2xl bg-white/15 flex items-center justify-center text-white mb-4">
@@ -807,126 +702,290 @@ export function DashboardPage() {
                   <span className="material-symbols-outlined text-[18px]">arrow_forward</span>
                 </button>
               </div>
-
             </div>
-          </section>
+          </div>
+        )}
 
-          {/* Refined Single CTA Banner ("Unburden Your Schedule") */}
-          <section className="w-full rounded-3xl bg-gradient-to-br from-[#EBE5FF] to-[#E2DCFF] p-8 md:p-10 clay-card relative overflow-hidden">
-            <div className="flex flex-col md:flex-row items-center justify-between gap-8 relative z-10">
-              <div className="flex flex-col gap-3 text-center md:text-left max-w-xl">
-                <span className="text-xs uppercase tracking-wider text-[#6C63FF] font-bold">Unburden Your Schedule</span>
-                <h2 className="text-3xl sm:text-4xl font-extrabold text-[#25233A] tracking-tight">
-                  Have work you need done?
-                </h2>
-                <p className="text-base text-[#6E6A8A] font-medium">
-                  Send us your requirements and files. Our team will take care of the rest.
+        {/* ====================================================== */}
+        {/* VIEW B: HOME TAB (Dashboard Overview & Status)         */}
+        {/* ====================================================== */}
+        {activeTab === 'home' && (
+          <div className="flex flex-col w-full gap-10 animate-in fade-in duration-300">
+            {/* Greeting Banner */}
+            <section className="w-full flex flex-col md:flex-row md:items-center justify-between gap-6 p-6 md:p-8 bg-white rounded-3xl clay-card relative overflow-hidden">
+              <div className="absolute -right-16 -top-16 w-56 h-56 bg-[#8B7CFF]/10 rounded-full blur-3xl pointer-events-none"></div>
+              <div className="flex flex-col gap-1.5 max-w-xl z-10">
+                <div className="inline-flex items-center gap-2 self-start px-3 py-1 rounded-full bg-[#EDE8FA] text-[#FFB84D] text-xs uppercase tracking-wider font-bold">
+                  <span className="w-2 h-2 rounded-full bg-[#FFB84D] animate-pulse"></span> Academic Workspace
+                </div>
+                <h1 className="text-3xl sm:text-4xl font-extrabold text-[#25233A] tracking-tight">
+                  Good morning, <span>{firstName}</span> <span className="inline-block hover:rotate-12 transition-transform cursor-default">👋</span>
+                </h1>
+                <p className="text-base sm:text-lg text-[#6E6A8A] font-medium">
+                  What work would you like us to handle for you today?
                 </p>
+              </div>
 
-                {/* Trust Badges */}
-                <div className="flex flex-wrap items-center justify-center md:justify-start gap-3 mt-2">
-                  <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white clay-pill-inset text-xs text-[#25233A] font-semibold">
-                    <span className="material-symbols-outlined text-[16px] text-[#6C63FF]">verified</span> 100% Confidential
-                  </span>
-                  <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white clay-pill-inset text-xs text-[#25233A] font-semibold">
-                    <span className="material-symbols-outlined text-[16px] text-[#6C63FF]">rule</span> Rubric Compliant
-                  </span>
-                  <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white clay-pill-inset text-xs text-[#25233A] font-semibold">
-                    <span className="material-symbols-outlined text-[16px] text-[#6C63FF]">bolt</span> Fast Turnaround
-                  </span>
+              <div className="flex flex-col items-start md:items-end gap-2.5 z-10">
+                <div className="flex items-center gap-1.5 text-[#6E6A8A] text-xs font-semibold">
+                  <span className="material-symbols-outlined text-[16px] text-[#55C595]">verified_user</span>
+                  <span>Guaranteed confidential & on-time delivery</span>
+                </div>
+                <button
+                  onClick={() => setProfileModalOpen(true)}
+                  className="px-4 py-2 rounded-full bg-[#EDE8FA] hover:bg-[#E2DCFF] text-[#6C63FF] text-xs font-bold clay-card transition-all flex items-center gap-1.5 cursor-pointer"
+                >
+                  <span className="material-symbols-outlined text-[16px]">badge</span>
+                  <span>{collegeName}</span>
+                </button>
+              </div>
+            </section>
+
+            {/* Zero Active Submissions / Empty State Section */}
+            <section className="flex flex-col items-center justify-center text-center p-8 sm:p-12 md:p-16 rounded-3xl bg-white clay-card w-full relative overflow-hidden">
+              <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-3xl bg-[#EDE8FA] flex items-center justify-center clay-card text-[#6C63FF] mb-6 shadow-md">
+                <span className="material-symbols-outlined text-[42px] sm:text-[48px]">library_books</span>
+              </div>
+
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#EDE8FA] text-[#6E6A8A] text-xs font-bold mb-3 clay-pill-inset">
+                Zero Active Submissions
+              </div>
+
+              <h2 className="text-2xl sm:text-3xl font-extrabold text-[#25233A] tracking-tight">
+                No requests yet
+              </h2>
+
+              <p className="text-sm sm:text-base text-[#6E6A8A] max-w-lg mt-2 leading-relaxed font-medium">
+                Send us your work and our team will take care of it. Sit back, relax, and let our academic specialists handle your deadlines.
+              </p>
+
+              {/* 3-Step Trust Highlights */}
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 w-full max-w-2xl my-8">
+                <div className="p-4 rounded-2xl bg-[#FAF8FF] clay-pill-inset flex flex-col items-center text-center gap-1.5">
+                  <span className="material-symbols-outlined text-[#6C63FF] text-[26px]">task</span>
+                  <span className="text-sm font-bold text-[#25233A]">1. Submit Work</span>
+                  <span className="text-xs text-[#6E6A8A]">Upload prompt or files</span>
+                </div>
+                <div className="p-4 rounded-2xl bg-[#FAF8FF] clay-pill-inset flex flex-col items-center text-center gap-1.5">
+                  <span className="material-symbols-outlined text-[#FFB84D] text-[26px]">engineering</span>
+                  <span className="text-sm font-bold text-[#25233A]">2. We Execute</span>
+                  <span className="text-xs text-[#6E6A8A]">Specialists craft solutions</span>
+                </div>
+                <div className="p-4 rounded-2xl bg-[#FAF8FF] clay-pill-inset flex flex-col items-center text-center gap-1.5">
+                  <span className="material-symbols-outlined text-[#55C595] text-[26px]">cloud_done</span>
+                  <span className="text-sm font-bold text-[#25233A]">3. Download</span>
+                  <span className="text-xs text-[#6E6A8A]">On-time guaranteed delivery</span>
                 </div>
               </div>
 
-              {/* Actions */}
-              <div className="flex flex-col sm:flex-row items-center gap-4 shrink-0">
+              {/* Action Buttons */}
+              <div className="flex flex-col sm:flex-row items-center gap-4">
                 <button
                   onClick={() => handleOpenRequestModal()}
-                  className="px-8 py-4 rounded-full bg-[#6C63FF] text-white text-sm font-bold clay-btn-primary hover:scale-105 active:scale-95 transition-all text-center cursor-pointer shadow-lg"
+                  className="px-8 py-3.5 rounded-full bg-[#6C63FF] text-white text-sm font-bold clay-btn-primary hover:scale-105 active:scale-95 transition-all text-center cursor-pointer shadow-lg"
                 >
                   + New Request
                 </button>
-                <a
-                  href="#services-section"
-                  onClick={(e) => scrollToTab(e, 'services-section')}
-                  className="px-7 py-4 rounded-full bg-white text-[#6C63FF] text-sm font-bold clay-card hover:bg-[#F3F0FF] transition-all text-center cursor-pointer"
+                <button
+                  onClick={() => handleTabChange('services')}
+                  className="px-7 py-3.5 rounded-full bg-[#EDE8FA] text-[#6C63FF] text-sm font-bold clay-card hover:bg-[#E2DCFF] transition-all cursor-pointer"
                 >
-                  Explore Services
-                </a>
+                  Explore Services Catalog
+                </button>
               </div>
-            </div>
-          </section>
+            </section>
 
-          {/* Support / Inquiries Compact Box */}
-          <section
-            id="support-section"
-            className="scroll-mt-28 flex flex-col md:flex-row items-center justify-between gap-6 p-6 md:p-8 rounded-3xl bg-white clay-card"
-          >
-            <div className="flex items-center gap-4">
-              <div className="w-14 h-14 rounded-2xl bg-secondary/15 flex items-center justify-center text-[#FFB84D] clay-card shrink-0">
-                <span className="material-symbols-outlined text-[28px]">support_agent</span>
+            {/* Refined Single CTA Banner ("Unburden Your Schedule") */}
+            <section className="w-full rounded-3xl bg-gradient-to-br from-[#EBE5FF] to-[#E2DCFF] p-8 md:p-10 clay-card relative overflow-hidden">
+              <div className="flex flex-col md:flex-row items-center justify-between gap-8 relative z-10">
+                <div className="flex flex-col gap-3 text-center md:text-left max-w-xl">
+                  <span className="text-xs uppercase tracking-wider text-[#6C63FF] font-bold">Unburden Your Schedule</span>
+                  <h2 className="text-3xl sm:text-4xl font-extrabold text-[#25233A] tracking-tight">
+                    Have work you need done?
+                  </h2>
+                  <p className="text-base text-[#6E6A8A] font-medium">
+                    Send us your requirements and files. Our team will take care of the rest.
+                  </p>
+
+                  {/* Trust Badges */}
+                  <div className="flex flex-wrap items-center justify-center md:justify-start gap-3 mt-2">
+                    <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white clay-pill-inset text-xs text-[#25233A] font-semibold">
+                      <span className="material-symbols-outlined text-[16px] text-[#6C63FF]">verified</span> 100% Confidential
+                    </span>
+                    <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white clay-pill-inset text-xs text-[#25233A] font-semibold">
+                      <span className="material-symbols-outlined text-[16px] text-[#6C63FF]">rule</span> Rubric Compliant
+                    </span>
+                    <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white clay-pill-inset text-xs text-[#25233A] font-semibold">
+                      <span className="material-symbols-outlined text-[16px] text-[#6C63FF]">bolt</span> Fast Turnaround
+                    </span>
+                  </div>
+                </div>
+
+                {/* Actions */}
+                <div className="flex flex-col sm:flex-row items-center gap-4 shrink-0">
+                  <button
+                    onClick={() => handleOpenRequestModal()}
+                    className="px-8 py-4 rounded-full bg-[#6C63FF] text-white text-sm font-bold clay-btn-primary hover:scale-105 active:scale-95 transition-all text-center cursor-pointer shadow-lg"
+                  >
+                    + New Request
+                  </button>
+                  <button
+                    onClick={() => handleTabChange('services')}
+                    className="px-7 py-4 rounded-full bg-white text-[#6C63FF] text-sm font-bold clay-card hover:bg-[#F3F0FF] transition-all text-center cursor-pointer"
+                  >
+                    Explore Services
+                  </button>
+                </div>
               </div>
-              <div className="flex flex-col">
-                <h3 className="text-xl font-bold text-[#25233A]">Need help with a request?</h3>
-                <p className="text-xs sm:text-sm text-[#6E6A8A] mt-0.5 leading-relaxed">
-                  Have a question about your work, payment, or delivery? Our academic coordinators are available 24/7.
+            </section>
+          </div>
+        )}
+
+        {/* ====================================================== */}
+        {/* VIEW C: MY REQUESTS TAB                                */}
+        {/* ====================================================== */}
+        {activeTab === 'my-requests' && (
+          <div className="flex flex-col w-full gap-8 animate-in fade-in duration-300">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <div>
+                <h1 className="text-3xl font-extrabold text-[#25233A] tracking-tight">My Requests</h1>
+                <p className="text-sm text-[#6E6A8A]">Track active academic deliverables and order status</p>
+              </div>
+              <button
+                onClick={() => handleOpenRequestModal()}
+                className="px-6 py-3 rounded-full bg-[#6C63FF] text-white text-xs font-bold clay-btn-primary hover:bg-[#5b52f5] transition-all self-start sm:self-auto cursor-pointer shadow-md"
+              >
+                + New Request
+              </button>
+            </div>
+
+            <div className="flex flex-col items-center justify-center text-center p-12 md:p-16 rounded-3xl bg-white clay-card w-full">
+              <div className="w-20 h-20 rounded-3xl bg-[#EDE8FA] flex items-center justify-center text-[#6C63FF] mb-5 shadow-sm">
+                <span className="material-symbols-outlined text-[40px]">inventory_2</span>
+              </div>
+              <h2 className="text-2xl font-bold text-[#25233A]">No Active Submissions</h2>
+              <p className="text-sm text-[#6E6A8A] max-w-md mt-2 mb-6">
+                You have not placed any assignment requests yet. Click below to submit your prompt, rubrics, or questions.
+              </p>
+              <button
+                onClick={() => handleOpenRequestModal()}
+                className="px-8 py-3.5 rounded-full bg-[#6C63FF] text-white text-sm font-bold clay-btn-primary hover:bg-[#5b52f5] transition-all cursor-pointer shadow-md"
+              >
+                Submit Academic Request
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* ====================================================== */}
+        {/* VIEW D: INQUIRIES TAB                                  */}
+        {/* ====================================================== */}
+        {activeTab === 'inquiries' && (
+          <div className="flex flex-col w-full gap-8 animate-in fade-in duration-300">
+            <div>
+              <h1 className="text-3xl font-extrabold text-[#25233A] tracking-tight">Inquiries & Support</h1>
+              <p className="text-sm text-[#6E6A8A]">Get personalized academic guidance and syllabus feasibility checks</p>
+            </div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+              <div className="lg:col-span-7 p-6 sm:p-8 rounded-3xl bg-white clay-card">
+                <h3 className="text-xl font-bold text-[#25233A] mb-2">Contact Academic Coordinator</h3>
+                <p className="text-xs sm:text-sm text-[#6E6A8A] mb-6">
+                  Have a question about an unconventional prompt, immediate rush deadline, or customized report format? Send a message directly to our coordination desk.
                 </p>
+
+                <form
+                  onSubmit={(e) => {
+                    e.preventDefault();
+                    showToast('Your inquiry has been sent to our academic desk! Expect a response within 15 minutes.', 'success');
+                  }}
+                  className="space-y-4"
+                >
+                  <div>
+                    <label className="block text-xs font-bold text-[#25233A]/70 mb-1">Subject</label>
+                    <input
+                      type="text"
+                      placeholder="e.g. Urgent assignment submission for tomorrow morning"
+                      className="w-full p-3.5 rounded-2xl bg-[#FAF8FF] border border-[#E2DCFF] text-sm text-[#25233A] outline-none"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-bold text-[#25233A]/70 mb-1">Message / Question</label>
+                    <textarea
+                      rows={4}
+                      placeholder="Explain your requirements or questions in detail..."
+                      className="w-full p-3.5 rounded-2xl bg-[#FAF8FF] border border-[#E2DCFF] text-sm text-[#25233A] outline-none resize-none font-medium"
+                      required
+                    />
+                  </div>
+                  <button
+                    type="submit"
+                    className="w-full py-3.5 rounded-full bg-[#6C63FF] text-white text-sm font-bold clay-btn-primary hover:bg-[#5b52f5] transition-all cursor-pointer shadow-md"
+                  >
+                    Send Inquiry
+                  </button>
+                </form>
+              </div>
+
+              <div className="lg:col-span-5 flex flex-col gap-6">
+                <div className="p-6 rounded-3xl bg-[#6C63FF] text-white clay-card shadow-xl">
+                  <div className="w-12 h-12 rounded-2xl bg-white/20 flex items-center justify-center text-white mb-4">
+                    <span className="material-symbols-outlined text-[24px]">support_agent</span>
+                  </div>
+                  <h4 className="text-xl font-bold mb-2">24/7 Academic Live Desk</h4>
+                  <p className="text-xs text-white/80 leading-relaxed mb-4">
+                    Immediate assistance for active orders, rush deliverables, and supervisor revision feedback.
+                  </p>
+                  <p className="text-sm font-bold text-white bg-white/10 px-4 py-2 rounded-xl inline-block">
+                    support@assignmenthub.in
+                  </p>
+                </div>
+
+                <div className="p-6 rounded-3xl bg-white clay-card">
+                  <h4 className="text-base font-bold text-[#25233A] mb-3">Guaranteed Turnaround</h4>
+                  <ul className="space-y-2 text-xs text-[#6E6A8A]">
+                    <li className="flex items-center gap-2">
+                      <span className="material-symbols-outlined text-[#55C595] text-[18px]">verified</span>
+                      <span>Average response time: <strong>&lt; 15 minutes</strong></span>
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <span className="material-symbols-outlined text-[#55C595] text-[18px]">verified</span>
+                      <span>100% Student identity confidentiality</span>
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <span className="material-symbols-outlined text-[#55C595] text-[18px]">verified</span>
+                      <span>No obligation quotation & schedule review</span>
+                    </li>
+                  </ul>
+                </div>
               </div>
             </div>
-            <button
-              onClick={() => showToast('Academic live desk: support@assignmenthub.in (24/7 Live Desk)', 'info')}
-              className="px-6 py-3 rounded-full bg-[#EBE5FF] text-[#6C63FF] text-sm font-bold clay-card hover:bg-[#E2DCFF] transition-all shrink-0 cursor-pointer"
-            >
-              View Inquiries →
-            </button>
-          </section>
+          </div>
+        )}
 
-        </div>
       </main>
 
       {/* ======================================================== */}
-      {/* 3. MOBILE BOTTOM NAVIGATION (Fixed) */}
+      {/* 3. MOBILE BOTTOM NAVIGATION (Fixed)                       */}
       {/* ======================================================== */}
       <nav className="fixed bottom-0 left-0 right-0 z-50 lg:hidden bg-white/95 backdrop-blur-xl border-t border-[#E2DCFF] shadow-lg px-2 py-2 flex items-center justify-around">
-        <a
-          href="#dashboard-home"
-          onClick={(e) => scrollToTab(e, 'dashboard-home')}
-          className={`flex flex-col items-center gap-1 py-1 px-3 rounded-xl text-xs transition-colors ${
-            activeTab === 'dashboard-home' ? 'text-[#6C63FF] font-bold' : 'text-[#6E6A8A] font-medium'
-          }`}
-        >
-          <span className="material-symbols-outlined text-[22px]">home</span>
-          <span>Home</span>
-        </a>
-        <a
-          href="#services-section"
-          onClick={(e) => scrollToTab(e, 'services-section')}
-          className={`flex flex-col items-center gap-1 py-1 px-3 rounded-xl text-xs transition-colors ${
-            activeTab === 'services-section' ? 'text-[#6C63FF] font-bold' : 'text-[#6E6A8A] font-medium'
-          }`}
-        >
-          <span className="material-symbols-outlined text-[22px]">category</span>
-          <span>Services</span>
-        </a>
-        <a
-          href="#my-requests-section"
-          onClick={(e) => scrollToTab(e, 'my-requests-section')}
-          className={`flex flex-col items-center gap-1 py-1 px-3 rounded-xl text-xs transition-colors ${
-            activeTab === 'my-requests-section' ? 'text-[#6C63FF] font-bold' : 'text-[#6E6A8A] font-medium'
-          }`}
-        >
-          <span className="material-symbols-outlined text-[22px]">task</span>
-          <span>Requests</span>
-        </a>
-        <a
-          href="#support-section"
-          onClick={(e) => scrollToTab(e, 'support-section')}
-          className={`flex flex-col items-center gap-1 py-1 px-3 rounded-xl text-xs transition-colors ${
-            activeTab === 'support-section' ? 'text-[#6C63FF] font-bold' : 'text-[#6E6A8A] font-medium'
-          }`}
-        >
-          <span className="material-symbols-outlined text-[22px]">chat</span>
-          <span>Inquiries</span>
-        </a>
+        {navItems.map((item) => {
+          const isActive = activeTab === item.id;
+          const icon = item.id === 'home' ? 'home' : item.id === 'services' ? 'category' : item.id === 'my-requests' ? 'task' : 'chat';
+          return (
+            <button
+              key={item.id}
+              onClick={() => handleTabChange(item.id)}
+              className={`flex flex-col items-center gap-1 py-1 px-3 rounded-xl text-xs transition-colors cursor-pointer ${
+                isActive ? 'text-[#6C63FF] font-bold' : 'text-[#6E6A8A] font-medium'
+              }`}
+            >
+              <span className="material-symbols-outlined text-[22px]">{icon}</span>
+              <span>{item.label}</span>
+            </button>
+          );
+        })}
         <button
           onClick={() => setProfileModalOpen(true)}
           className="flex flex-col items-center gap-1 py-1 px-3 rounded-xl text-xs text-[#6E6A8A] font-medium transition-colors cursor-pointer"
@@ -937,7 +996,7 @@ export function DashboardPage() {
       </nav>
 
       {/* ======================================================== */}
-      {/* 4. INTERACTIVE SERVICE DETAIL MODAL */}
+      {/* 4. INTERACTIVE SERVICE DETAIL MODAL                       */}
       {/* ======================================================== */}
       {serviceModalOpen && selectedService && (
         <div
@@ -951,7 +1010,7 @@ export function DashboardPage() {
             {/* Modal Header */}
             <div className="flex items-start justify-between gap-4 pb-4 border-b border-[#E2DCFF] mb-6">
               <div>
-                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#F3F0FF] text-[#6C63FF] text-xs font-bold mb-2 clay-pill-inset">
+                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#EDE8FA] text-[#6C63FF] text-xs font-bold mb-2 clay-pill-inset">
                   <span>{selectedService.modalBadge || selectedService.badge}</span>
                 </div>
                 <h3 className="text-2xl sm:text-3xl font-bold text-[#25233A]">
@@ -961,7 +1020,7 @@ export function DashboardPage() {
               <button
                 type="button"
                 onClick={() => setServiceModalOpen(false)}
-                className="w-10 h-10 rounded-full bg-[#F3F0FF] text-[#6E6A8A] hover:text-[#25233A] flex items-center justify-center clay-card transition-colors cursor-pointer"
+                className="w-10 h-10 rounded-full bg-[#EDE8FA] text-[#6E6A8A] hover:text-[#25233A] flex items-center justify-center clay-card transition-colors cursor-pointer"
               >
                 <span className="material-symbols-outlined text-[20px]">close</span>
               </button>
@@ -1008,15 +1067,15 @@ export function DashboardPage() {
                   <span>Expected Deliverables & Specs</span>
                 </h4>
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                  <div className="p-3.5 rounded-2xl bg-[#F3F0FF] clay-pill-inset text-center">
+                  <div className="p-3.5 rounded-2xl bg-[#EDE8FA] clay-pill-inset text-center">
                     <span className="text-[10px] font-bold text-[#6E6A8A] uppercase tracking-wider block">Timeline</span>
                     <span className="text-sm font-bold text-[#25233A] mt-0.5 block">{selectedService.modalTimeline || selectedService.timeline}</span>
                   </div>
-                  <div className="p-3.5 rounded-2xl bg-[#F3F0FF] clay-pill-inset text-center">
+                  <div className="p-3.5 rounded-2xl bg-[#EDE8FA] clay-pill-inset text-center">
                     <span className="text-[10px] font-bold text-[#6E6A8A] uppercase tracking-wider block">Scope</span>
                     <span className="text-sm font-bold text-[#25233A] mt-0.5 block">{selectedService.modalScope || selectedService.scope}</span>
                   </div>
-                  <div className="p-3.5 rounded-2xl bg-[#F3F0FF] clay-pill-inset text-center">
+                  <div className="p-3.5 rounded-2xl bg-[#EDE8FA] clay-pill-inset text-center">
                     <span className="text-[10px] font-bold text-[#6E6A8A] uppercase tracking-wider block">Format</span>
                     <span className="text-sm font-bold text-[#25233A] mt-0.5 block">{selectedService.modalFormat || selectedService.format}</span>
                   </div>
@@ -1043,7 +1102,7 @@ export function DashboardPage() {
       )}
 
       {/* ======================================================== */}
-      {/* 5. NEW REQUEST MODAL */}
+      {/* 5. NEW REQUEST MODAL                                     */}
       {/* ======================================================== */}
       {requestModalOpen && (
         <div
@@ -1174,7 +1233,7 @@ export function DashboardPage() {
       )}
 
       {/* ======================================================== */}
-      {/* 6. PROFILE EDIT MODAL */}
+      {/* 6. PROFILE EDIT MODAL                                    */}
       {/* ======================================================== */}
       {profileModalOpen && (
         <div
@@ -1273,27 +1332,39 @@ export function DashboardPage() {
       )}
 
       {/* ======================================================== */}
-      {/* 7. FOOTER */}
+      {/* 7. FOOTER                                                */}
       {/* ======================================================== */}
-      <footer className="w-full bg-[#F3F0FF] py-10 md:py-12 mt-12 border-t border-[#E2DCFF]/50">
+      <footer className="w-full bg-[#EDE8FA] py-10 md:py-12 mt-12 border-t border-[#E2DCFF]/50">
         <div className="max-w-7xl mx-auto px-4 md:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between gap-6">
           <div className="flex flex-col items-center md:items-start gap-1">
             <p className="text-sm text-[#25233A] font-semibold">Assignment Hub © 2026</p>
             <p className="text-xs text-[#6E6A8A] text-center md:text-left">You give us your work — we take care of the rest.</p>
           </div>
           <div className="flex flex-wrap items-center justify-center gap-6">
-            <a href="#dashboard-home" onClick={(e) => scrollToTab(e, 'dashboard-home')} className="text-xs text-[#6E6A8A] hover:text-[#6C63FF] transition-colors cursor-pointer">
+            <button
+              onClick={() => handleTabChange('home')}
+              className="text-xs text-[#6E6A8A] hover:text-[#6C63FF] transition-colors cursor-pointer"
+            >
               Dashboard Home
-            </a>
-            <a href="#services-section" onClick={(e) => scrollToTab(e, 'services-section')} className="text-xs text-[#6E6A8A] hover:text-[#6C63FF] transition-colors cursor-pointer">
+            </button>
+            <button
+              onClick={() => handleTabChange('services')}
+              className="text-xs text-[#6E6A8A] hover:text-[#6C63FF] transition-colors cursor-pointer font-semibold"
+            >
               Services
-            </a>
-            <a href="#my-requests-section" onClick={(e) => scrollToTab(e, 'my-requests-section')} className="text-xs text-[#6E6A8A] hover:text-[#6C63FF] transition-colors cursor-pointer">
+            </button>
+            <button
+              onClick={() => handleTabChange('my-requests')}
+              className="text-xs text-[#6E6A8A] hover:text-[#6C63FF] transition-colors cursor-pointer"
+            >
               My Requests
-            </a>
-            <a href="#support-section" onClick={(e) => scrollToTab(e, 'support-section')} className="text-xs text-[#6E6A8A] hover:text-[#6C63FF] transition-colors cursor-pointer">
+            </button>
+            <button
+              onClick={() => handleTabChange('inquiries')}
+              className="text-xs text-[#6E6A8A] hover:text-[#6C63FF] transition-colors cursor-pointer"
+            >
               Inquiries & Support
-            </a>
+            </button>
             <Link to="/" className="text-xs text-[#6E6A8A] hover:text-[#6C63FF] transition-colors">
               Landing Page ↗
             </Link>
