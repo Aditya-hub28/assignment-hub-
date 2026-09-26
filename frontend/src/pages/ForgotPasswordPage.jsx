@@ -25,7 +25,9 @@ export function ForgotPasswordPage() {
       setStep(2);
       showToast('Password reset code sent to your email!', 'success');
     } catch (err) {
-      const msg = err.message || 'Failed to send reset code.';
+      const msg = typeof err === 'string'
+        ? err
+        : (err?.message && err.message !== '[object Object]' ? err.message : 'Failed to send reset code.');
       setErrorMsg(msg);
       showToast(msg, 'error');
     } finally {
@@ -52,7 +54,9 @@ export function ForgotPasswordPage() {
       showToast('Password reset successfully! Please sign in with your new password.', 'success');
       navigate('/login');
     } catch (err) {
-      const msg = err.message || 'Failed to reset password. Check your OTP.';
+      const msg = typeof err === 'string'
+        ? err
+        : (err?.message && err.message !== '[object Object]' ? err.message : 'Failed to reset password. Check your OTP.');
       setErrorMsg(msg);
       showToast(msg, 'error');
     } finally {

@@ -6,8 +6,23 @@ export function ToastProvider({ children }) {
   const [toasts, setToasts] = useState([]);
 
   const showToast = useCallback((message, type = 'info', duration = 3500) => {
+    let cleanMessage = 'Notification';
+    if (typeof message === 'string') {
+      cleanMessage = message;
+    } else if (message instanceof Error) {
+      cleanMessage = message.message;
+    } else if (message && typeof message === 'object') {
+      cleanMessage = message.message || message.error?.message || (typeof message.error === 'string' ? message.error : JSON.stringify(message));
+    } else {
+      cleanMessage = String(message || '');
+    }
+
+    if (cleanMessage === '[object Object]') {
+      cleanMessage = 'An unexpected response was received.';
+    }
+
     const id = Date.now() + Math.random().toString(36).substring(2, 5);
-    setToasts(prev => [...prev, { id, message, type }]);
+    setToasts(prev => [...prev, { id, message: cleanMessage, type }]);
 
     setTimeout(() => {
       setToasts(prev => prev.filter(t => t.id !== id));

@@ -21,11 +21,18 @@ export const authStorage = {
       return null;
     }
   },
-  setSession: ({ session, user, profile }) => {
-    if (session?.accessToken) localStorage.setItem('ah_access_token', session.accessToken);
-    if (session?.refreshToken) localStorage.setItem('ah_refresh_token', session.refreshToken);
-    if (user) localStorage.setItem('ah_user', JSON.stringify(user));
-    if (profile) localStorage.setItem('ah_profile', JSON.stringify(profile));
+  setSession: (sessionData = {}) => {
+    const session = sessionData.session || sessionData;
+    const user = sessionData.user;
+    const profile = sessionData.profile;
+
+    const access = session?.accessToken || session?.access_token;
+    const refresh = session?.refreshToken || session?.refresh_token;
+
+    if (access) localStorage.setItem('ah_access_token', access);
+    if (refresh) localStorage.setItem('ah_refresh_token', refresh);
+    if (user) localStorage.setItem('ah_user', typeof user === 'string' ? user : JSON.stringify(user));
+    if (profile) localStorage.setItem('ah_profile', typeof profile === 'string' ? profile : JSON.stringify(profile));
   },
   clearSession: () => {
     localStorage.removeItem('ah_access_token');
@@ -59,8 +66,24 @@ async function request(endpoint, options = {}) {
   const data = await response.json().catch(() => ({}));
 
   if (!response.ok) {
-    const error = new Error(data.message || data.error || `HTTP error! status: ${response.status}`);
+    let errorMsg = 'An unexpected error occurred.';
+    if (typeof data?.message === 'string' && data.message.trim()) {
+      errorMsg = data.message;
+    } else if (typeof data?.error === 'string' && data.error.trim()) {
+      errorMsg = data.error;
+    } else if (data?.error && typeof data.error.message === 'string' && data.error.message.trim()) {
+      errorMsg = data.error.message;
+    } else if (data?.error?.details && Array.isArray(data.error.details) && data.error.details.length > 0) {
+      errorMsg = data.error.details.map(d => d.message || d).join(', ');
+    } else if (data?.errors && Array.isArray(data.errors) && data.errors.length > 0) {
+      errorMsg = data.errors.map(e => (typeof e === 'string' ? e : e.message || JSON.stringify(e))).join(', ');
+    } else {
+      errorMsg = `Server error (${response.status})`;
+    }
+
+    const error = new Error(errorMsg);
     error.status = response.status;
+    error.code = data?.error?.code;
     error.data = data;
     throw error;
   }

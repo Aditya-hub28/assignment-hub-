@@ -31,7 +31,9 @@ export function LoginPage() {
       const destination = location.state?.from?.pathname || '/dashboard';
       navigate(destination, { replace: true });
     } catch (err) {
-      const msg = err.message || 'Login failed. Please check your credentials.';
+      const msg = typeof err === 'string'
+        ? err
+        : (err?.message && err.message !== '[object Object]' ? err.message : 'Login failed. Please check your credentials.');
       setErrorMsg(msg);
       showToast(msg, 'error');
     } finally {

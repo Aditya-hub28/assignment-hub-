@@ -72,7 +72,9 @@ export function SignupPage() {
         throw new Error('Verification ID not received.');
       }
     } catch (err) {
-      const msg = err.message || 'Failed to initiate signup.';
+      const msg = typeof err === 'string'
+        ? err
+        : (err?.message && err.message !== '[object Object]' ? err.message : 'Failed to initiate signup.');
       setErrorMsg(msg);
       showToast(msg, 'error');
     } finally {
@@ -98,7 +100,7 @@ export function SignupPage() {
       });
 
       if (res?.data?.session) {
-        authStorage.setSession(res.data.session);
+        authStorage.setSession(res.data);
         await refreshProfile();
         showToast('Registration successful! Welcome to Assignment Hub.', 'success');
         navigate('/dashboard');
@@ -106,7 +108,9 @@ export function SignupPage() {
         throw new Error('Session data not returned.');
       }
     } catch (err) {
-      const msg = err.message || 'Invalid OTP code.';
+      const msg = typeof err === 'string'
+        ? err
+        : (err?.message && err.message !== '[object Object]' ? err.message : 'Invalid OTP code.');
       setErrorMsg(msg);
       showToast(msg, 'error');
     } finally {
@@ -124,7 +128,9 @@ export function SignupPage() {
       setResendCooldown(60);
       showToast('A new OTP has been dispatched to your email.', 'info');
     } catch (err) {
-      const msg = err.message || 'Failed to resend OTP.';
+      const msg = typeof err === 'string'
+        ? err
+        : (err?.message && err.message !== '[object Object]' ? err.message : 'Failed to resend OTP.');
       setErrorMsg(msg);
       showToast(msg, 'error');
     } finally {
