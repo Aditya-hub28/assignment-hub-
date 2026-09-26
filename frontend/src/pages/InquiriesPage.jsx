@@ -3,552 +3,787 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
 
-// Sample conversation dataset matching Stitch Screen d167850e22ad434e91dd9d2aab2d11c2
-const INITIAL_CONVERSATIONS = [
+// Dataset aligned with Stitch Screen 303be452a5684a22ad716eaa66b36904
+const INITIAL_INQUIRIES = [
   {
-    id: 'math',
-    title: 'Mathematics Assignment',
-    subtitle: 'Calculus III',
-    subjectDetail: 'Subject: Calculus III & Vector Algebra • Assigned Academic Support',
-    icon: 'functions',
-    iconBg: 'bg-[#675DF9] text-white',
-    lastTime: '2 min ago',
-    unread: true,
-    resolved: false,
-    messages: [
+    id: 'REQ-1024',
+    title: 'Assignment Deadline Question',
+    requestNumber: '#REQ-1024',
+    requestTitle: 'Engineering Mathematics Assignment',
+    status: 'open',
+    quote: '“Can I get this assignment delivered one day earlier? My professor moved the submission deadline to Friday morning at 10 AM instead of Saturday.”',
+    messagesCount: 2,
+    updatedAt: 'Updated 2h ago',
+    category: 'Request Question',
+    coordinator: 'Dr. Banerjee (Academic Reviewer)',
+    createdAt: '26 Sep 2026, 10:30 AM',
+    lastActivity: '26 Sep 2026, 11:40 AM',
+    keywords: 'Assignment Deadline Question #REQ-1024 Engineering Mathematics earlier professor Friday',
+    thread: [
       {
-        id: 1,
-        sender: 'support',
-        senderName: 'Assignment Hub Academic Support',
-        badge: 'Verified Staff',
-        time: '10:30 AM',
-        text: 'Hi Aditya! How can we help you today with your coursework?'
-      },
-      {
-        id: 2,
-        sender: 'user',
-        senderName: 'You',
-        time: '10:32 AM',
-        text: 'I need help completing my Mathematics assignment. Can it be completed by tomorrow afternoon?'
-      },
-      {
-        id: 3,
-        sender: 'support',
-        senderName: 'Assignment Hub Academic Support',
-        badge: 'Verified Staff',
-        time: '10:35 AM',
-        text: 'Yes, our mathematics mentor Dr. Banerjee is available. Please send the assignment questions and any specific required formatting instructions.'
-      },
-      {
-        id: 4,
-        sender: 'user',
-        senderName: 'You',
-        time: '10:36 AM',
-        text: 'Sure, here are the problem sheets from the professor:',
+        id: 'msg-1',
+        sender: 'student',
+        senderName: 'Aditya K. (You)',
+        badge: 'Student',
+        time: '26 Sep 2026 • 10:30 AM',
+        text: 'Can I get this assignment delivered one day earlier? My professor moved the submission deadline to Friday morning at 10 AM instead of Saturday.',
         attachment: {
-          name: 'Math_Assignment_Questions_Set4.pdf',
-          size: '2.4 MB • 6 Pages',
-          type: 'pdf'
+          name: 'revised_schedule_notice.pdf',
+          size: '850 KB'
         }
       },
       {
-        id: 5,
-        sender: 'support',
-        senderName: 'Assignment Hub Academic Support',
-        badge: 'Verified Staff',
-        time: '10:40 AM',
-        text: 'Received! We are reviewing the questions right away. You can reply anytime if you have additional notes or university rubrics.'
+        id: 'msg-2',
+        sender: 'coordinator',
+        senderName: 'Dr. Banerjee',
+        badge: 'Academic Coordinator',
+        time: '26 Sep 2026 • 11:05 AM',
+        text: 'Hello Aditya, we have coordinated with your assigned subject specialist. Since the mathematical proofs are already 70% completed, we can expedite the final review and deliver by Thursday, 9:00 PM without compromising academic integrity standards.'
+      },
+      {
+        id: 'msg-3',
+        sender: 'student',
+        senderName: 'Aditya K. (You)',
+        badge: 'Student',
+        time: '26 Sep 2026 • 11:40 AM',
+        text: 'That works wonderfully! Please proceed with the expedited Thursday timeline. Thank you for the quick turnaround.'
       }
     ]
   },
   {
-    id: 'project',
-    title: 'Final Year Project',
-    subtitle: 'IoT Smart Irrigation',
-    subjectDetail: 'Subject: IoT Smart Irrigation System • Technical Mentor Lead',
-    icon: 'engineering',
-    iconBg: 'bg-[#E4DFFE] text-[#5846C8]',
-    lastTime: 'Yesterday',
-    unread: false,
-    resolved: false,
-    messages: [
+    id: 'REQ-1018',
+    title: 'Clarification on Dataset & Chart Requirements',
+    requestNumber: '#REQ-1018',
+    requestTitle: 'IoT Smart Weather Station Simulation',
+    status: 'awaiting',
+    requiresStudentInput: true,
+    quote: '“Assignment Hub: We have reviewed your initial schematic. Could you please confirm if Python 3.11 is mandatory or if 3.10 is acceptable for the test scripts?”',
+    messagesCount: 4,
+    updatedAt: 'Updated 45m ago',
+    category: 'Technical Specification',
+    coordinator: 'Eng. Vikram Rao (Technical Mentor)',
+    createdAt: '25 Sep 2026, 03:15 PM',
+    lastActivity: '26 Sep 2026, 01:10 PM',
+    keywords: 'Clarification on Dataset Chart Requirements #REQ-1018 IoT Smart Weather Station Simulation Python 3.11 3.10',
+    thread: [
       {
-        id: 1,
-        sender: 'support',
-        senderName: 'Assignment Hub Academic Support',
-        badge: 'Verified Staff',
-        time: 'Yesterday, 04:15 PM',
-        text: 'Greetings! Our engineering lead Eng. Vikram Rao is reviewing your IoT project outline.'
+        id: 'msg-101',
+        sender: 'student',
+        senderName: 'Aditya K. (You)',
+        badge: 'Student',
+        time: '25 Sep 2026 • 03:15 PM',
+        text: 'Attached the circuit simulator guidelines from university portal for IoT Smart Weather Station.'
       },
       {
-        id: 2,
-        sender: 'support',
-        senderName: 'Assignment Hub Academic Support',
-        badge: 'Verified Staff',
-        time: 'Yesterday, 04:20 PM',
-        text: 'Please send the project requirements, required micro-controller hardware (ESP32/Arduino), and report length guidelines.'
+        id: 'msg-102',
+        sender: 'coordinator',
+        senderName: 'Eng. Vikram Rao',
+        badge: 'Technical Mentor',
+        time: '25 Sep 2026 • 04:30 PM',
+        text: 'Thanks Aditya. The schematics and sensor arrays look good. Are you running the visualization script on Linux or Windows host?'
       },
       {
-        id: 3,
-        sender: 'user',
-        senderName: 'You',
-        time: 'Yesterday, 06:10 PM',
-        text: 'I have uploaded the synopsis and circuit diagrams. Need Wokwi simulation plus report.'
+        id: 'msg-103',
+        sender: 'student',
+        senderName: 'Aditya K. (You)',
+        badge: 'Student',
+        time: '26 Sep 2026 • 09:20 AM',
+        text: 'We are demonstrating it on a Windows laptop with VS Code.'
+      },
+      {
+        id: 'msg-104',
+        sender: 'coordinator',
+        senderName: 'Eng. Vikram Rao',
+        badge: 'Technical Mentor',
+        time: '26 Sep 2026 • 01:10 PM',
+        text: 'Understood. We have reviewed your initial schematic. Could you please confirm if Python 3.11 is mandatory or if 3.10 is acceptable for the test scripts?'
       }
     ]
   },
   {
-    id: 'ppt',
-    title: 'New PPT Requirement',
-    subtitle: 'Macroeconomics',
-    subjectDetail: 'Subject: Macroeconomics Seminar • Presentation Specialist',
-    icon: 'slideshow',
-    iconBg: 'bg-[#FFDDB3] text-[#7F5300]',
-    lastTime: '2 days ago',
-    unread: false,
-    resolved: false,
-    messages: [
+    id: 'REQ-1028',
+    title: 'Citation Format: APA 7th vs IEEE for Project Report',
+    requestNumber: '#REQ-1028',
+    requestTitle: 'Data Structures & Algorithms Lab File',
+    status: 'open',
+    quote: '“The department handbook mentions APA 7th for literature reviews but IEEE for code citations. Should the final bibliography combine both?”',
+    messagesCount: 1,
+    updatedAt: 'Updated 4h ago',
+    category: 'Formatting Guidelines',
+    coordinator: 'Prof. Ananya Sen (Review Coordinator)',
+    createdAt: '26 Sep 2026, 08:30 AM',
+    lastActivity: '26 Sep 2026, 08:30 AM',
+    keywords: 'Citation Format APA 7th vs IEEE Project Report #REQ-1028 Data Structures Algorithms Lab File bibliography',
+    thread: [
       {
-        id: 1,
-        sender: 'user',
-        senderName: 'You',
-        time: '24 Sep, 11:15 AM',
-        text: 'I need around 15 slides on modern monetary policy and inflation targeting.'
-      },
-      {
-        id: 2,
-        sender: 'support',
-        senderName: 'Assignment Hub Academic Support',
-        badge: 'Verified Staff',
-        time: '24 Sep, 11:30 AM',
-        text: 'Understood. We will structure 15 widescreen 16:9 slides with infographics and complete presenter notes for your viva.'
+        id: 'msg-201',
+        sender: 'student',
+        senderName: 'Aditya K. (You)',
+        badge: 'Student',
+        time: '26 Sep 2026 • 08:30 AM',
+        text: 'The department handbook mentions APA 7th for literature reviews but IEEE for code citations. Should the final bibliography combine both?'
       }
     ]
   },
   {
-    id: 'python',
-    title: 'Python Lab Report Formatting',
-    subtitle: 'CS 204 Data Structures',
-    subjectDetail: 'Subject: CS 204 Data Structures • Completed Reference Archive',
-    icon: 'code',
-    iconBg: 'bg-[#EAE5FF] text-[#464555]',
-    lastTime: '3 days ago',
-    unread: false,
-    resolved: true,
-    messages: [
+    id: 'REQ-1009',
+    title: 'Request for Additional Appendix in Physics Record',
+    requestNumber: '#REQ-1009',
+    requestTitle: 'Physics Practical Lab File',
+    status: 'resolved',
+    quote: '“Assignment Hub: The additional observation table has been appended to Section 4. Deliverable updated on your My Requests page.”',
+    messagesCount: 3,
+    updatedAt: 'Resolved on 25 Sep 2026',
+    category: 'Revision & Addendum',
+    coordinator: 'Dr. Mukherjee (Physics Specialist)',
+    createdAt: '24 Sep 2026, 11:00 AM',
+    lastActivity: '25 Sep 2026, 04:45 PM',
+    keywords: 'Request for Additional Appendix Physics Record #REQ-1009 Physics Practical Lab File observation table Section 4',
+    thread: [
       {
-        id: 1,
-        sender: 'user',
-        senderName: 'You',
-        time: '23 Sep, 02:00 PM',
-        text: 'Can you help format 10 Python recursion programs according to IEEE lab standards?'
+        id: 'msg-301',
+        sender: 'student',
+        senderName: 'Aditya K. (You)',
+        badge: 'Student',
+        time: '24 Sep 2026 • 11:00 AM',
+        text: 'Could you please include the second observation table for error analysis in Experiment 4?'
       },
       {
-        id: 2,
-        sender: 'support',
-        senderName: 'Assignment Hub Academic Support',
-        badge: 'Verified Staff',
-        time: '23 Sep, 05:40 PM',
-        text: 'Verified! Formatted PDF has been sent with complete dry-run recursion trees.'
+        id: 'msg-302',
+        sender: 'coordinator',
+        senderName: 'Dr. Mukherjee',
+        badge: 'Physics Specialist',
+        time: '24 Sep 2026 • 02:15 PM',
+        text: 'Certainly! We are generating the residual error curve and adding the second table into Section 4.'
+      },
+      {
+        id: 'msg-303',
+        sender: 'coordinator',
+        senderName: 'Dr. Mukherjee',
+        badge: 'Physics Specialist',
+        time: '25 Sep 2026 • 04:45 PM',
+        text: 'The additional observation table has been appended to Section 4. Deliverable updated on your My Requests page.'
+      }
+    ]
+  },
+  {
+    id: 'GEN-1001',
+    title: 'General Question on Presentation Speaker Notes',
+    requestNumber: 'General Inquiry',
+    requestTitle: 'No Request Linked',
+    status: 'resolved',
+    quote: '“Student: Thank you, the speaker notes format provided matches university guidelines perfectly!”',
+    messagesCount: 2,
+    updatedAt: 'Resolved on 22 Sep 2026',
+    category: 'General Question',
+    coordinator: 'Academic Advising Desk',
+    createdAt: '22 Sep 2026, 09:10 AM',
+    lastActivity: '22 Sep 2026, 02:30 PM',
+    keywords: 'General Question Presentation Speaker Notes General Inquiry No Request Linked university guidelines',
+    thread: [
+      {
+        id: 'msg-401',
+        sender: 'student',
+        senderName: 'Aditya K. (You)',
+        badge: 'Student',
+        time: '22 Sep 2026 • 09:10 AM',
+        text: 'What format do your specialists follow for speaker notes in presentation decks?'
+      },
+      {
+        id: 'msg-402',
+        sender: 'coordinator',
+        senderName: 'Academic Advising Desk',
+        badge: 'Advising Lead',
+        time: '22 Sep 2026 • 10:15 AM',
+        text: 'We provide structured 3-part presenter cues: 1. Hook/Intro, 2. Key Data Point Explanation, 3. Anticipated Viva/Audience Question with sample answer.'
+      },
+      {
+        id: 'msg-403',
+        sender: 'student',
+        senderName: 'Aditya K. (You)',
+        badge: 'Student',
+        time: '22 Sep 2026 • 02:30 PM',
+        text: 'Thank you, the speaker notes format provided matches university guidelines perfectly!'
       }
     ]
   }
 ];
 
+const INITIAL_NOTIFICATIONS = [
+  {
+    id: 'notif-1',
+    type: 'inquiry',
+    category: 'unread',
+    icon: 'chat',
+    iconBg: 'bg-primary text-white',
+    title: 'Dr. Banerjee replied to your Inquiry',
+    description: 'Mathematics Assignment: “Proofs are already 70% completed, we can deliver by Thursday 9:00 PM.”',
+    time: '2 min ago',
+    unread: true,
+    targetInquiryId: 'REQ-1024',
+    actionText: 'Reply Now',
+    actionIcon: 'reply'
+  },
+  {
+    id: 'notif-2',
+    type: 'update',
+    category: 'updates',
+    icon: 'trending_up',
+    iconBg: 'bg-tertiary-fixed text-on-tertiary-fixed',
+    title: 'Progress Update on #REQ-1024',
+    description: 'Engineering Mathematics Assignment reached 70% completion milestone.',
+    time: '1 hour ago',
+    unread: true,
+    link: '/my-requests',
+    actionText: 'View Request',
+    actionIcon: 'arrow_forward'
+  },
+  {
+    id: 'notif-3',
+    type: 'download',
+    category: 'updates',
+    icon: 'download_done',
+    iconBg: 'bg-surface-container-high text-primary',
+    title: 'Deliverables Ready for Download',
+    description: 'IoT Smart Weather Station Simulation files have been uploaded to your drive.',
+    time: 'Yesterday, 4:15 PM',
+    extraBadge: 'File: .ZIP (14.2 MB)',
+    unread: false
+  },
+  {
+    id: 'notif-4',
+    type: 'reminder',
+    category: 'updates',
+    icon: 'alarm',
+    iconBg: 'bg-secondary-fixed text-secondary',
+    title: 'Deadline Reminder: DSA Lab File',
+    description: 'Data Structures & Algorithms review will conclude tomorrow.',
+    time: '2 days ago',
+    unread: false
+  },
+  {
+    id: 'notif-5',
+    type: 'announcement',
+    category: 'all',
+    icon: 'school',
+    iconBg: 'bg-surface-container text-primary',
+    title: 'Academic Services Updated',
+    description: 'Explore new coursework & dissertation assistance packages in the Services hub.',
+    time: '3 days ago',
+    link: '/services',
+    actionText: 'Explore Services',
+    actionIcon: 'arrow_forward',
+    unread: false
+  }
+];
+
 export function InquiriesPage() {
-  const { user, logout, updateProfile } = useAuth();
+  const { user, logout } = useAuth();
   const { showToast } = useToast();
   const navigate = useNavigate();
 
-  // Conversations state
-  const [conversations, setConversations] = useState(INITIAL_CONVERSATIONS);
-  const [selectedConvoId, setSelectedConvoId] = useState('math');
-  const [listFilter, setListFilter] = useState('all'); // 'all' | 'resolved-only'
+  // Core state
+  const [inquiries, setInquiries] = useState(INITIAL_INQUIRIES);
+  const [notifications, setNotifications] = useState(INITIAL_NOTIFICATIONS);
+  const [currentFilter, setCurrentFilter] = useState('all'); // all | open | awaiting | resolved
   const [searchQuery, setSearchQuery] = useState('');
-  const [viewMode, setViewMode] = useState('active'); // 'active' | 'resolved' | 'empty'
+  const [sortOrder, setSortOrder] = useState('latest'); // latest | oldest
 
-  // Composer state
-  const [inputMessage, setInputMessage] = useState('');
-  const [selectedFile, setSelectedFile] = useState(null);
-
-  // Modals state
-  const [newModalOpen, setNewModalOpen] = useState(false);
-  const [profileModalOpen, setProfileModalOpen] = useState(false);
+  // Modals & Panels
+  const [notificationPopupOpen, setNotificationPopupOpen] = useState(false);
+  const [notifFilter, setNotifFilter] = useState('all'); // all | unread | updates
+  const [newInquiryModalOpen, setNewInquiryModalOpen] = useState(false);
+  const [selectedInquiry, setSelectedInquiry] = useState(null);
+  const [replyText, setReplyText] = useState('');
   const [userDropdownOpen, setUserDropdownOpen] = useState(false);
 
-  // New Convo form
-  const [newTitle, setNewTitle] = useState('');
-  const [newMessage, setNewMessage] = useState('');
+  // New inquiry form state
+  const [formSubject, setFormSubject] = useState('');
+  const [formRequest, setFormRequest] = useState('');
+  const [formCategory, setFormCategory] = useState('Request Question');
+  const [formMessage, setFormMessage] = useState('');
+  const [formAttachment, setFormAttachment] = useState('syllabus_clause_revision.pdf (1.2 MB)');
 
-  // Profile Edit form
-  const [editName, setEditName] = useState(user?.name || '');
-  const [editCollege, setEditCollege] = useState(user?.college || '');
-  const [editCourse, setEditCourse] = useState(user?.course || '');
+  const notificationRef = useRef(null);
+  const userDropdownRef = useRef(null);
+  const threadEndRef = useRef(null);
 
-  // Derived user details
-  const firstName = user?.name ? user.name.split(' ')[0] : 'Student';
-  const initial = user?.name ? user.name.charAt(0).toUpperCase() : 'S';
-  const email = user?.email || 'student@university.edu';
-
-  const messagesEndRef = useRef(null);
-  const fileInputRef = useRef(null);
-
-  // Active conversation object
-  const activeConvo = useMemo(() => {
-    return conversations.find((c) => c.id === selectedConvoId) || conversations[0];
-  }, [conversations, selectedConvoId]);
-
-  // Scroll to bottom when messages change
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  };
-
+  // Auto scroll in conversation drawer
   useEffect(() => {
-    scrollToBottom();
-  }, [activeConvo?.messages]);
+    if (selectedInquiry && threadEndRef.current) {
+      threadEndRef.current.scrollIntoView({ behavior: 'smooth' });
+    }
+  }, [selectedInquiry, selectedInquiry?.thread]);
 
-  // Counts
-  const counts = useMemo(() => {
-    const total = conversations.length;
-    const resolved = conversations.filter((c) => c.resolved).length;
-    return { total, resolved };
-  }, [conversations]);
+  // Click outside listener for notification popup and user dropdown
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (notificationRef.current && !notificationRef.current.contains(event.target)) {
+        setNotificationPopupOpen(false);
+      }
+      if (userDropdownRef.current && !userDropdownRef.current.contains(event.target)) {
+        setUserDropdownOpen(false);
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
-  // Filtered conversation list
-  const filteredConversations = useMemo(() => {
-    return conversations.filter((c) => {
-      const matchesFilter = listFilter === 'all' || (listFilter === 'resolved-only' && c.resolved);
+  // Compute stat counts
+  const statCounts = useMemo(() => {
+    const total = inquiries.length;
+    const open = inquiries.filter(i => i.status === 'open').length;
+    const awaiting = inquiries.filter(i => i.status === 'awaiting').length;
+    const resolved = inquiries.filter(i => i.status === 'resolved').length;
+    return { total, open, awaiting, resolved };
+  }, [inquiries]);
+
+  // Compute unread notifications
+  const unreadNotifCount = useMemo(() => {
+    return notifications.filter(n => n.unread).length;
+  }, [notifications]);
+
+  // Filtered notifications
+  const filteredNotifications = useMemo(() => {
+    if (notifFilter === 'unread') {
+      return notifications.filter(n => n.unread);
+    }
+    if (notifFilter === 'updates') {
+      return notifications.filter(n => n.category === 'updates');
+    }
+    return notifications;
+  }, [notifications, notifFilter]);
+
+  // Mark all notifications read
+  const handleMarkAllRead = () => {
+    setNotifications(prev => prev.map(n => ({ ...n, unread: false })));
+    showToast('All notifications marked as read', 'success');
+  };
+
+  // Click notification action
+  const handleNotificationAction = (notif) => {
+    setNotificationPopupOpen(false);
+    if (notif.targetInquiryId) {
+      const match = inquiries.find(i => i.id === notif.targetInquiryId);
+      if (match) {
+        setSelectedInquiry(match);
+      }
+    } else if (notif.link) {
+      navigate(notif.link);
+    }
+  };
+
+  // Filtered and sorted inquiries
+  const filteredInquiries = useMemo(() => {
+    let result = inquiries.filter(inq => {
+      const matchesFilter = (currentFilter === 'all') || (inq.status === currentFilter);
       const q = searchQuery.toLowerCase().trim();
-      const matchesSearch =
-        !q ||
-        c.title.toLowerCase().includes(q) ||
-        c.subtitle.toLowerCase().includes(q) ||
-        c.subjectDetail.toLowerCase().includes(q);
-      return matchesFilter && matchesSearch;
+      const matchesQuery = !q || inq.title.toLowerCase().includes(q) ||
+        inq.requestNumber.toLowerCase().includes(q) ||
+        inq.requestTitle.toLowerCase().includes(q) ||
+        inq.keywords?.toLowerCase().includes(q);
+      return matchesFilter && matchesQuery;
     });
-  }, [conversations, listFilter, searchQuery]);
 
-  // Switch view mode (Active, Resolved, Empty)
-  const handleSetViewMode = (mode) => {
-    setViewMode(mode);
-    if (mode === 'active') {
-      const activeOne = conversations.find((c) => !c.resolved) || conversations[0];
-      setSelectedConvoId(activeOne.id);
-      setListFilter('all');
-    } else if (mode === 'resolved') {
-      const resolvedOne = conversations.find((c) => c.resolved) || conversations[0];
-      setSelectedConvoId(resolvedOne.id);
-      setListFilter('resolved-only');
+    if (sortOrder === 'oldest') {
+      return [...result].reverse();
     }
+    return result;
+  }, [inquiries, currentFilter, searchQuery, sortOrder]);
+
+  // Handle send reply in conversation drawer
+  const handleSendReply = (e) => {
+    e.preventDefault();
+    const text = replyText.trim();
+    if (!text || !selectedInquiry) return;
+
+    const newMsg = {
+      id: `msg-${Date.now()}`,
+      sender: 'student',
+      senderName: `${user?.name || 'Aditya K.'} (You)`,
+      badge: 'Student',
+      time: 'Just now',
+      text
+    };
+
+    const updatedInquiries = inquiries.map(inq => {
+      if (inq.id === selectedInquiry.id) {
+        return {
+          ...inq,
+          status: inq.status === 'awaiting' ? 'open' : inq.status,
+          messagesCount: inq.messagesCount + 1,
+          updatedAt: 'Updated just now',
+          thread: [...inq.thread, newMsg]
+        };
+      }
+      return inq;
+    });
+
+    setInquiries(updatedInquiries);
+    const updatedCurrent = updatedInquiries.find(i => i.id === selectedInquiry.id);
+    setSelectedInquiry(updatedCurrent);
+    setReplyText('');
+    showToast('Reply sent to academic coordinator', 'success');
   };
 
-  // Select conversation
-  const handleSelectConversation = (id) => {
-    setSelectedConvoId(id);
-    if (viewMode === 'empty') {
-      setViewMode('active');
-    }
-    // Mark as read
-    setConversations((prev) =>
-      prev.map((c) => (c.id === id ? { ...c, unread: false } : c))
-    );
-  };
+  // Toggle resolve status
+  const handleToggleResolve = () => {
+    if (!selectedInquiry) return;
+    const isNowResolved = selectedInquiry.status !== 'resolved';
+    const newStatus = isNowResolved ? 'resolved' : 'open';
 
-  // Toggle resolved state
-  const handleToggleResolvedState = () => {
-    const newResolvedState = !activeConvo.resolved;
-    setConversations((prev) =>
-      prev.map((c) =>
-        c.id === activeConvo.id
-          ? {
-              ...c,
-              resolved: newResolvedState
-            }
-          : c
-      )
-    );
+    const updatedInquiries = inquiries.map(inq => {
+      if (inq.id === selectedInquiry.id) {
+        return {
+          ...inq,
+          status: newStatus,
+          updatedAt: isNowResolved ? 'Resolved just now' : 'Reopened just now'
+        };
+      }
+      return inq;
+    });
+
+    setInquiries(updatedInquiries);
+    setSelectedInquiry(prev => ({
+      ...prev,
+      status: newStatus,
+      updatedAt: isNowResolved ? 'Resolved just now' : 'Reopened just now'
+    }));
+
     showToast(
-      newResolvedState
-        ? `Conversation "${activeConvo.title}" marked as Resolved.`
-        : `Conversation "${activeConvo.title}" reopened.`,
+      isNowResolved ? 'Inquiry marked as resolved' : 'Inquiry reopened for discussion',
       'info'
     );
   };
 
-  // Send message
-  const handleSendMessage = (e) => {
+  // Handle new inquiry submission
+  const handleSubmitNewInquiry = (e) => {
     e.preventDefault();
-    const text = inputMessage.trim();
-    if (!text && !selectedFile) return;
-
-    const timeStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-
-    const newMsg = {
-      id: Date.now(),
-      sender: 'user',
-      senderName: 'You',
-      time: timeStr,
-      text: text || 'Uploaded file for review:',
-      attachment: selectedFile
-        ? {
-            name: selectedFile.name,
-            size: `${(selectedFile.size / (1024 * 1024)).toFixed(1)} MB`,
-            type: selectedFile.type?.includes('pdf') ? 'pdf' : 'doc'
-          }
-        : null
-    };
-
-    setConversations((prev) =>
-      prev.map((c) =>
-        c.id === activeConvo.id
-          ? {
-              ...c,
-              lastTime: 'Just now',
-              messages: [...c.messages, newMsg]
-            }
-          : c
-      )
-    );
-
-    setInputMessage('');
-    setSelectedFile(null);
-    if (fileInputRef.current) fileInputRef.current.value = '';
-
-    // Simulated responsive feedback from Academic Support
-    setTimeout(() => {
-      const replyMsg = {
-        id: Date.now() + 1,
-        sender: 'support',
-        senderName: 'Assignment Hub Academic Support',
-        badge: 'Verified Staff',
-        time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-        text: 'Thank you for your update! Our academic coordinator has logged this into your coursework file.'
-      };
-      setConversations((prev) =>
-        prev.map((c) =>
-          c.id === activeConvo.id
-            ? {
-                ...c,
-                lastTime: 'Just now',
-                messages: [...c.messages, replyMsg]
-              }
-            : c
-        )
-      );
-    }, 1200);
-  };
-
-  // Handle file select
-  const handleFileChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      setSelectedFile(file);
-      showToast(`Attached: ${file.name}`, 'info');
+    if (!formSubject.trim() || !formMessage.trim()) {
+      showToast('Please fill out all required fields', 'error');
+      return;
     }
-  };
 
-  // Handle Create New Conversation
-  const handleCreateConversation = (e) => {
-    e.preventDefault();
-    if (!newTitle.trim() || !newMessage.trim()) return;
-
-    const newId = `convo-${Date.now()}`;
-    const timeStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-
-    const newConversation = {
-      id: newId,
-      title: newTitle.trim(),
-      subtitle: 'Academic Inquiries',
-      subjectDetail: `Subject: ${newTitle.trim()} • Assigned Academic Support`,
-      icon: 'chat',
-      iconBg: 'bg-[#675DF9] text-white',
-      lastTime: 'Just now',
-      unread: false,
-      resolved: false,
-      messages: [
+    const newInquiry = {
+      id: `INQ-${Date.now().toString().slice(-4)}`,
+      title: formSubject,
+      requestNumber: formRequest || 'General Inquiry',
+      requestTitle: formRequest ? 'Linked Academic Request' : 'No Request Linked',
+      status: 'open',
+      quote: `“${formMessage}”`,
+      messagesCount: 1,
+      updatedAt: 'Updated just now',
+      category: formCategory,
+      coordinator: 'Assignment Hub Academic Coordinator',
+      createdAt: 'Just now',
+      lastActivity: 'Just now',
+      keywords: `${formSubject} ${formRequest} ${formCategory} ${formMessage}`,
+      thread: [
         {
-          id: 1,
-          sender: 'user',
-          senderName: 'You',
-          time: timeStr,
-          text: newMessage.trim()
-        },
-        {
-          id: 2,
-          sender: 'support',
-          senderName: 'Assignment Hub Academic Support',
-          badge: 'Verified Staff',
-          time: timeStr,
-          text: `Hello ${firstName}! We received your inquiry regarding "${newTitle.trim()}". A subject mentor will answer in ~10 minutes.`
+          id: `msg-${Date.now()}`,
+          sender: 'student',
+          senderName: `${user?.name || 'Aditya K.'} (You)`,
+          badge: 'Student',
+          time: 'Just now',
+          text: formMessage,
+          attachment: formAttachment ? { name: formAttachment, size: 'Uploaded file' } : null
         }
       ]
     };
 
-    setConversations([newConversation, ...conversations]);
-    setSelectedConvoId(newId);
-    setNewModalOpen(false);
-    setNewTitle('');
-    setNewMessage('');
-    setViewMode('active');
-    showToast(`Conversation "${newTitle}" created successfully!`, 'success');
-  };
-
-  // Save profile
-  const handleSaveProfile = async (e) => {
-    e.preventDefault();
-    const result = await updateProfile({
-      name: editName,
-      college: editCollege,
-      course: editCourse
-    });
-    if (result.success) {
-      showToast('Profile updated successfully!', 'success');
-      setProfileModalOpen(false);
-    } else {
-      showToast(result.error || 'Failed to update profile', 'error');
-    }
-  };
-
-  const handleLogoutClick = () => {
-    logout();
-    navigate('/');
-    showToast('Logged out successfully.', 'info');
+    setInquiries([newInquiry, ...inquiries]);
+    setNewInquiryModalOpen(false);
+    setFormSubject('');
+    setFormRequest('');
+    setFormMessage('');
+    showToast('Your inquiry has been submitted! Our academic mentor team will get back to you shortly.', 'success');
   };
 
   return (
-    <div className="min-h-screen bg-[#FCF8FF] font-['Plus_Jakarta_Sans',sans-serif] text-[#1B192F] flex flex-col selection:bg-[#4D41DF]/20 selection:text-[#4D41DF]">
-      {/* ======================================================== */}
-      {/* 1. TOP NAVBAR (Matching Stitch Header)                   */}
-      {/* ======================================================== */}
-      <header className="fixed top-0 left-0 right-0 z-40 bg-[#FCF8FF]/90 backdrop-blur-xl border-b border-[#EAE5FF]/60 shadow-[0_10px_25px_rgba(108,99,255,0.05),inset_0_1px_2px_rgba(255,255,255,0.85)]">
-        <div className="h-20 max-w-7xl mx-auto px-4 md:px-6 lg:px-8 flex items-center justify-between gap-4">
-          {/* Brand & Workspace Pill */}
-          <div className="flex items-center gap-3">
-            <Link
-              to="/dashboard"
-              className="flex items-center gap-3 transition-transform hover:scale-[1.02] active:scale-95"
-            >
-              <div className="w-10 h-10 rounded-2xl bg-[#4D41DF] text-white flex items-center justify-center clay-btn-primary shadow-sm">
-                <span className="material-symbols-outlined text-[24px]">school</span>
-              </div>
-              <span className="font-bold text-xl text-[#1B192F] tracking-tight">Assignment Hub</span>
-            </Link>
-            <span className="hidden md:inline-flex items-center px-3.5 py-1 rounded-full bg-[#F0EBFF] text-[#464555] text-xs font-semibold clay-pill-inset">
-              Student Workspace
-            </span>
-          </div>
+    <div className="min-h-screen bg-surface font-sans text-on-surface antialiased selection:bg-primary-fixed selection:text-on-primary-fixed flex flex-col">
+      {/* ─────────────────────────────────────────────────────────────
+          1. TOP NAVIGATION BAR (Fixed Claymorphic)
+      ────────────────────────────────────────────────────────────── */}
+      <header className="fixed top-0 w-full z-40 bg-surface/90 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)]">
+        <div className="h-20 w-full px-6 lg:px-12 flex items-center justify-between gap-6">
+          {/* Logo & Workspace Pill */}
+          <Link to="/dashboard" className="flex items-center gap-3.5 group">
+            <div className="w-11 h-11 rounded-2xl bg-primary text-white flex items-center justify-center shadow-[6px_10px_20px_rgba(108,99,255,0.25)] group-hover:scale-105 transition-transform">
+              <span className="material-symbols-outlined text-[24px]">school</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="font-bold text-[22px] text-on-surface tracking-tight">Assignment Hub</span>
+              <span className="hidden sm:inline-block px-3 py-1 rounded-full bg-surface-container-high text-primary text-xs uppercase tracking-wider font-bold">
+                Student Workspace
+              </span>
+            </div>
+          </Link>
 
-          {/* Main Navigation Links */}
-          <nav className="hidden lg:flex items-center gap-1.5 px-2 py-1.5 bg-[#F6F1FF] rounded-full clay-pill-inset">
+          {/* Nav Links */}
+          <nav className="hidden lg:flex items-center gap-1 p-1 rounded-full bg-surface-container-low shadow-[inset_1px_1px_2px_rgba(37,35,58,0.04)]">
             <Link
               to="/dashboard"
-              className="px-4 py-2 rounded-full text-sm font-semibold text-[#464555] hover:text-[#1B192F] transition-all"
+              className="px-5 py-2 rounded-full text-sm font-semibold text-on-surface-variant hover:text-on-surface hover:bg-surface-container transition-all"
             >
               Home
             </Link>
             <Link
               to="/services"
-              className="px-4 py-2 rounded-full text-sm font-semibold text-[#464555] hover:text-[#1B192F] transition-all"
+              className="px-5 py-2 rounded-full text-sm font-semibold text-on-surface-variant hover:text-on-surface hover:bg-surface-container transition-all"
             >
               Services
             </Link>
             <Link
               to="/my-requests"
-              className="px-4 py-2 rounded-full text-sm font-semibold text-[#464555] hover:text-[#1B192F] transition-all"
+              className="px-5 py-2 rounded-full text-sm font-semibold text-on-surface-variant hover:text-on-surface hover:bg-surface-container transition-all"
             >
               My Requests
             </Link>
-            <span
-              className="px-4 py-2 rounded-full text-sm font-bold bg-white text-[#4D41DF] shadow-sm clay-card-sm cursor-default"
+            <Link
+              to="/inquiries"
+              className="px-5 py-2 rounded-full text-sm font-bold bg-surface-container-highest text-primary shadow-[inset_2px_2px_4px_rgba(255,255,255,0.8),inset_-2px_-2px_4px_rgba(108,99,255,0.12)] transition-all"
             >
               Inquiries
-            </span>
+            </Link>
           </nav>
 
-          {/* Action & Profile Block */}
+          {/* Right Header Actions */}
           <div className="flex items-center gap-3">
-            <button
-              onClick={() => setNewModalOpen(true)}
-              className="hidden sm:inline-flex items-center gap-1.5 px-4 py-2.5 rounded-full bg-[#4D41DF] font-bold text-sm text-white clay-btn-primary hover:-translate-y-0.5 transition-transform cursor-pointer shadow-md"
+            {/* New Request Button */}
+            <Link
+              to="/request-assignment"
+              className="hidden sm:flex items-center gap-2 px-5 py-2.5 rounded-full bg-primary text-white text-sm font-bold shadow-[6px_10px_20px_rgba(108,99,255,0.35)] hover:bg-primary-container hover:-translate-y-0.5 transition-all"
             >
               <span className="material-symbols-outlined text-[18px]">add</span>
-              <span>New Conversation</span>
-            </button>
+              <span>New Request</span>
+            </Link>
 
-            {/* Notification Bell Badge */}
-            <button
-              onClick={() => showToast('You have 2 updates from academic mentors.', 'info')}
-              aria-label="Notifications"
-              className="relative p-2.5 rounded-full bg-white text-[#464555] hover:text-[#4D41DF] transition-all clay-card cursor-pointer border border-white"
-            >
-              <span className="material-symbols-outlined text-[20px]">notifications</span>
-              <span className="absolute top-1.5 right-1.5 flex h-4 w-4 items-center justify-center rounded-full bg-[#FFB951] text-[#291800] text-[10px] font-bold ring-2 ring-white">
-                2
-              </span>
-            </button>
-
-            {/* User Profile Pill */}
-            <div className="relative">
+            {/* ── Notification Bell with Claymorphic Popup Dropdown ── */}
+            <div className="relative" ref={notificationRef}>
               <button
-                onClick={() => setUserDropdownOpen(!userDropdownOpen)}
-                className="flex items-center gap-2.5 p-1.5 pr-3.5 rounded-full bg-white clay-card hover:bg-[#F6F1FF] transition-all cursor-pointer border border-white"
+                aria-label="Notifications"
+                id="btn-notification-bell"
+                type="button"
+                onClick={() => setNotificationPopupOpen(prev => !prev)}
+                className="relative w-10 h-10 rounded-full bg-primary-fixed text-primary flex items-center justify-center transition-all shadow-[inset_2px_2px_4px_rgba(255,255,255,0.9),inset_-2px_-2px_4px_rgba(77,65,223,0.15)] hover:shadow-[4px_6px_12px_rgba(108,99,255,0.15)]"
               >
-                <div className="w-8 h-8 rounded-full bg-[#4D41DF] flex items-center justify-center text-white font-bold text-xs shadow-sm">
-                  {initial}
-                </div>
-                <span className="hidden md:inline-block text-sm font-semibold text-[#1B192F] max-w-[120px] truncate">
-                  {firstName}
-                </span>
-                <span className="material-symbols-outlined text-[18px] text-[#464555]">expand_more</span>
+                <span className="material-symbols-outlined text-[20px]">notifications</span>
+                {unreadNotifCount > 0 && (
+                  <span className="absolute top-1 right-1 w-4 h-4 rounded-full bg-tertiary-fixed-dim text-on-tertiary-fixed text-[10px] flex items-center justify-center leading-none font-bold shadow-[0_2px_4px_rgba(0,0,0,0.15)]">
+                    {unreadNotifCount}
+                  </span>
+                )}
               </button>
 
-              {userDropdownOpen && (
-                <div className="absolute right-0 mt-2 w-56 rounded-2xl bg-white p-2 z-50 clay-card shadow-2xl border border-white">
-                  <div className="px-3 py-2 border-b border-[#E4DFFE] mb-1">
-                    <p className="text-xs text-[#464555] font-medium">Signed in as</p>
-                    <p className="text-sm font-bold text-[#1B192F] truncate">{email}</p>
+              {/* Notification Center Popup Dropdown */}
+              {notificationPopupOpen && (
+                <div
+                  id="notification-dropdown"
+                  className="absolute right-0 top-14 w-[420px] max-w-[90vw] rounded-3xl bg-surface-container-lowest shadow-[24px_32px_60px_rgba(37,35,58,0.25),-12px_-12px_32px_rgba(255,255,255,0.95)] z-50 flex flex-col overflow-hidden transition-all border border-surface-container-high/40 animate-in fade-in zoom-in-95 duration-150"
+                >
+                  {/* Decorative top indicator/caret */}
+                  <div className="absolute -top-2 right-4 w-4 h-4 bg-surface-container-lowest rotate-45 shadow-[-2px_-2px_4px_rgba(0,0,0,0.03)] border-t border-l border-surface-container-high/30"></div>
+
+                  {/* Header */}
+                  <div className="p-5 pb-3 bg-surface-container-lowest flex items-center justify-between z-10">
+                    <div className="flex items-center gap-2.5">
+                      <h3 className="font-bold text-[20px] text-on-surface tracking-tight">Notifications</h3>
+                      {unreadNotifCount > 0 && (
+                        <span className="px-2.5 py-0.5 rounded-full bg-primary text-white text-xs font-bold shadow-[2px_4px_8px_rgba(108,99,255,0.25)]">
+                          {unreadNotifCount} New
+                        </span>
+                      )}
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <button
+                        type="button"
+                        onClick={handleMarkAllRead}
+                        className="text-xs text-primary hover:underline font-bold"
+                      >
+                        Mark all read
+                      </button>
+                      <button
+                        type="button"
+                        id="close-notification-popup"
+                        onClick={() => setNotificationPopupOpen(false)}
+                        className="w-8 h-8 rounded-full bg-surface-container flex items-center justify-center text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-colors"
+                      >
+                        <span className="material-symbols-outlined text-[18px]">close</span>
+                      </button>
+                    </div>
                   </div>
-                  <button
-                    onClick={() => {
-                      setUserDropdownOpen(false);
-                      setProfileModalOpen(true);
-                    }}
-                    className="w-full text-left flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-semibold text-[#464555] hover:bg-[#F0EBFF] hover:text-[#1B192F] transition-all cursor-pointer"
-                  >
-                    <span className="material-symbols-outlined text-[18px] text-[#4D41DF]">person</span>
-                    <span>My Profile</span>
-                  </button>
+
+                  {/* Filter Tabs in Popup */}
+                  <div className="px-5 pb-3 flex items-center gap-1.5 z-10 border-b border-surface-container/60">
+                    <button
+                      type="button"
+                      onClick={() => setNotifFilter('all')}
+                      className={`px-3.5 py-1 rounded-full text-xs font-bold transition-all ${
+                        notifFilter === 'all'
+                          ? 'bg-surface-container-highest text-primary shadow-[inset_1px_1px_2px_rgba(255,255,255,0.9),inset_-1px_-1px_2px_rgba(77,65,223,0.1)]'
+                          : 'text-on-surface-variant hover:text-on-surface hover:bg-surface-container'
+                      }`}
+                    >
+                      All ({notifications.length})
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setNotifFilter('unread')}
+                      className={`px-3.5 py-1 rounded-full text-xs font-bold transition-all ${
+                        notifFilter === 'unread'
+                          ? 'bg-surface-container-highest text-primary shadow-[inset_1px_1px_2px_rgba(255,255,255,0.9),inset_-1px_-1px_2px_rgba(77,65,223,0.1)]'
+                          : 'text-on-surface-variant hover:text-on-surface hover:bg-surface-container'
+                      }`}
+                    >
+                      Unread ({unreadNotifCount})
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setNotifFilter('updates')}
+                      className={`px-3.5 py-1 rounded-full text-xs font-bold transition-all ${
+                        notifFilter === 'updates'
+                          ? 'bg-surface-container-highest text-primary shadow-[inset_1px_1px_2px_rgba(255,255,255,0.9),inset_-1px_-1px_2px_rgba(77,65,223,0.1)]'
+                          : 'text-on-surface-variant hover:text-on-surface hover:bg-surface-container'
+                      }`}
+                    >
+                      Updates ({notifications.filter(n => n.category === 'updates').length})
+                    </button>
+                  </div>
+
+                  {/* Notification Items List */}
+                  <div className="flex flex-col max-h-[380px] overflow-y-auto divide-y divide-surface-container z-10">
+                    {filteredNotifications.length === 0 ? (
+                      <div className="p-8 text-center text-on-surface-variant text-sm flex flex-col items-center gap-2">
+                        <span className="material-symbols-outlined text-[28px] text-outline">notifications_off</span>
+                        <span>No notifications found in this tab.</span>
+                      </div>
+                    ) : (
+                      filteredNotifications.map(notif => (
+                        <div
+                          key={notif.id}
+                          className={`p-4 hover:bg-surface-container-low/60 transition-colors flex items-start gap-3 relative group ${
+                            notif.unread ? 'bg-primary-fixed/20' : 'bg-transparent'
+                          }`}
+                        >
+                          <div
+                            className={`w-10 h-10 rounded-2xl shrink-0 flex items-center justify-center shadow-[4px_6px_12px_rgba(108,99,255,0.15)] ${notif.iconBg}`}
+                          >
+                            <span className="material-symbols-outlined text-[20px]">{notif.icon}</span>
+                          </div>
+                          <div className="flex-1 min-w-0 flex flex-col gap-1">
+                            <div className="flex items-center justify-between gap-1">
+                              <span className="text-xs font-bold text-on-surface truncate">
+                                {notif.title}
+                              </span>
+                              {notif.unread && (
+                                <span className="w-2 h-2 rounded-full bg-primary shrink-0 animate-pulse"></span>
+                              )}
+                            </div>
+                            <p className="text-xs text-on-surface-variant leading-snug line-clamp-2">
+                              {notif.description}
+                            </p>
+                            <div className="flex items-center justify-between pt-1">
+                              <span className="text-[11px] font-semibold text-on-surface-variant">
+                                {notif.time}
+                              </span>
+                              {notif.actionText && (
+                                <button
+                                  type="button"
+                                  onClick={() => handleNotificationAction(notif)}
+                                  className="px-3 py-1 rounded-full bg-primary text-white text-[11px] font-bold shadow-[2px_4px_8px_rgba(108,99,255,0.25)] hover:bg-primary-container transition-all flex items-center gap-1"
+                                >
+                                  <span>{notif.actionText}</span>
+                                  <span className="material-symbols-outlined text-[13px]">{notif.actionIcon}</span>
+                                </button>
+                              )}
+                              {notif.extraBadge && (
+                                <span className="text-[11px] font-medium text-on-surface-variant">
+                                  {notif.extraBadge}
+                                </span>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                      ))
+                    )}
+                  </div>
+
+                  {/* Footer */}
+                  <div className="p-3.5 bg-surface-container-low flex items-center justify-between z-10 border-t border-surface-container">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setNotificationPopupOpen(false);
+                        setNotifFilter('all');
+                      }}
+                      className="text-xs font-bold text-primary hover:underline flex items-center gap-1"
+                    >
+                      <span>View All Notifications</span>
+                      <span className="material-symbols-outlined text-[14px]">arrow_forward</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        showToast('Notification preferences are set to instantaneous desktop push', 'info');
+                      }}
+                      className="text-xs font-semibold text-on-surface-variant hover:text-on-surface flex items-center gap-1"
+                    >
+                      <span className="material-symbols-outlined text-[14px]">settings</span>
+                      <span>Settings</span>
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Profile Dropdown */}
+            <div className="relative" ref={userDropdownRef}>
+              <div
+                onClick={() => setUserDropdownOpen(prev => !prev)}
+                className="flex items-center gap-2 p-1 pr-3 rounded-full bg-surface-container-low hover:bg-surface-container transition-all cursor-pointer shadow-[inset_1px_1px_2px_rgba(255,255,255,0.8)]"
+              >
+                <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-white text-xs font-bold">
+                  {user?.name ? user.name.slice(0, 2).toUpperCase() : 'AK'}
+                </div>
+                <span className="hidden md:inline text-sm font-semibold text-on-surface">
+                  {user?.name || 'Aditya K.'}
+                </span>
+                <span className="material-symbols-outlined text-on-surface-variant text-[18px]">expand_more</span>
+              </div>
+
+              {userDropdownOpen && (
+                <div className="absolute right-0 top-12 w-48 rounded-2xl bg-surface-container-lowest shadow-[12px_16px_32px_rgba(37,35,58,0.15)] p-2 z-50 border border-surface-container">
+                  <div className="px-3 py-2 border-b border-surface-container">
+                    <p className="text-xs font-bold text-on-surface">{user?.name || 'Aditya K.'}</p>
+                    <p className="text-[11px] text-on-surface-variant truncate">{user?.email || 'aditya@student.edu'}</p>
+                  </div>
                   <Link
                     to="/dashboard"
                     onClick={() => setUserDropdownOpen(false)}
-                    className="w-full text-left flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-semibold text-[#464555] hover:bg-[#F0EBFF] hover:text-[#1B192F] transition-all cursor-pointer"
+                    className="flex items-center gap-2 px-3 py-2 text-xs font-medium text-on-surface hover:bg-surface-container rounded-xl transition-colors"
                   >
-                    <span className="material-symbols-outlined text-[18px] text-[#4D41DF]">dashboard</span>
-                    <span>Student Dashboard</span>
-                  </Link>
-                  <Link
-                    to="/services"
-                    onClick={() => setUserDropdownOpen(false)}
-                    className="w-full text-left flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-semibold text-[#464555] hover:bg-[#F0EBFF] hover:text-[#1B192F] transition-all cursor-pointer"
-                  >
-                    <span className="material-symbols-outlined text-[18px] text-[#4D41DF]">category</span>
-                    <span>Academic Services</span>
+                    <span className="material-symbols-outlined text-[16px]">dashboard</span>
+                    Dashboard
                   </Link>
                   <Link
                     to="/my-requests"
                     onClick={() => setUserDropdownOpen(false)}
-                    className="w-full text-left flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-semibold text-[#464555] hover:bg-[#F0EBFF] hover:text-[#1B192F] transition-all cursor-pointer"
+                    className="flex items-center gap-2 px-3 py-2 text-xs font-medium text-on-surface hover:bg-surface-container rounded-xl transition-colors"
                   >
-                    <span className="material-symbols-outlined text-[18px] text-[#4D41DF]">task</span>
-                    <span>My Requests</span>
+                    <span className="material-symbols-outlined text-[16px]">inventory_2</span>
+                    My Requests
                   </Link>
-                  <div className="my-1 h-px bg-[#E4DFFE]"></div>
                   <button
-                    onClick={handleLogoutClick}
-                    className="w-full text-left flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-semibold text-[#BA1A1A] hover:bg-[#FFDAD6] transition-all cursor-pointer"
+                    type="button"
+                    onClick={() => {
+                      setUserDropdownOpen(false);
+                      logout();
+                      navigate('/login');
+                    }}
+                    className="w-full flex items-center gap-2 px-3 py-2 text-xs font-medium text-error hover:bg-error-container/30 rounded-xl transition-colors text-left"
                   >
-                    <span className="material-symbols-outlined text-[18px]">logout</span>
-                    <span>Logout</span>
+                    <span className="material-symbols-outlined text-[16px]">logout</span>
+                    Logout
                   </button>
                 </div>
               )}
@@ -557,566 +792,570 @@ export function InquiriesPage() {
         </div>
       </header>
 
-      {/* ======================================================== */}
-      {/* 2. MAIN INQUIRIES CHAT CENTER INTERFACE                   */}
-      {/* ======================================================== */}
-      <main className="w-full pt-28 pb-20 bg-[#FCF8FF] min-h-[calc(100vh-140px)] flex-grow">
-        <div className="w-full max-w-7xl mx-auto px-4 md:px-6 lg:px-8 space-y-6">
-          
-          {/* Top Header Bar with Crisp Title and Controls */}
-          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-2">
-            <div className="flex flex-col gap-1">
-              <div className="flex items-center gap-2">
-                <h1 className="text-3xl md:text-4xl font-extrabold text-[#1B192F] tracking-tight">
-                  Inquiries
-                </h1>
-                <span className="px-3 py-1 rounded-full bg-[#E3DFFF] text-[#4D41DF] text-xs font-bold clay-pill-inset flex items-center gap-1.5">
-                  <span className="w-2 h-2 rounded-full bg-[#4D41DF] animate-pulse"></span>
-                  Direct Academic Chat
-                </span>
-              </div>
-              <p className="text-sm md:text-base text-[#464555] font-medium">
-                Chat with the Assignment Hub team about your academic coursework and requirements.
-              </p>
+      {/* ─────────────────────────────────────────────────────────────
+          2. MAIN CONTENT AREA
+      ────────────────────────────────────────────────────────────── */}
+      <main className="w-full pt-28 pb-16 px-4 sm:px-8 lg:px-12 max-w-7xl mx-auto flex-1 flex flex-col gap-10">
+        {/* 1. PAGE HEADER */}
+        <section className="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-2">
+          <div className="flex flex-col gap-2 max-w-2xl">
+            <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-surface-container-high w-fit shadow-[inset_1px_1px_2px_rgba(255,255,255,0.9),inset_-1px_-1px_2px_rgba(77,65,223,0.08)]">
+              <span className="text-[14px]">💬</span>
+              <span className="text-xs uppercase tracking-wider text-primary font-bold">
+                Academic Support &amp; Clarification
+              </span>
             </div>
+            <h1 className="font-extrabold text-3xl sm:text-4xl text-on-surface tracking-tight">
+              Inquiries
+            </h1>
+            <p className="text-base text-on-surface-variant">
+              Get help with your requests, services, and academic work directly from mentors &amp; coordinators.
+            </p>
+          </div>
 
-            <div className="flex items-center gap-3 self-stretch sm:self-auto">
-              {/* Interactive Preview Controls (Active, Resolved, Empty switches) */}
-              <div className="flex items-center bg-[#F6F1FF] p-1.5 rounded-full clay-pill-inset">
-                <button
-                  type="button"
-                  onClick={() => handleSetViewMode('active')}
-                  className={`px-3 py-1.5 rounded-full text-xs font-bold transition-all cursor-pointer ${
-                    viewMode === 'active'
-                      ? 'text-[#4D41DF] bg-white clay-card-sm shadow-sm'
-                      : 'text-[#464555] hover:text-[#1B192F]'
-                  }`}
-                >
-                  Active
-                </button>
-                <button
-                  type="button"
-                  onClick={() => handleSetViewMode('resolved')}
-                  className={`px-3 py-1.5 rounded-full text-xs font-bold transition-all cursor-pointer ${
-                    viewMode === 'resolved'
-                      ? 'text-[#4D41DF] bg-white clay-card-sm shadow-sm'
-                      : 'text-[#464555] hover:text-[#1B192F]'
-                  }`}
-                >
-                  Resolved
-                </button>
-                <button
-                  type="button"
-                  onClick={() => handleSetViewMode('empty')}
-                  className={`px-3 py-1.5 rounded-full text-xs font-bold transition-all cursor-pointer ${
-                    viewMode === 'empty'
-                      ? 'text-[#4D41DF] bg-white clay-card-sm shadow-sm'
-                      : 'text-[#464555] hover:text-[#1B192F]'
-                  }`}
-                >
-                  Empty
-                </button>
-              </div>
+          <div className="flex items-center flex-wrap gap-3">
+            <button
+              type="button"
+              id="btn-open-demo"
+              onClick={() => setSelectedInquiry(inquiries[0])}
+              className="group flex items-center gap-2 px-5 py-2.5 rounded-full bg-surface-container-lowest text-primary text-sm font-bold shadow-[8px_12px_24px_rgba(108,99,255,0.12),-6px_-6px_16px_rgba(255,255,255,0.95)] hover:shadow-[12px_18px_30px_rgba(108,99,255,0.18)] hover:-translate-y-0.5 transition-all"
+            >
+              <span className="material-symbols-outlined text-[20px] text-primary transition-transform group-hover:scale-110">
+                chat
+              </span>
+              <span>Quick Demo: Open Conversation</span>
+            </button>
+            <button
+              type="button"
+              id="btn-open-modal"
+              onClick={() => setNewInquiryModalOpen(true)}
+              className="flex items-center gap-2 px-6 py-2.5 rounded-full bg-primary text-white text-sm font-bold shadow-[6px_10px_20px_rgba(108,99,255,0.35)] hover:bg-primary-container hover:-translate-y-0.5 transition-all"
+            >
+              <span className="material-symbols-outlined text-[20px]">add</span>
+              <span>New Inquiry</span>
+            </button>
+          </div>
+        </section>
 
-              <button
-                type="button"
-                onClick={() => setNewModalOpen(true)}
-                className="flex-1 sm:flex-initial flex items-center justify-center gap-2 px-5 py-2.5 rounded-full bg-[#4D41DF] text-white font-bold text-xs md:text-sm clay-btn-primary hover:-translate-y-0.5 transition-transform cursor-pointer shadow-md"
-              >
-                <span className="material-symbols-outlined text-[18px]">add_circle</span>
-                <span>New Conversation</span>
-              </button>
+        {/* 2. QUICK METRIC STAT CARDS */}
+        <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+          {/* Total Inquiries */}
+          <div
+            onClick={() => setCurrentFilter('all')}
+            className={`p-6 rounded-3xl bg-surface-container-lowest shadow-[12px_16px_32px_rgba(108,99,255,0.08),-8px_-8px_24px_rgba(255,255,255,0.9)] flex items-center justify-between relative overflow-hidden group hover:-translate-y-0.5 transition-all cursor-pointer ${
+              currentFilter === 'all' ? 'ring-2 ring-primary/40' : ''
+            }`}
+          >
+            <div className="flex flex-col gap-1 z-10">
+              <span className="text-xs uppercase tracking-wider text-on-surface-variant font-bold">
+                Total Inquiries
+              </span>
+              <span className="text-3xl font-extrabold text-on-surface">{statCounts.total}</span>
+              <span className="text-xs text-on-surface-variant font-medium">Active conversations</span>
+            </div>
+            <div className="w-12 h-12 rounded-2xl bg-surface-container flex items-center justify-center text-primary shadow-[inset_2px_2px_4px_rgba(255,255,255,0.8),inset_-2px_-2px_4px_rgba(77,65,223,0.1)]">
+              <span className="material-symbols-outlined text-[24px]">forum</span>
             </div>
           </div>
 
-          {/* MAIN TWO-PANEL INTERFACE */}
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start min-h-[720px]">
-            
-            {/* ======================================================== */}
-            {/* LEFT PANEL: Conversation List (4 cols on desktop)       */}
-            {/* ======================================================== */}
-            <aside className="w-full lg:col-span-5 xl:col-span-4 flex flex-col gap-4 bg-white p-5 rounded-3xl clay-card border border-white/80">
-              
-              {/* Search Conversation Inset Box */}
-              <div className="relative w-full">
-                <span className="material-symbols-outlined absolute left-3.5 top-1/2 -translate-y-1/2 text-[#464555] text-[18px]">
-                  search
-                </span>
-                <input
-                  type="text"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  placeholder="Search conversations..."
-                  className="w-full pl-10 pr-4 py-2.5 bg-[#F6F1FF] rounded-xl text-xs md:text-sm text-[#1B192F] placeholder:text-[#464555]/70 clay-pill-inset focus:outline-none focus:bg-white transition-all"
-                />
-                {searchQuery && (
-                  <button
-                    onClick={() => setSearchQuery('')}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-[#464555] hover:text-[#1B192F]"
+          {/* Open */}
+          <div
+            onClick={() => setCurrentFilter('open')}
+            className={`p-6 rounded-3xl bg-surface-container-lowest shadow-[12px_16px_32px_rgba(108,99,255,0.08),-8px_-8px_24px_rgba(255,255,255,0.9)] flex items-center justify-between relative overflow-hidden group hover:-translate-y-0.5 transition-all cursor-pointer ${
+              currentFilter === 'open' ? 'ring-2 ring-tertiary-fixed-dim/60' : ''
+            }`}
+          >
+            <div className="flex flex-col gap-1 z-10">
+              <span className="text-xs uppercase tracking-wider text-tertiary font-bold">Open</span>
+              <span className="text-3xl font-extrabold text-on-surface">{statCounts.open}</span>
+              <span className="text-xs text-on-surface-variant font-medium">Waiting for coordinator</span>
+            </div>
+            <div className="w-12 h-12 rounded-2xl bg-tertiary-fixed flex items-center justify-center text-on-tertiary-fixed shadow-[inset_2px_2px_4px_rgba(255,255,255,0.8),inset_-2px_-2px_4px_rgba(160,105,0,0.15)]">
+              <span className="material-symbols-outlined text-[24px]">hourglass_top</span>
+            </div>
+          </div>
+
+          {/* Awaiting Reply */}
+          <div
+            onClick={() => setCurrentFilter('awaiting')}
+            className={`p-6 rounded-3xl bg-surface-container-lowest shadow-[12px_16px_32px_rgba(108,99,255,0.08),-8px_-8px_24px_rgba(255,255,255,0.9)] flex items-center justify-between relative overflow-hidden group hover:-translate-y-0.5 transition-all cursor-pointer ${
+              currentFilter === 'awaiting' ? 'ring-2 ring-primary/40' : ''
+            }`}
+          >
+            <div className="flex flex-col gap-1 z-10">
+              <span className="text-xs uppercase tracking-wider text-primary font-bold">Awaiting Reply</span>
+              <span className="text-3xl font-extrabold text-primary">{statCounts.awaiting}</span>
+              <span className="text-xs text-on-surface-variant font-medium">Your response needed</span>
+            </div>
+            <div className="w-12 h-12 rounded-2xl bg-primary-fixed flex items-center justify-center text-on-primary-fixed shadow-[inset_2px_2px_4px_rgba(255,255,255,0.8),inset_-2px_-2px_4px_rgba(77,65,223,0.15)]">
+              <span className="material-symbols-outlined text-[24px]">notifications_active</span>
+            </div>
+          </div>
+
+          {/* Resolved */}
+          <div
+            onClick={() => setCurrentFilter('resolved')}
+            className={`p-6 rounded-3xl bg-surface-container-lowest shadow-[12px_16px_32px_rgba(108,99,255,0.08),-8px_-8px_24px_rgba(255,255,255,0.9)] flex items-center justify-between relative overflow-hidden group hover:-translate-y-0.5 transition-all cursor-pointer ${
+              currentFilter === 'resolved' ? 'ring-2 ring-outline/40' : ''
+            }`}
+          >
+            <div className="flex flex-col gap-1 z-10">
+              <span className="text-xs uppercase tracking-wider text-on-surface-variant font-bold">Resolved</span>
+              <span className="text-3xl font-extrabold text-on-surface">{statCounts.resolved}</span>
+              <span className="text-xs text-on-surface-variant font-medium">Completed &amp; closed</span>
+            </div>
+            <div className="w-12 h-12 rounded-2xl bg-surface-container-high flex items-center justify-center text-on-surface-variant shadow-[inset_2px_2px_4px_rgba(255,255,255,0.8),inset_-2px_-2px_4px_rgba(77,65,223,0.08)]">
+              <span className="material-symbols-outlined text-[24px]">check_circle</span>
+            </div>
+          </div>
+        </section>
+
+        {/* 3. STATUS FILTERS & SEARCH + SORT BAR */}
+        <section className="flex flex-col gap-4">
+          {/* Tabs */}
+          <div className="flex items-center gap-2 p-1.5 rounded-full bg-surface-container-low max-w-fit overflow-x-auto shadow-[inset_2px_2px_4px_rgba(37,35,58,0.04),inset_-2px_-2px_4px_rgba(255,255,255,0.8)]">
+            <button
+              type="button"
+              onClick={() => setCurrentFilter('all')}
+              className={`px-5 py-2 rounded-full text-xs font-bold transition-all ${
+                currentFilter === 'all'
+                  ? 'text-primary bg-surface-container-lowest shadow-[4px_6px_14px_rgba(108,99,255,0.12),inset_1px_1px_2px_rgba(255,255,255,0.9)]'
+                  : 'text-on-surface-variant hover:text-on-surface'
+              }`}
+            >
+              All ({statCounts.total})
+            </button>
+            <button
+              type="button"
+              onClick={() => setCurrentFilter('open')}
+              className={`px-5 py-2 rounded-full text-xs font-bold transition-all ${
+                currentFilter === 'open'
+                  ? 'text-primary bg-surface-container-lowest shadow-[4px_6px_14px_rgba(108,99,255,0.12),inset_1px_1px_2px_rgba(255,255,255,0.9)]'
+                  : 'text-on-surface-variant hover:text-on-surface'
+              }`}
+            >
+              Open ({statCounts.open})
+            </button>
+            <button
+              type="button"
+              onClick={() => setCurrentFilter('awaiting')}
+              className={`px-5 py-2 rounded-full text-xs font-bold transition-all ${
+                currentFilter === 'awaiting'
+                  ? 'text-primary bg-surface-container-lowest shadow-[4px_6px_14px_rgba(108,99,255,0.12),inset_1px_1px_2px_rgba(255,255,255,0.9)]'
+                  : 'text-on-surface-variant hover:text-on-surface'
+              }`}
+            >
+              Awaiting Reply ({statCounts.awaiting})
+            </button>
+            <button
+              type="button"
+              onClick={() => setCurrentFilter('resolved')}
+              className={`px-5 py-2 rounded-full text-xs font-bold transition-all ${
+                currentFilter === 'resolved'
+                  ? 'text-primary bg-surface-container-lowest shadow-[4px_6px_14px_rgba(108,99,255,0.12),inset_1px_1px_2px_rgba(255,255,255,0.9)]'
+                  : 'text-on-surface-variant hover:text-on-surface'
+              }`}
+            >
+              Resolved ({statCounts.resolved})
+            </button>
+          </div>
+
+          {/* Controls Row */}
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div className="relative flex-1 max-w-xl">
+              <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant text-[20px]">
+                search
+              </span>
+              <input
+                type="text"
+                id="search-input"
+                value={searchQuery}
+                onChange={e => setSearchQuery(e.target.value)}
+                placeholder="Search inquiries by subject, request ID or keyword..."
+                className="w-full pl-11 pr-4 py-3 rounded-2xl bg-surface-container-low text-on-surface placeholder:text-on-surface-variant text-sm shadow-[inset_3px_3px_6px_rgba(37,35,58,0.06),inset_-3px_-3px_6px_rgba(255,255,255,0.8)] focus:outline-none focus:bg-surface-container-lowest transition-all"
+              />
+            </div>
+
+            <div className="flex items-center gap-4 justify-between md:justify-end">
+              <div className="flex items-center gap-2">
+                <span className="text-xs font-semibold text-on-surface-variant">Sort by:</span>
+                <div className="relative">
+                  <select
+                    id="sort-select"
+                    value={sortOrder}
+                    onChange={e => setSortOrder(e.target.value)}
+                    className="appearance-none pl-3 pr-8 py-2 rounded-full bg-surface-container-lowest text-on-surface text-xs font-bold shadow-[4px_6px_12px_rgba(108,99,255,0.08),inset_1px_1px_2px_rgba(255,255,255,0.9)] focus:outline-none cursor-pointer"
                   >
-                    ✕
-                  </button>
-                )}
-              </div>
-
-              {/* Filter Pill Chips */}
-              <div className="flex items-center gap-1 p-1 bg-[#F6F1FF] rounded-full clay-pill-inset">
-                <button
-                  type="button"
-                  onClick={() => setListFilter('all')}
-                  className={`flex-1 py-1.5 rounded-full text-xs font-bold transition-all text-center cursor-pointer ${
-                    listFilter === 'all'
-                      ? 'text-[#4D41DF] bg-white clay-card-sm shadow-sm'
-                      : 'text-[#464555] hover:text-[#1B192F]'
-                  }`}
-                >
-                  All ({counts.total})
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setListFilter('resolved-only')}
-                  className={`flex-1 py-1.5 rounded-full text-xs font-bold transition-all text-center cursor-pointer ${
-                    listFilter === 'resolved-only'
-                      ? 'text-[#4D41DF] bg-white clay-card-sm shadow-sm'
-                      : 'text-[#464555] hover:text-[#1B192F]'
-                  }`}
-                >
-                  Resolved ({counts.resolved})
-                </button>
-              </div>
-
-              {/* Conversation Item List */}
-              <div className="flex flex-col gap-2.5 overflow-y-auto max-h-[520px] pr-1">
-                {filteredConversations.length > 0 ? (
-                  filteredConversations.map((convo) => {
-                    const isSelected = selectedConvoId === convo.id && viewMode !== 'empty';
-                    const lastMsg = convo.messages[convo.messages.length - 1];
-
-                    return (
-                      <div
-                        key={convo.id}
-                        onClick={() => handleSelectConversation(convo.id)}
-                        className={`cursor-pointer p-4 rounded-2xl transition-all duration-200 ${
-                          isSelected
-                            ? 'bg-[#F0EBFF] clay-pill-inset border-2 border-[#4D41DF]/30 shadow-md'
-                            : 'bg-white hover:bg-[#F6F1FF] clay-card border border-white/60'
-                        }`}
-                      >
-                        <div className="flex items-start justify-between gap-2 mb-1.5">
-                          <div className="flex items-center gap-2.5">
-                            <div className={`w-9 h-9 rounded-full ${convo.iconBg} flex items-center justify-center font-bold text-xs shadow-sm shrink-0`}>
-                              <span className="material-symbols-outlined text-[18px]">
-                                {convo.icon || 'chat'}
-                              </span>
-                            </div>
-                            <div className="min-w-0">
-                              <h3 className="text-sm font-bold text-[#1B192F] leading-tight truncate">
-                                {convo.title}
-                              </h3>
-                              <span className={`text-[11px] font-bold uppercase tracking-wider block truncate ${
-                                convo.resolved ? 'text-[#464555]' : 'text-[#4D41DF]'
-                              }`}>
-                                {convo.subtitle}
-                              </span>
-                            </div>
-                          </div>
-
-                          <div className="flex flex-col items-end gap-1 shrink-0">
-                            <span className="text-[11px] font-semibold text-[#464555]">
-                              {convo.lastTime}
-                            </span>
-                            {convo.resolved ? (
-                              <span className="px-2 py-0.5 rounded-full bg-[#EAE5FF] text-[#464555] text-[10px] font-bold flex items-center gap-0.5">
-                                <span className="material-symbols-outlined text-[12px]">check_circle</span>
-                                Resolved
-                              </span>
-                            ) : convo.unread ? (
-                              <span className="w-2.5 h-2.5 rounded-full bg-[#4D41DF] shadow-[0_0_8px_rgba(77,65,223,0.8)]"></span>
-                            ) : null}
-                          </div>
-                        </div>
-
-                        <div className="pl-11">
-                          <p className="text-xs text-[#464555] truncate font-medium">
-                            <span className="font-bold text-[#1B192F]">
-                              {lastMsg?.sender === 'user' ? 'You: ' : 'Assignment Hub: '}
-                            </span>
-                            {lastMsg?.text}
-                          </p>
-                        </div>
-                      </div>
-                    );
-                  })
-                ) : (
-                  <div className="p-8 text-center text-xs text-[#464555]">
-                    No conversations match your search.
-                  </div>
-                )}
-              </div>
-
-              {/* Student Direct Helper Pill */}
-              <div className="mt-auto pt-2 border-t border-[#F0EBFF]">
-                <div className="p-3.5 rounded-2xl bg-[#F6F1FF] flex items-center gap-3 clay-pill-inset">
-                  <div className="w-10 h-10 rounded-full bg-[#E3DFFF] flex items-center justify-center text-[#4D41DF] shrink-0">
-                    <span className="material-symbols-outlined text-[20px]">support_agent</span>
-                  </div>
-                  <div>
-                    <p className="text-xs font-bold text-[#1B192F]">Academic Response Team</p>
-                    <p className="text-[11px] text-[#464555]">Typical response within 10-15 minutes</p>
-                  </div>
+                    <option value="latest">Latest</option>
+                    <option value="oldest">Oldest</option>
+                  </select>
+                  <span className="material-symbols-outlined pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 text-on-surface-variant text-[18px]">
+                    expand_more
+                  </span>
                 </div>
               </div>
-            </aside>
 
-            {/* ======================================================== */}
-            {/* RIGHT PANEL: Active Chat Canvas OR Empty State Panel     */}
-            {/* ======================================================== */}
-            {viewMode === 'empty' ? (
-              /* EMPTY STATE VIEW */
-              <section className="w-full lg:col-span-7 xl:col-span-8 flex flex-col items-center justify-center p-8 md:p-12 bg-white rounded-3xl clay-card text-center min-h-[640px] border border-white">
-                <div className="w-24 h-24 rounded-3xl bg-[#F0EBFF] text-[#4D41DF] flex items-center justify-center mb-6 clay-pill-inset">
-                  <span className="material-symbols-outlined text-[48px]">chat_bubble_outline</span>
-                </div>
-                <h2 className="text-2xl font-bold text-[#1B192F] mb-2">No Conversations Yet</h2>
-                <p className="text-sm text-[#464555] max-w-md mb-6 leading-relaxed">
-                  Have questions about an upcoming paper, problem set, or presentation? Start a direct thread with our subject mentors.
-                </p>
-                <button
-                  type="button"
-                  onClick={() => setNewModalOpen(true)}
-                  className="flex items-center gap-2 px-6 py-3.5 rounded-full bg-[#4D41DF] text-white font-bold text-sm clay-btn-primary hover:-translate-y-0.5 transition-all cursor-pointer shadow-lg"
-                >
-                  <span className="material-symbols-outlined text-[20px]">add_comment</span>
-                  <span>Start Your First Conversation</span>
-                </button>
-              </section>
-            ) : (
-              /* ACTIVE CONVERSATION CANVAS */
-              <section className="w-full lg:col-span-7 xl:col-span-8 flex flex-col bg-white rounded-3xl clay-card overflow-hidden min-h-[640px] border border-white/80">
-                
-                {/* Conversation Top Bar */}
-                <div className="p-5 md:p-6 bg-white flex items-center justify-between border-b border-[#F0EBFF] z-10 shadow-sm">
-                  <div className="flex items-center gap-3.5">
-                    <div className="w-12 h-12 rounded-2xl bg-[#675DF9] text-white flex items-center justify-center clay-btn-primary shadow-md shrink-0">
+              <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-surface-container text-on-surface-variant text-xs font-semibold">
+                <span className="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
+                <span>
+                  Showing {filteredInquiries.length} conversation{filteredInquiries.length === 1 ? '' : 's'}
+                </span>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* 4. INQUIRY CARDS CONTAINER */}
+        <section className="flex flex-col gap-5" id="inquiry-list">
+          {filteredInquiries.length === 0 ? (
+            /* Empty State */
+            <div
+              id="empty-state"
+              className="p-12 rounded-3xl bg-surface-container-lowest shadow-[12px_16px_32px_rgba(108,99,255,0.06)] flex flex-col items-center justify-center text-center gap-4"
+            >
+              <div className="w-16 h-16 rounded-2xl bg-surface-container flex items-center justify-center text-primary shadow-[inset_2px_2px_4px_rgba(255,255,255,0.9),inset_-2px_-2px_4px_rgba(77,65,223,0.1)]">
+                <span className="material-symbols-outlined text-[32px]">drafts</span>
+              </div>
+              <h3 className="font-bold text-xl text-on-surface">No Inquiries Found</h3>
+              <p className="text-sm text-on-surface-variant max-w-md">
+                There are no conversations matching your selected filter or search terms.
+              </p>
+              <button
+                type="button"
+                onClick={() => {
+                  setCurrentFilter('all');
+                  setSearchQuery('');
+                }}
+                className="mt-2 px-6 py-2.5 rounded-full bg-primary text-white text-xs font-bold shadow-[4px_6px_14px_rgba(108,99,255,0.3)] hover:bg-primary-container transition-all"
+              >
+                Show All Inquiries
+              </button>
+            </div>
+          ) : (
+            filteredInquiries.map(inq => (
+              <article
+                key={inq.id}
+                className={`inquiry-card p-6 md:p-8 rounded-3xl bg-surface-container-lowest shadow-[12px_16px_32px_rgba(108,99,255,0.08),-8px_-8px_24px_rgba(255,255,255,0.95)] hover:shadow-[18px_24px_40px_rgba(108,99,255,0.13)] transition-all flex flex-col gap-5 relative group ${
+                  inq.status === 'resolved' ? 'opacity-90 hover:opacity-100' : ''
+                }`}
+              >
+                {/* Header Row */}
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                  <div className="flex items-center gap-3">
+                    <div
+                      className={`w-12 h-12 rounded-2xl flex items-center justify-center shadow-[inset_2px_2px_4px_rgba(255,255,255,0.9),inset_-2px_-2px_4px_rgba(77,65,223,0.12)] ${
+                        inq.status === 'awaiting'
+                          ? 'bg-primary-fixed text-primary'
+                          : inq.status === 'open'
+                          ? inq.id === 'REQ-1028'
+                            ? 'bg-secondary-fixed text-secondary'
+                            : 'bg-surface-variant text-primary'
+                          : 'bg-surface-container-high text-on-surface-variant'
+                      }`}
+                    >
                       <span className="material-symbols-outlined text-[24px]">
-                        {activeConvo?.icon || 'functions'}
+                        {inq.status === 'awaiting'
+                          ? 'notifications'
+                          : inq.status === 'resolved'
+                          ? 'task_alt'
+                          : inq.id === 'REQ-1028'
+                          ? 'help'
+                          : 'chat_bubble'}
                       </span>
                     </div>
+
                     <div>
                       <div className="flex items-center gap-2 flex-wrap">
-                        <h2 className="text-lg md:text-xl font-bold text-[#1B192F] tracking-tight">
-                          {activeConvo?.title}
+                        <h2
+                          onClick={() => setSelectedInquiry(inq)}
+                          className="font-bold text-lg sm:text-xl text-on-surface tracking-tight group-hover:text-primary transition-colors cursor-pointer"
+                        >
+                          {inq.title}
                         </h2>
-                        {activeConvo?.resolved ? (
-                          <span className="px-3 py-0.5 rounded-full bg-[#EAE5FF] text-[#464555] text-[11px] font-bold uppercase tracking-wider flex items-center gap-1">
-                            <span className="material-symbols-outlined text-[13px]">check_circle</span>
-                            Resolved
-                          </span>
-                        ) : (
-                          <span className="px-3 py-0.5 rounded-full bg-[#F0EBFF] text-[#4D41DF] text-[11px] font-bold uppercase tracking-wider flex items-center gap-1.5 clay-pill-inset">
-                            <span className="w-1.5 h-1.5 rounded-full bg-[#4D41DF]"></span>
-                            Active conversation
+                        {inq.requiresStudentInput && inq.status === 'awaiting' && (
+                          <span className="px-2.5 py-0.5 rounded-full bg-error-container text-on-error-container text-[11px] font-bold animate-pulse">
+                            ⚡ Requires student input
                           </span>
                         )}
                       </div>
-                      <p className="text-xs text-[#464555] font-medium mt-0.5">
-                        {activeConvo?.subjectDetail}
-                      </p>
+
+                      {inq.requestNumber !== 'General Inquiry' ? (
+                        <Link
+                          to="/my-requests"
+                          className="text-xs font-semibold text-primary hover:underline flex items-center gap-1 mt-0.5"
+                        >
+                          <span>Regarding: {inq.requestNumber} — {inq.requestTitle}</span>
+                          <span className="material-symbols-outlined text-[14px]">arrow_outward</span>
+                        </Link>
+                      ) : (
+                        <span className="text-xs font-semibold text-on-surface-variant flex items-center gap-1 mt-0.5">
+                          <span>General Inquiry (No Request Linked)</span>
+                        </span>
+                      )}
                     </div>
                   </div>
 
-                  <div className="flex items-center gap-2">
-                    <button
-                      type="button"
-                      onClick={handleToggleResolvedState}
-                      className="hidden sm:flex items-center gap-1.5 px-3.5 py-2 rounded-full bg-[#F6F1FF] hover:bg-[#F0EBFF] text-xs font-bold text-[#1B192F] transition-all clay-pill-inset cursor-pointer"
-                    >
-                      <span className="material-symbols-outlined text-[16px] text-[#4D41DF]">
-                        {activeConvo?.resolved ? 'replay' : 'check_circle'}
-                      </span>
-                      <span>{activeConvo?.resolved ? 'Reopen Conversation' : 'Mark as Resolved'}</span>
-                    </button>
-
-                    <button
-                      type="button"
-                      onClick={() => setNewModalOpen(true)}
-                      title="Start Another Conversation"
-                      className="w-9 h-9 rounded-full bg-[#F6F1FF] hover:bg-[#F0EBFF] flex items-center justify-center text-[#464555] hover:text-[#1B192F] transition-all cursor-pointer clay-pill-inset"
-                    >
-                      <span className="material-symbols-outlined text-[18px]">add</span>
-                    </button>
-                  </div>
-                </div>
-
-                {/* RESOLVED CONVERSATION BANNER */}
-                {activeConvo?.resolved && (
-                  <div className="px-6 py-3 bg-[#EAE5FF] flex items-center justify-between gap-4 border-b border-[#E4DFFE]">
-                    <div className="flex items-center gap-2 text-xs text-[#1B192F]">
-                      <span className="material-symbols-outlined text-[#4D41DF] text-[20px]">task_alt</span>
-                      <span>
-                        This conversation has been marked as <strong>Resolved</strong>. Messages remain accessible for academic reference.
-                      </span>
-                    </div>
-                    <button
-                      type="button"
-                      onClick={() => setNewModalOpen(true)}
-                      className="px-3 py-1 rounded-full bg-[#4D41DF] text-white text-xs font-bold clay-btn-primary hover:bg-[#3d32ce] transition-all flex items-center gap-1 cursor-pointer shrink-0"
-                    >
-                      <span className="material-symbols-outlined text-[14px]">edit_note</span>
-                      <span>Start New</span>
-                    </button>
-                  </div>
-                )}
-
-                {/* CHAT MESSAGE SCROLL AREA */}
-                <div className="flex-1 p-5 sm:p-6 md:p-8 flex flex-col gap-5 overflow-y-auto max-h-[500px] bg-gradient-to-b from-white to-[#FCF8FF]">
-                  {/* Date Divider */}
-                  <div className="flex items-center justify-center my-1">
-                    <span className="px-4 py-1 rounded-full bg-[#F0EBFF] text-[#464555] text-xs font-semibold clay-pill-inset">
-                      Today, 26 Sep
-                    </span>
-                  </div>
-
-                  {/* Messages Stream */}
-                  {activeConvo?.messages?.map((msg) => {
-                    const isUser = msg.sender === 'user';
-
-                    return (
-                      <div
-                        key={msg.id}
-                        className={`flex items-start gap-3 max-w-[85%] sm:max-w-[75%] ${
-                          isUser ? 'self-end flex-row-reverse' : ''
-                        }`}
-                      >
-                        {/* Avatar */}
-                        <div
-                          className={`w-10 h-10 rounded-full flex items-center justify-center shrink-0 shadow-md font-bold text-xs ${
-                            isUser
-                              ? 'bg-[#5846C8] text-white'
-                              : 'bg-[#4D41DF] text-white'
-                          }`}
-                        >
-                          {isUser ? initial : 'AH'}
-                        </div>
-
-                        {/* Content */}
-                        <div className={`flex flex-col gap-1 ${isUser ? 'items-end' : 'items-start'}`}>
-                          <div className="flex items-center gap-2">
-                            <span className="text-xs font-bold text-[#1B192F]">
-                              {isUser ? 'You' : msg.senderName}
-                            </span>
-                            {!isUser && msg.badge && (
-                              <span className="px-1.5 py-0.5 rounded-md bg-[#E3DFFF] text-[#4D41DF] text-[9px] font-bold uppercase tracking-wider">
-                                {msg.badge}
-                              </span>
-                            )}
-                            <span className="text-[11px] text-[#464555]/70">{msg.time}</span>
-                          </div>
-
-                          <div
-                            className={`p-4 sm:p-5 rounded-2xl ${
-                              isUser
-                                ? 'rounded-tr-sm bg-[#E3DFFF] text-[#1B192F] shadow-sm clay-card border border-[#DCD6FF]'
-                                : 'rounded-tl-sm bg-[#F6F1FF] text-[#1B192F] clay-card border border-white'
-                            }`}
-                          >
-                            <p className="text-xs sm:text-sm font-medium leading-relaxed">
-                              {msg.text}
-                            </p>
-
-                            {/* Embedded File Attachment Card */}
-                            {msg.attachment && (
-                              <div className="mt-3 p-3 rounded-xl bg-white text-[#1B192F] flex items-center justify-between gap-3 clay-card border border-white">
-                                <div className="flex items-center gap-2.5 min-w-0">
-                                  <div className="w-9 h-9 rounded-xl bg-[#FFDAD6] text-[#BA1A1A] flex items-center justify-center shrink-0">
-                                    <span className="material-symbols-outlined text-[20px]">picture_as_pdf</span>
-                                  </div>
-                                  <div className="min-w-0">
-                                    <span className="text-xs font-bold text-[#1B192F] block truncate">
-                                      {msg.attachment.name}
-                                    </span>
-                                    <span className="text-[10px] text-[#464555]">
-                                      {msg.attachment.size}
-                                    </span>
-                                  </div>
-                                </div>
-                                <button
-                                  type="button"
-                                  onClick={() => showToast(`Opening ${msg.attachment.name}...`, 'info')}
-                                  className="px-2.5 py-1 rounded-full bg-[#F0EBFF] hover:bg-[#E4DFFE] text-[11px] font-bold text-[#4D41DF] transition-colors cursor-pointer shrink-0"
-                                >
-                                  Download
-                                </button>
-                              </div>
-                            )}
-                          </div>
-                        </div>
-                      </div>
-                    );
-                  })}
-                  <div ref={messagesEndRef} />
-                </div>
-
-                {/* Sticky Bottom Message Composer */}
-                <div className="p-4 sm:p-5 bg-white border-t border-[#F0EBFF] z-10">
-                  <form
-                    onSubmit={handleSendMessage}
-                    className="relative flex items-center gap-2 p-2 bg-[#F6F1FF] rounded-2xl clay-pill-inset"
-                  >
-                    {/* Attachment Trigger */}
-                    <label
-                      className="cursor-pointer w-10 h-10 rounded-xl bg-white hover:bg-[#F0EBFF] flex items-center justify-center text-[#464555] hover:text-[#4D41DF] transition-all clay-card shrink-0"
-                      title="Attach file"
-                    >
-                      <span className="material-symbols-outlined text-[20px]">attach_file</span>
-                      <input
-                        ref={fileInputRef}
-                        type="file"
-                        onChange={handleFileChange}
-                        className="hidden"
-                      />
-                    </label>
-
-                    {/* Text Input */}
-                    <input
-                      type="text"
-                      value={inputMessage}
-                      onChange={(e) => setInputMessage(e.target.value)}
-                      placeholder="Type a message to Academic Support..."
-                      className="flex-1 bg-transparent px-2 py-2 text-xs sm:text-sm text-[#1B192F] placeholder:text-[#464555]/70 focus:outline-none"
-                    />
-
-                    {/* Selected File Badge */}
-                    {selectedFile && (
-                      <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-[#E3DFFF] text-[#4D41DF] text-xs font-bold clay-pill-inset">
-                        <span className="material-symbols-outlined text-[14px]">description</span>
-                        <span className="truncate max-w-[120px]">{selectedFile.name}</span>
-                        <button
-                          type="button"
-                          onClick={() => {
-                            setSelectedFile(null);
-                            if (fileInputRef.current) fileInputRef.current.value = '';
-                          }}
-                          className="hover:text-[#BA1A1A] font-bold ml-1"
-                        >
-                          ×
-                        </button>
+                  {/* Status Badge */}
+                  <div className="self-start sm:self-center">
+                    {inq.status === 'open' && (
+                      <span className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-tertiary-fixed text-on-tertiary-fixed text-xs font-bold shadow-[inset_1px_1px_2px_rgba(255,255,255,0.8),inset_-1px_-1px_2px_rgba(160,105,0,0.1)]">
+                        <span className="w-2 h-2 rounded-full bg-tertiary"></span>
+                        <span>Open</span>
                       </span>
                     )}
-
-                    {/* Submit Send Button */}
-                    <button
-                      type="submit"
-                      className="w-10 h-10 rounded-full bg-[#4D41DF] text-white flex items-center justify-center clay-btn-primary hover:scale-105 active:scale-95 transition-all cursor-pointer shadow-md shrink-0"
-                    >
-                      <span className="material-symbols-outlined text-[18px]">send</span>
-                    </button>
-                  </form>
-
-                  <div className="flex items-center justify-between mt-2 px-1 text-[11px] text-[#464555]/70">
-                    <span>Press Enter to send. Attach PDFs, docs, or screenshots.</span>
-                    <span className="font-semibold text-[#4D41DF] flex items-center gap-1">
-                      <span className="material-symbols-outlined text-[13px]">lock</span>
-                      Confidential academic workspace
-                    </span>
+                    {inq.status === 'awaiting' && (
+                      <span className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-secondary-container text-on-secondary-container text-xs font-bold shadow-[4px_6px_12px_rgba(113,97,227,0.25)]">
+                        <span className="w-2 h-2 rounded-full bg-surface-bright"></span>
+                        <span>Awaiting Your Reply</span>
+                      </span>
+                    )}
+                    {inq.status === 'resolved' && (
+                      <span className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-surface-container-high text-on-surface text-xs font-bold shadow-[inset_1px_1px_2px_rgba(255,255,255,0.9)]">
+                        <span className="material-symbols-outlined text-[16px]">check</span>
+                        <span>Resolved</span>
+                      </span>
+                    )}
                   </div>
                 </div>
-              </section>
-            )}
+
+                {/* Quote Box */}
+                <div className="p-4 rounded-2xl bg-surface-container-low text-on-surface-variant text-sm shadow-[inset_2px_2px_5px_rgba(37,35,58,0.04),inset_-2px_-2px_5px_rgba(255,255,255,0.8)] italic">
+                  {inq.quote}
+                </div>
+
+                {/* Footer Row */}
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pt-1">
+                  <div className="flex items-center gap-3 text-on-surface-variant text-xs font-semibold">
+                    <span className="flex items-center gap-1">
+                      <span className="material-symbols-outlined text-[16px]">forum</span>
+                      {inq.messagesCount} {inq.messagesCount === 1 ? 'Message' : 'Messages'}
+                    </span>
+                    <span>•</span>
+                    <span
+                      className={`flex items-center gap-1 ${
+                        inq.status === 'awaiting' ? 'text-primary font-bold' : ''
+                      }`}
+                    >
+                      <span className="material-symbols-outlined text-[16px]">
+                        {inq.status === 'resolved' ? 'done_all' : 'schedule'}
+                      </span>
+                      {inq.updatedAt}
+                    </span>
+                  </div>
+
+                  {inq.status === 'awaiting' ? (
+                    <button
+                      type="button"
+                      onClick={() => setSelectedInquiry(inq)}
+                      className="self-start sm:self-center px-5 py-2 rounded-full bg-primary text-white text-xs font-bold shadow-[4px_6px_14px_rgba(108,99,255,0.3)] hover:bg-primary-container transition-all flex items-center gap-1.5"
+                    >
+                      <span>Reply Now</span>
+                      <span className="material-symbols-outlined text-[16px]">reply</span>
+                    </button>
+                  ) : inq.status === 'resolved' ? (
+                    <button
+                      type="button"
+                      onClick={() => setSelectedInquiry(inq)}
+                      className="self-start sm:self-center px-5 py-2 rounded-full bg-surface-container text-on-surface-variant text-xs font-bold hover:bg-surface-container-highest transition-all flex items-center gap-1.5"
+                    >
+                      <span>View Archive</span>
+                      <span className="material-symbols-outlined text-[16px]">history</span>
+                    </button>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={() => setSelectedInquiry(inq)}
+                      className="self-start sm:self-center px-5 py-2 rounded-full bg-surface-container-high text-primary text-xs font-bold shadow-[4px_6px_14px_rgba(108,99,255,0.12),inset_1px_1px_2px_rgba(255,255,255,0.9)] hover:bg-primary hover:text-white transition-all flex items-center gap-1.5"
+                    >
+                      <span>View Inquiry</span>
+                      <span className="material-symbols-outlined text-[16px]">arrow_forward</span>
+                    </button>
+                  )}
+                </div>
+              </article>
+            ))
+          )}
+        </section>
+
+        {/* 5. ACADEMIC INTEGRITY & STRICT HONOR CODE GUARANTEE BANNER */}
+        <section className="p-6 md:p-8 rounded-3xl bg-surface-container-low shadow-[12px_16px_32px_rgba(108,99,255,0.06),-8px_-8px_24px_rgba(255,255,255,0.9)] flex flex-col md:flex-row items-center gap-6">
+          <div className="w-14 h-14 shrink-0 rounded-2xl bg-primary text-white flex items-center justify-center shadow-[6px_10px_20px_rgba(108,99,255,0.3)]">
+            <span className="material-symbols-outlined text-[30px]">verified_user</span>
           </div>
-        </div>
+          <div className="flex flex-col gap-1 text-center md:text-left flex-1">
+            <h4 className="font-bold text-lg text-on-surface">
+              Academic Integrity &amp; Strict Honor Code Guarantee
+            </h4>
+            <p className="text-sm text-on-surface-variant">
+              All discussions, files, and queries exchanged with Assignment Hub subject coordinators remain strictly
+              encrypted, private, and bound by institutional academic integrity benchmarks.
+            </p>
+          </div>
+          <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-surface-container-lowest text-primary text-xs font-bold shadow-[inset_1px_1px_2px_rgba(255,255,255,0.9)] shrink-0">
+            <span className="material-symbols-outlined text-[18px]">lock</span>
+            <span>End-to-End Private</span>
+          </div>
+        </section>
       </main>
 
-      {/* ======================================================== */}
-      {/* 3. START NEW CONVERSATION CLAY MODAL                     */}
-      {/* ======================================================== */}
-      {newModalOpen && (
-        <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-[#302E45]/40 backdrop-blur-sm p-4 transition-all animate-in fade-in duration-200"
-          onClick={() => setNewModalOpen(false)}
-        >
-          <div
-            className="relative w-full max-w-lg bg-white p-6 sm:p-8 rounded-3xl clay-card shadow-2xl border border-white flex flex-col gap-6"
-            onClick={(e) => e.stopPropagation()}
-          >
+      {/* ─────────────────────────────────────────────────────────────
+          3. NEW INQUIRY MODAL DIALOG
+      ────────────────────────────────────────────────────────────── */}
+      {newInquiryModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-inverse-surface/40 backdrop-blur-md animate-in fade-in duration-200">
+          <div className="w-full max-w-2xl bg-surface rounded-3xl p-6 md:p-8 shadow-[24px_32px_60px_rgba(37,35,58,0.25),-12px_-12px_32px_rgba(255,255,255,0.9)] flex flex-col gap-6 max-h-[90vh] overflow-y-auto">
             {/* Modal Header */}
-            <div className="flex items-start justify-between">
-              <div className="flex flex-col gap-1">
-                <h3 className="text-xl font-bold text-[#1B192F] tracking-tight">
-                  Start New Conversation
-                </h3>
-                <p className="text-xs text-[#464555]">
-                  What is this conversation regarding?
+            <div className="flex items-center justify-between pb-2 border-none">
+              <div>
+                <h2 className="font-extrabold text-2xl text-on-surface tracking-tight">New Inquiry</h2>
+                <p className="text-xs text-on-surface-variant">
+                  Tell us what you need help with. A coordinator will review within 2 hours.
                 </p>
               </div>
               <button
                 type="button"
-                onClick={() => setNewModalOpen(false)}
-                className="w-8 h-8 rounded-full bg-[#F6F1FF] hover:bg-[#F0EBFF] text-[#1B192F] flex items-center justify-center text-lg font-bold transition-colors cursor-pointer"
+                id="modal-close"
+                onClick={() => setNewInquiryModalOpen(false)}
+                className="w-10 h-10 rounded-full bg-surface-container flex items-center justify-center text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-colors"
               >
-                ✕
+                <span className="material-symbols-outlined text-[20px]">close</span>
               </button>
             </div>
 
-            {/* Form */}
-            <form onSubmit={handleCreateConversation} className="flex flex-col gap-4">
-              <div className="flex flex-col gap-1.5">
-                <label className="text-xs font-bold text-[#1B192F]">
-                  Conversation Subject / Assignment Title *
+            {/* Modal Form */}
+            <form onSubmit={handleSubmitNewInquiry} className="flex flex-col gap-5">
+              {/* Field 1: Subject */}
+              <div className="flex flex-col gap-2">
+                <label className="text-xs font-bold text-on-surface" htmlFor="inquiry-subject">
+                  Subject *
                 </label>
                 <input
                   type="text"
-                  value={newTitle}
-                  onChange={(e) => setNewTitle(e.target.value)}
-                  placeholder="e.g. Database Normalization Assignment, Seminar Deck..."
-                  className="w-full px-4 py-3 bg-[#F6F1FF] rounded-xl text-xs md:text-sm text-[#1B192F] placeholder:text-[#464555]/70 clay-pill-inset focus:outline-none focus:bg-white"
+                  id="inquiry-subject"
                   required
+                  value={formSubject}
+                  onChange={e => setFormSubject(e.target.value)}
+                  placeholder="Enter inquiry subject (e.g. Deadline question, revision query)"
+                  className="w-full px-4 py-3 rounded-2xl bg-surface-container-low text-on-surface placeholder:text-on-surface-variant text-sm shadow-[inset_3px_3px_6px_rgba(37,35,58,0.06),inset_-3px_-3px_6px_rgba(255,255,255,0.8)] focus:outline-none focus:bg-surface-container-lowest"
                 />
               </div>
 
-              <div className="flex flex-col gap-1.5">
-                <label className="text-xs font-bold text-[#1B192F]">
-                  Your Initial Message *
+              {/* Field 2 & 3: Related Request & Category */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="flex flex-col gap-2">
+                  <label className="text-xs font-bold text-on-surface" htmlFor="inquiry-request">
+                    Related Request
+                  </label>
+                  <div className="relative">
+                    <select
+                      id="inquiry-request"
+                      value={formRequest}
+                      onChange={e => setFormRequest(e.target.value)}
+                      className="w-full appearance-none pl-4 pr-10 py-3 rounded-2xl bg-surface-container-low text-on-surface text-sm shadow-[inset_3px_3px_6px_rgba(37,35,58,0.06),inset_-3px_-3px_6px_rgba(255,255,255,0.8)] focus:outline-none focus:bg-surface-container-lowest cursor-pointer"
+                    >
+                      <option value="">Select a request (Optional)</option>
+                      <option value="#REQ-1024">#REQ-1024 — Engineering Mathematics Assignment</option>
+                      <option value="#REQ-1028">#REQ-1028 — Data Structures &amp; Algorithms Lab File</option>
+                      <option value="#REQ-1018">#REQ-1018 — IoT Smart Weather Station Simulation</option>
+                      <option value="none">No Related Request (General Question)</option>
+                    </select>
+                    <span className="material-symbols-outlined pointer-events-none absolute right-3.5 top-1/2 -translate-y-1/2 text-on-surface-variant text-[20px]">
+                      expand_more
+                    </span>
+                  </div>
+                </div>
+
+                <div className="flex flex-col gap-2">
+                  <label className="text-xs font-bold text-on-surface" htmlFor="inquiry-category">
+                    Category
+                  </label>
+                  <div className="relative">
+                    <select
+                      id="inquiry-category"
+                      value={formCategory}
+                      onChange={e => setFormCategory(e.target.value)}
+                      className="w-full appearance-none pl-4 pr-10 py-3 rounded-2xl bg-surface-container-low text-on-surface text-sm shadow-[inset_3px_3px_6px_rgba(37,35,58,0.06),inset_-3px_-3px_6px_rgba(255,255,255,0.8)] focus:outline-none focus:bg-surface-container-lowest cursor-pointer"
+                    >
+                      <option value="Request Question">Request Question</option>
+                      <option value="Service Question">Service Question</option>
+                      <option value="Delivery Question">Delivery Question</option>
+                      <option value="Revision Question">Revision Question</option>
+                      <option value="General Question">General Question</option>
+                      <option value="Other">Other</option>
+                    </select>
+                    <span className="material-symbols-outlined pointer-events-none absolute right-3.5 top-1/2 -translate-y-1/2 text-on-surface-variant text-[20px]">
+                      expand_more
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Field 4: Message */}
+              <div className="flex flex-col gap-2">
+                <label className="text-xs font-bold text-on-surface" htmlFor="inquiry-message">
+                  Message *
                 </label>
                 <textarea
-                  value={newMessage}
-                  onChange={(e) => setNewMessage(e.target.value)}
-                  placeholder="Briefly describe what you need assistance with, your deadline, and instructions..."
-                  rows={4}
-                  className="w-full p-4 bg-[#F6F1FF] rounded-xl text-xs md:text-sm text-[#1B192F] placeholder:text-[#464555]/70 clay-pill-inset focus:outline-none focus:bg-white resize-none"
+                  id="inquiry-message"
                   required
+                  rows={4}
+                  value={formMessage}
+                  onChange={e => setFormMessage(e.target.value)}
+                  placeholder="Describe your question or issue in detail..."
+                  className="w-full p-4 rounded-2xl bg-surface-container-low text-on-surface placeholder:text-on-surface-variant text-sm shadow-[inset_3px_3px_6px_rgba(37,35,58,0.06),inset_-3px_-3px_6px_rgba(255,255,255,0.8)] focus:outline-none focus:bg-surface-container-lowest"
                 />
               </div>
 
-              {/* Optional Attachment Dropzone */}
-              <div className="flex flex-col gap-1.5">
-                <label className="text-xs font-bold text-[#1B192F]">Optional Attachment</label>
-                <label className="flex flex-col items-center justify-center p-4 rounded-xl bg-[#F6F1FF] border-2 border-dashed border-[#C7C4D8] hover:border-[#4D41DF] cursor-pointer transition-all">
-                  <span className="material-symbols-outlined text-[28px] text-[#4D41DF] mb-1">
-                    upload_file
-                  </span>
-                  <span className="text-xs font-bold text-[#1B192F]">
-                    Click to attach questions, syllabus, or lecture slides
-                  </span>
-                  <span className="text-[10px] text-[#464555]">PDF, DOCX, ZIP, or PNG up to 25 MB</span>
-                  <input type="file" className="hidden" />
+              {/* Field 5: Attachment Dropzone */}
+              <div className="flex flex-col gap-2">
+                <span className="text-xs font-bold text-on-surface">Attachments (Optional)</span>
+                <label className="p-5 rounded-2xl bg-surface-container-low/70 flex flex-col items-center justify-center text-center gap-2 cursor-pointer hover:bg-surface-container transition-colors shadow-[inset_2px_2px_4px_rgba(37,35,58,0.04)]">
+                  <input
+                    type="file"
+                    className="hidden"
+                    onChange={e => {
+                      if (e.target.files?.[0]) {
+                        setFormAttachment(`${e.target.files[0].name} (${(e.target.files[0].size / 1024 / 1024).toFixed(1)} MB)`);
+                      }
+                    }}
+                  />
+                  <span className="material-symbols-outlined text-[28px] text-primary">cloud_upload</span>
+                  <span className="text-xs font-bold text-primary">+ Add Attachment (PDF, DOCX, PNG up to 25MB)</span>
+                  <span className="text-[11px] text-on-surface-variant">Drop relevant syllabi, project sheets, or screenshots</span>
                 </label>
+
+                {formAttachment && (
+                  <div className="flex items-center justify-between p-2.5 px-4 rounded-xl bg-surface-container-high text-on-surface text-xs font-medium">
+                    <div className="flex items-center gap-2">
+                      <span className="material-symbols-outlined text-[20px] text-primary">description</span>
+                      <span className="font-semibold text-xs">{formAttachment}</span>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => setFormAttachment('')}
+                      className="text-on-surface-variant hover:text-error transition-colors flex items-center"
+                    >
+                      <span className="material-symbols-outlined text-[18px]">close</span>
+                    </button>
+                  </div>
+                )}
               </div>
 
-              {/* Modal Actions */}
-              <div className="flex items-center justify-end gap-3 pt-2 border-t border-[#F0EBFF]">
+              {/* Actions */}
+              <div className="flex items-center justify-end gap-3 pt-3">
                 <button
                   type="button"
-                  onClick={() => setNewModalOpen(false)}
-                  className="px-5 py-2.5 rounded-full text-xs font-bold text-[#464555] hover:bg-[#F6F1FF] cursor-pointer"
+                  id="modal-cancel"
+                  onClick={() => setNewInquiryModalOpen(false)}
+                  className="px-6 py-2.5 rounded-full bg-surface-container text-on-surface-variant text-sm font-bold hover:bg-surface-container-high transition-all"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-6 py-2.5 rounded-full bg-[#4D41DF] text-white text-xs font-bold clay-btn-primary hover:bg-[#3d32ce] transition-all cursor-pointer shadow-md"
+                  className="px-7 py-2.5 rounded-full bg-primary text-white text-sm font-bold shadow-[6px_10px_20px_rgba(108,99,255,0.35)] hover:bg-primary-container transition-all"
                 >
-                  Start Conversation
+                  Submit Inquiry
                 </button>
               </div>
             </form>
@@ -1124,153 +1363,275 @@ export function InquiriesPage() {
         </div>
       )}
 
-      {/* ======================================================== */}
-      {/* 4. PROFILE EDIT MODAL                                    */}
-      {/* ======================================================== */}
-      {profileModalOpen && (
-        <div
-          className="fixed inset-0 z-50 bg-[#302E45]/40 backdrop-blur-sm flex items-center justify-center p-4 transition-opacity animate-in fade-in duration-200"
-          onClick={() => setProfileModalOpen(false)}
-        >
-          <div
-            className="w-full max-w-md bg-white rounded-3xl p-6 sm:p-8 clay-card shadow-2xl border border-white"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div className="flex items-center justify-between pb-4 border-b border-[#F0EBFF] mb-6">
-              <div className="flex items-center gap-2.5">
-                <div className="w-10 h-10 rounded-2xl bg-[#4D41DF] text-white flex items-center justify-center shadow-md">
-                  <span className="material-symbols-outlined text-[20px]">account_circle</span>
-                </div>
-                <div>
-                  <h3 className="text-xl font-bold text-[#1B192F]">Student Profile</h3>
-                  <p className="text-xs text-[#464555]">Manage your account details</p>
+      {/* ─────────────────────────────────────────────────────────────
+          4. INQUIRY CONVERSATION DETAIL SLIDE-OUT DRAWER
+      ────────────────────────────────────────────────────────────── */}
+      {selectedInquiry && (
+        <div className="fixed inset-0 z-50 bg-inverse-surface/40 backdrop-blur-md flex justify-end animate-in fade-in duration-200">
+          <div className="w-full lg:max-w-4xl bg-surface h-full shadow-[-20px_0_40px_rgba(37,35,58,0.2)] flex flex-col overflow-hidden animate-in slide-in-from-right duration-300">
+            {/* Top Bar */}
+            <div className="px-6 py-4 bg-surface-container-low flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-[0_2px_8px_rgba(0,0,0,0.03)] shrink-0">
+              <div className="flex items-center gap-3">
+                <button
+                  type="button"
+                  id="detail-back"
+                  onClick={() => setSelectedInquiry(null)}
+                  className="p-2 rounded-full bg-surface-container-lowest text-on-surface hover:bg-surface-container transition-colors shadow-[2px_4px_8px_rgba(108,99,255,0.08)]"
+                >
+                  <span className="material-symbols-outlined text-[20px]">arrow_back</span>
+                </button>
+                <div className="flex flex-col">
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <h3 className="font-bold text-lg sm:text-xl text-on-surface">{selectedInquiry.title}</h3>
+                    <span
+                      className={`px-3 py-0.5 rounded-full text-xs font-bold ${
+                        selectedInquiry.status === 'open'
+                          ? 'bg-tertiary-fixed text-on-tertiary-fixed'
+                          : selectedInquiry.status === 'awaiting'
+                          ? 'bg-secondary-container text-on-secondary-container'
+                          : 'bg-surface-container-high text-on-surface'
+                      }`}
+                    >
+                      ● {selectedInquiry.status === 'awaiting' ? 'Awaiting Your Reply' : selectedInquiry.status === 'resolved' ? 'Resolved' : 'Open'}
+                    </span>
+                  </div>
+                  <span className="text-xs font-semibold text-primary">
+                    {selectedInquiry.requestNumber} — {selectedInquiry.requestTitle}
+                  </span>
                 </div>
               </div>
+
               <button
                 type="button"
-                onClick={() => setProfileModalOpen(false)}
-                className="w-8 h-8 rounded-full bg-[#F6F1FF] hover:bg-[#F0EBFF] text-[#1B192F] flex items-center justify-center text-lg font-bold transition-colors cursor-pointer"
+                id="detail-close-btn"
+                onClick={() => setSelectedInquiry(null)}
+                className="self-end sm:self-center w-9 h-9 rounded-full bg-surface-container flex items-center justify-center text-on-surface-variant hover:text-on-surface"
               >
-                ✕
+                <span className="material-symbols-outlined text-[20px]">close</span>
               </button>
             </div>
 
-            <form onSubmit={handleSaveProfile} className="space-y-4">
-              <div>
-                <label className="block text-xs font-bold text-[#1B192F]/70 mb-1.5">Full Name</label>
-                <div className="p-3.5 rounded-2xl bg-[#F6F1FF] border border-[#E4DFFE] flex items-center">
-                  <input
-                    type="text"
-                    value={editName}
-                    onChange={(e) => setEditName(e.target.value)}
-                    className="w-full bg-transparent text-sm font-bold text-[#1B192F] outline-none"
-                    required
-                  />
+            {/* Main Two-Column Panel Container */}
+            <div className="flex-1 grid grid-cols-1 lg:grid-cols-12 overflow-y-auto">
+              {/* Support Conversation Feed (Left 8 cols) */}
+              <div className="lg:col-span-8 p-6 md:p-8 flex flex-col gap-6 lg:bg-surface-container-lowest/30 overflow-y-auto">
+                {/* Notice Banner */}
+                <div className="p-4 rounded-2xl bg-surface-container-high flex items-center gap-3 shadow-[inset_1px_1px_2px_rgba(255,255,255,0.8)]">
+                  <span className="material-symbols-outlined text-primary text-[24px]">info</span>
+                  <p className="text-xs sm:text-sm text-on-surface-variant font-medium">
+                    ⚡ Your inquiry is assigned. Academic Coordinator {selectedInquiry.coordinator} and our subject mentors are reviewing live.
+                  </p>
+                </div>
+
+                {/* Messages Thread */}
+                {selectedInquiry.thread?.map(msg => (
+                  <div
+                    key={msg.id}
+                    className={`flex flex-col gap-2 ${
+                      msg.sender === 'coordinator' ? 'ml-4 md:ml-8' : ''
+                    }`}
+                  >
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <div
+                          className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-xs ${
+                            msg.sender === 'coordinator'
+                              ? 'bg-secondary text-white'
+                              : 'bg-primary text-white'
+                          }`}
+                        >
+                          {msg.sender === 'coordinator' ? 'DB' : 'AK'}
+                        </div>
+                        <span className="text-xs font-bold text-on-surface">{msg.senderName}</span>
+                        {msg.badge && (
+                          <span
+                            className={`px-2 py-0.5 rounded-full text-[10px] font-semibold ${
+                              msg.sender === 'coordinator'
+                                ? 'bg-primary-fixed text-on-primary-fixed'
+                                : 'bg-surface-container text-on-surface-variant'
+                            }`}
+                          >
+                            {msg.badge}
+                          </span>
+                        )}
+                      </div>
+                      <span className="text-[11px] text-on-surface-variant">{msg.time}</span>
+                    </div>
+
+                    <div
+                      className={`p-5 rounded-2xl text-sm leading-relaxed ${
+                        msg.sender === 'coordinator'
+                          ? 'bg-surface-container-lowest text-on-surface shadow-[6px_10px_20px_rgba(108,99,255,0.08),inset_1px_1px_2px_rgba(255,255,255,0.9)] flex flex-col gap-2'
+                          : 'bg-surface-container-low text-on-surface shadow-[4px_6px_16px_rgba(108,99,255,0.06),inset_1px_1px_2px_rgba(255,255,255,0.9)] flex flex-col gap-3'
+                      }`}
+                    >
+                      <p>{msg.text}</p>
+                      {msg.attachment && (
+                        <div className="flex items-center gap-2 px-3 py-2 rounded-xl bg-surface-container-lowest w-fit shadow-[2px_3px_8px_rgba(0,0,0,0.04)] text-on-surface text-xs font-semibold">
+                          <span className="material-symbols-outlined text-[18px] text-primary">attach_file</span>
+                          <span>
+                            {msg.attachment.name} ({msg.attachment.size})
+                          </span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                ))}
+                <div ref={threadEndRef} />
+
+                {/* Sticky Message Composer */}
+                <div className="sticky bottom-0 pt-4 bg-gradient-to-t from-surface via-surface to-transparent">
+                  <form
+                    onSubmit={handleSendReply}
+                    className="p-2.5 rounded-2xl bg-surface-container-lowest shadow-[8px_12px_28px_rgba(108,99,255,0.12),inset_1px_1px_2px_rgba(255,255,255,0.95)] flex items-center gap-2"
+                  >
+                    <label
+                      aria-label="Add file"
+                      className="p-2.5 rounded-xl text-on-surface-variant hover:text-primary hover:bg-surface-container transition-colors cursor-pointer"
+                    >
+                      <input type="file" className="hidden" onChange={() => showToast('File attached', 'info')} />
+                      <span className="material-symbols-outlined text-[22px]">attach_file</span>
+                    </label>
+                    <input
+                      type="text"
+                      id="reply-text"
+                      value={replyText}
+                      onChange={e => setReplyText(e.target.value)}
+                      placeholder="Type your reply or question..."
+                      className="flex-1 bg-transparent px-2 py-1 text-sm text-on-surface placeholder:text-on-surface-variant focus:outline-none"
+                    />
+                    <button
+                      type="submit"
+                      className="flex items-center gap-1.5 px-5 py-2.5 rounded-xl bg-primary text-white text-xs font-bold shadow-[4px_6px_12px_rgba(108,99,255,0.3)] hover:bg-primary-container transition-all"
+                    >
+                      <span>Send</span>
+                      <span className="material-symbols-outlined text-[18px]">send</span>
+                    </button>
+                  </form>
                 </div>
               </div>
 
-              <div>
-                <label className="block text-xs font-bold text-[#1B192F]/70 mb-1.5">College / University</label>
-                <div className="p-3.5 rounded-2xl bg-[#F6F1FF] border border-[#E4DFFE] flex items-center">
-                  <input
-                    type="text"
-                    value={editCollege}
-                    onChange={(e) => setEditCollege(e.target.value)}
-                    className="w-full bg-transparent text-sm font-semibold text-[#1B192F] outline-none"
-                    placeholder="e.g. Stanford University or MIT"
-                  />
-                </div>
-              </div>
+              {/* Inquiry Details Sidebar (Right 4 cols) */}
+              <aside className="lg:col-span-4 p-6 md:p-8 bg-surface-container-low/60 flex flex-col gap-6 border-t lg:border-t-0 lg:border-l border-surface-container">
+                <h4 className="font-bold text-base text-on-surface">Inquiry Details</h4>
 
-              <div>
-                <label className="block text-xs font-bold text-[#1B192F]/70 mb-1.5">Course / Degree</label>
-                <div className="p-3.5 rounded-2xl bg-[#F6F1FF] border border-[#E4DFFE] flex items-center">
-                  <input
-                    type="text"
-                    value={editCourse}
-                    onChange={(e) => setEditCourse(e.target.value)}
-                    className="w-full bg-transparent text-sm font-semibold text-[#1B192F] outline-none"
-                    placeholder="e.g. B.Tech Computer Science"
-                  />
-                </div>
-              </div>
+                <div className="p-5 rounded-2xl bg-surface-container-lowest shadow-[6px_8px_18px_rgba(108,99,255,0.05)] flex flex-col gap-4">
+                  <div className="flex flex-col gap-0.5">
+                    <span className="text-[11px] uppercase tracking-wider text-on-surface-variant font-bold">
+                      Status
+                    </span>
+                    <div className="flex items-center gap-2 mt-1">
+                      <span
+                        className={`w-2.5 h-2.5 rounded-full ${
+                          selectedInquiry.status === 'open'
+                            ? 'bg-tertiary'
+                            : selectedInquiry.status === 'awaiting'
+                            ? 'bg-primary animate-pulse'
+                            : 'bg-outline'
+                        }`}
+                      ></span>
+                      <span className="text-xs font-bold text-on-surface">
+                        {selectedInquiry.status === 'open'
+                          ? 'Open — In Discussion'
+                          : selectedInquiry.status === 'awaiting'
+                          ? 'Awaiting Your Input'
+                          : 'Resolved & Archived'}
+                      </span>
+                    </div>
+                  </div>
 
-              <div className="flex items-center justify-end gap-3 pt-4 border-t border-[#F0EBFF]">
-                <button
-                  type="button"
-                  onClick={() => setProfileModalOpen(false)}
-                  className="px-5 py-2.5 rounded-full text-xs font-bold text-[#464555] hover:bg-[#F6F1FF] cursor-pointer"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  className="px-6 py-2.5 rounded-full bg-[#4D41DF] text-white text-xs font-bold clay-btn-primary hover:bg-[#3d32ce] transition-all cursor-pointer shadow-md"
-                >
-                  Save Changes
-                </button>
-              </div>
-            </form>
+                  <div className="flex flex-col gap-0.5">
+                    <span className="text-[11px] uppercase tracking-wider text-on-surface-variant font-bold">
+                      Category
+                    </span>
+                    <span className="text-xs text-on-surface font-medium">{selectedInquiry.category}</span>
+                  </div>
+
+                  <div className="flex flex-col gap-0.5">
+                    <span className="text-[11px] uppercase tracking-wider text-on-surface-variant font-bold">
+                      Related Request
+                    </span>
+                    {selectedInquiry.requestNumber !== 'General Inquiry' ? (
+                      <Link
+                        to="/my-requests"
+                        className="text-xs font-bold text-primary hover:underline flex items-center gap-1"
+                      >
+                        <span>{selectedInquiry.requestNumber} (View Order)</span>
+                        <span className="material-symbols-outlined text-[14px]">open_in_new</span>
+                      </Link>
+                    ) : (
+                      <span className="text-xs text-on-surface font-medium">None (General Inquiry)</span>
+                    )}
+                  </div>
+
+                  <div className="flex flex-col gap-0.5">
+                    <span className="text-[11px] uppercase tracking-wider text-on-surface-variant font-bold">
+                      Assigned Coordinator
+                    </span>
+                    <span className="text-xs text-on-surface font-medium">{selectedInquiry.coordinator}</span>
+                  </div>
+
+                  <div className="flex flex-col gap-0.5">
+                    <span className="text-[11px] uppercase tracking-wider text-on-surface-variant font-bold">
+                      Timestamps
+                    </span>
+                    <span className="text-[11px] text-on-surface-variant">Created: {selectedInquiry.createdAt}</span>
+                    <span className="text-[11px] text-on-surface-variant">Last activity: {selectedInquiry.lastActivity}</span>
+                  </div>
+                </div>
+
+                <div className="flex flex-col gap-3">
+                  <button
+                    type="button"
+                    id="resolve-toggle-btn"
+                    onClick={handleToggleResolve}
+                    className={`w-full py-3 rounded-full text-xs font-bold transition-all flex items-center justify-center gap-2 shadow-[2px_4px_10px_rgba(0,0,0,0.03)] ${
+                      selectedInquiry.status === 'resolved'
+                        ? 'bg-tertiary-fixed text-on-tertiary-fixed hover:bg-tertiary-fixed-dim'
+                        : 'bg-surface-container-high text-on-surface hover:bg-surface-container-highest'
+                    }`}
+                  >
+                    <span className="material-symbols-outlined text-[18px]">
+                      {selectedInquiry.status === 'resolved' ? 'refresh' : 'check_circle'}
+                    </span>
+                    <span>{selectedInquiry.status === 'resolved' ? 'Reopen Inquiry' : 'Mark as Resolved'}</span>
+                  </button>
+                  <p className="text-[11px] text-on-surface-variant text-center">
+                    Closing an inquiry automatically stores it in your resolved archive.
+                  </p>
+                </div>
+              </aside>
+            </div>
           </div>
         </div>
       )}
 
-      {/* ======================================================== */}
-      {/* 5. MOBILE BOTTOM NAVIGATION                               */}
-      {/* ======================================================== */}
-      <nav className="fixed bottom-0 left-0 right-0 z-40 lg:hidden bg-[#FCF8FF]/95 backdrop-blur-xl border-t border-[#EAE5FF] shadow-lg px-2 py-2 flex items-center justify-around">
-        <Link
-          to="/dashboard"
-          className="flex flex-col items-center gap-1 py-1 px-3 rounded-xl text-xs font-semibold text-[#464555] hover:text-[#4D41DF] transition-colors"
-        >
-          <span className="material-symbols-outlined text-[22px]">home</span>
-          <span>Home</span>
-        </Link>
-        <Link
-          to="/services"
-          className="flex flex-col items-center gap-1 py-1 px-3 rounded-xl text-xs font-semibold text-[#464555] hover:text-[#4D41DF] transition-colors"
-        >
-          <span className="material-symbols-outlined text-[22px]">category</span>
-          <span>Services</span>
-        </Link>
-        <Link
-          to="/my-requests"
-          className="flex flex-col items-center gap-1 py-1 px-3 rounded-xl text-xs font-semibold text-[#464555] hover:text-[#4D41DF] transition-colors"
-        >
-          <span className="material-symbols-outlined text-[22px]">task</span>
-          <span>My Requests</span>
-        </Link>
-        <span
-          className="flex flex-col items-center gap-1 py-1 px-3 rounded-xl text-xs font-bold text-[#4D41DF] cursor-default"
-        >
-          <span className="material-symbols-outlined text-[22px]">chat</span>
-          <span>Inquiries</span>
-        </span>
-        <button
-          onClick={() => setProfileModalOpen(true)}
-          className="flex flex-col items-center gap-1 py-1 px-3 rounded-xl text-xs font-semibold text-[#464555] hover:text-[#4D41DF] transition-colors cursor-pointer"
-        >
-          <span className="material-symbols-outlined text-[22px]">person</span>
-          <span>Profile</span>
-        </button>
-      </nav>
-
-      {/* ======================================================== */}
-      {/* 6. FOOTER                                                */}
-      {/* ======================================================== */}
-      <footer className="w-full bg-[#F6F1FF] border-t border-[#EAE5FF]/60 py-10 mt-auto">
-        <div className="max-w-7xl mx-auto px-4 md:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between gap-6">
-          <div className="flex flex-col items-center md:items-start gap-1">
-            <p className="text-sm font-bold text-[#1B192F]">Assignment Hub © 2026.</p>
-            <p className="text-xs text-[#464555]">You give us your work — we take care of the rest.</p>
+      {/* ─────────────────────────────────────────────────────────────
+          5. FOOTER
+      ────────────────────────────────────────────────────────────── */}
+      <footer className="w-full bg-surface-container-low py-10 mt-16 border-t border-surface-container">
+        <div className="w-full px-6 lg:px-12 max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6">
+          <div className="text-center md:text-left">
+            <p className="text-sm font-bold text-on-surface">Assignment Hub © 2026.</p>
+            <p className="text-xs text-on-surface-variant">You give us your work — we take care of the rest.</p>
           </div>
-          <div className="flex flex-wrap items-center justify-center gap-6 text-xs font-semibold text-[#464555]">
-            <Link to="/about" className="hover:text-[#4D41DF] transition-colors">About</Link>
-            <Link to="/contact" className="hover:text-[#4D41DF] transition-colors">Contact</Link>
-            <Link to="/support" className="hover:text-[#4D41DF] transition-colors">Support</Link>
-            <Link to="/privacy-policy" className="hover:text-[#4D41DF] transition-colors">Privacy Policy</Link>
-            <Link to="/terms-conditions" className="hover:text-[#4D41DF] transition-colors">Terms &amp; Conditions</Link>
-          </div>
+          <nav className="flex flex-wrap items-center justify-center gap-6">
+            <Link to="/about" className="text-xs font-semibold text-on-surface-variant hover:text-on-surface transition-colors">
+              About
+            </Link>
+            <Link to="/contact" className="text-xs font-semibold text-on-surface-variant hover:text-on-surface transition-colors">
+              Contact
+            </Link>
+            <Link to="/support" className="text-xs font-semibold text-on-surface-variant hover:text-on-surface transition-colors">
+              Support
+            </Link>
+            <Link to="/privacy-policy" className="text-xs font-semibold text-on-surface-variant hover:text-on-surface transition-colors">
+              Privacy Policy
+            </Link>
+            <Link to="/terms-conditions" className="text-xs font-semibold text-on-surface-variant hover:text-on-surface transition-colors">
+              Terms &amp; Conditions
+            </Link>
+          </nav>
         </div>
       </footer>
     </div>
@@ -1278,3 +1639,4 @@ export function InquiriesPage() {
 }
 
 export default InquiriesPage;
+
