@@ -463,8 +463,8 @@ export function ServicesPage() {
           </div>
 
           {/* FULL-WIDTH CLAY CATEGORY BAR */}
-          <div className="w-full max-w-7xl mx-auto p-2 sm:p-3 my-6 sm:my-8 rounded-2xl md:rounded-full bg-[#EDE8FA] border border-white/80 shadow-[0_10px_25px_-5px_rgba(108,99,255,0.08),inset_0_2px_4px_rgba(255,255,255,0.95),inset_0_-2px_5px_rgba(108,99,255,0.08)] overflow-x-auto scrollbar-none">
-            <div className="flex items-center justify-start md:justify-center gap-2.5 sm:gap-4 flex-nowrap whitespace-nowrap w-full px-2 sm:px-4">
+          <div className="w-full max-w-7xl mx-auto p-1.5 sm:p-2.5 my-4 sm:my-8 rounded-2xl md:rounded-full bg-[#EDE8FA] border border-white/80 shadow-[0_10px_25px_-5px_rgba(108,99,255,0.08),inset_0_2px_4px_rgba(255,255,255,0.95),inset_0_-2px_5px_rgba(108,99,255,0.08)] overflow-x-auto no-scrollbar">
+            <div className="flex items-center justify-start md:justify-center gap-2 sm:gap-3 flex-nowrap whitespace-nowrap min-w-max md:min-w-0 md:w-full px-1 sm:px-2">
               {categoryFilters.map((cat) => {
                 const isCatActive = activeCategory === cat.id;
                 return (
@@ -472,7 +472,7 @@ export function ServicesPage() {
                     key={cat.id}
                     type="button"
                     onClick={() => setActiveCategory(cat.id)}
-                    className={`shrink-0 whitespace-nowrap px-5 sm:px-6 py-2.5 sm:py-3 rounded-full text-xs sm:text-sm tracking-normal transition-all duration-200 cursor-pointer ${
+                    className={`shrink-0 whitespace-nowrap px-4 sm:px-6 py-2 sm:py-2.5 rounded-full text-xs sm:text-sm tracking-normal transition-all duration-200 cursor-pointer ${
                       isCatActive
                         ? 'bg-[#6C63FF] text-white font-bold shadow-[inset_0_3px_6px_rgba(0,0,0,0.22),inset_0_-1px_2px_rgba(255,255,255,0.35),0_2px_4px_rgba(108,99,255,0.15)]'
                         : 'bg-white text-[#25233A] hover:text-[#6C63FF] hover:bg-white font-semibold border border-white/90 shadow-[0_4px_10px_rgba(108,99,255,0.06),0_1px_3px_rgba(0,0,0,0.04),inset_0_2px_3px_rgba(255,255,255,1),inset_0_-2px_4px_rgba(108,99,255,0.06)] hover:-translate-y-0.5'
@@ -486,82 +486,82 @@ export function ServicesPage() {
           </div>
 
           {/* 7 SERVICES GRID */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8 mb-12">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 md:gap-8 mb-12">
             {filteredServices.map((svc) => {
               const isFullSpan = svc.id === 'other';
               return (
                 <article
                   key={svc.id}
-                  className={`flex flex-col justify-between p-6 md:p-8 rounded-3xl bg-white clay-card transition-all duration-300 hover:-translate-y-1.5 group ${
-                    isFullSpan ? 'md:col-span-2 lg:col-span-3 lg:flex-row items-stretch gap-6' : ''
+                  className={`flex flex-col justify-between p-4 sm:p-6 md:p-8 rounded-2xl sm:rounded-3xl bg-white clay-card transition-all duration-300 hover:-translate-y-1 group ${
+                    isFullSpan ? 'md:col-span-2 lg:col-span-3 lg:flex-row items-stretch gap-5 sm:gap-6' : ''
                   }`}
                 >
-                  <div className={isFullSpan ? 'flex-1' : ''}>
+                  <div className={isFullSpan ? 'flex-1 min-w-0' : 'min-w-0 flex-1 flex flex-col'}>
                     {/* Card Header */}
-                    <div className="flex items-start justify-between gap-4 mb-4">
-                      <div className="flex items-center gap-3">
-                        <div className="w-14 h-14 rounded-2xl bg-[#F3F0FF] flex items-center justify-center clay-pill-inset group-hover:scale-105 transition-transform">
+                    <div className="flex items-start justify-between gap-3 mb-3 sm:mb-4">
+                      <div className="flex items-center gap-3 min-w-0">
+                        <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-xl sm:rounded-2xl bg-[#F3F0FF] flex items-center justify-center clay-pill-inset group-hover:scale-105 transition-transform shrink-0">
                           <span
-                            className={`material-symbols-outlined text-[28px] ${svc.iconColor}`}
+                            className={`material-symbols-outlined text-[24px] sm:text-[28px] ${svc.iconColor}`}
                             style={{ fontVariationSettings: "'FILL' 1" }}
                           >
                             {svc.icon}
                           </span>
                         </div>
                         {isFullSpan && (
-                          <div>
-                            <h3 className="text-xl md:text-2xl font-bold text-[#25233A]">{svc.title}</h3>
-                            <p className="text-xs text-[#6E6A8A] font-semibold">{svc.subtitle}</p>
+                          <div className="min-w-0">
+                            <h3 className="text-lg sm:text-xl md:text-2xl font-bold text-[#25233A] truncate">{svc.title}</h3>
+                            <p className="text-xs text-[#6E6A8A] font-semibold truncate">{svc.subtitle}</p>
                           </div>
                         )}
                       </div>
 
-                      <span className="px-3 py-1 rounded-full text-[11px] font-bold bg-[#F3F0FF] text-[#6C63FF] clay-pill-inset shrink-0">
+                      <span className="px-2.5 sm:px-3 py-0.5 sm:py-1 rounded-full text-[10px] sm:text-[11px] font-bold bg-[#F3F0FF] text-[#6C63FF] clay-pill-inset shrink-0 whitespace-nowrap">
                         {svc.badge}
                       </span>
                     </div>
 
                     {!isFullSpan && (
-                      <h3 className="text-xl font-bold text-[#25233A] mb-2">{svc.title}</h3>
+                      <h3 className="text-lg sm:text-xl font-bold text-[#25233A] mb-1.5 sm:mb-2 leading-snug">{svc.title}</h3>
                     )}
 
-                    <p className={`text-xs sm:text-sm text-[#6E6A8A] leading-relaxed mb-6 ${isFullSpan ? 'max-w-3xl' : ''}`}>
+                    <p className={`text-xs sm:text-sm text-[#6E6A8A] leading-relaxed mb-4 sm:mb-6 ${isFullSpan ? 'max-w-3xl' : 'min-h-[36px] sm:min-h-[44px]'}`}>
                       {svc.desc}
                     </p>
 
                     {/* Specs List */}
-                    <div className={`space-y-2 mb-6 ${isFullSpan ? 'grid grid-cols-1 sm:grid-cols-3 gap-2.5 space-y-0' : ''}`}>
-                      <div className="flex items-center gap-2.5 p-2 rounded-2xl bg-[#F3F0FF] text-[#6E6A8A] text-xs font-semibold clay-pill-inset">
-                        <span className="material-symbols-outlined text-[#6C63FF] text-[18px]">schedule</span>
-                        <span><strong className="text-[#25233A]">Timeline:</strong> {svc.timeline}</span>
+                    <div className={`space-y-2 mb-4 sm:mb-6 ${isFullSpan ? 'grid grid-cols-1 sm:grid-cols-3 gap-2.5 space-y-0' : ''}`}>
+                      <div className="flex items-center gap-2 p-2 rounded-xl sm:rounded-2xl bg-[#F3F0FF] text-[#6E6A8A] text-xs font-semibold clay-pill-inset min-w-0">
+                        <span className="material-symbols-outlined text-[#6C63FF] text-[18px] shrink-0">schedule</span>
+                        <span className="truncate"><strong className="text-[#25233A]">Timeline:</strong> {svc.timeline}</span>
                       </div>
-                      <div className="flex items-center gap-2.5 p-2 rounded-2xl bg-[#F3F0FF] text-[#6E6A8A] text-xs font-semibold clay-pill-inset">
-                        <span className="material-symbols-outlined text-[#6C63FF] text-[18px]">
+                      <div className="flex items-center gap-2 p-2 rounded-xl sm:rounded-2xl bg-[#F3F0FF] text-[#6E6A8A] text-xs font-semibold clay-pill-inset min-w-0">
+                        <span className="material-symbols-outlined text-[#6C63FF] text-[18px] shrink-0">
                           {svc.id === 'presentation' ? 'co_present' : svc.id === 'reports' ? 'auto_stories' : svc.id === 'coding' ? 'data_object' : svc.id === 'drawing' ? 'draw' : svc.id === 'physics' ? 'biotech' : 'description'}
                         </span>
-                        <span><strong className="text-[#25233A]">Scope:</strong> {svc.scope}</span>
+                        <span className="truncate"><strong className="text-[#25233A]">Scope:</strong> {svc.scope}</span>
                       </div>
-                      <div className="flex items-center gap-2.5 p-2 rounded-2xl bg-[#F3F0FF] text-[#6E6A8A] text-xs font-semibold clay-pill-inset">
-                        <span className="material-symbols-outlined text-[#6C63FF] text-[18px]">inventory_2</span>
-                        <span><strong className="text-[#25233A]">Format:</strong> {svc.format}</span>
+                      <div className="flex items-center gap-2 p-2 rounded-xl sm:rounded-2xl bg-[#F3F0FF] text-[#6E6A8A] text-xs font-semibold clay-pill-inset min-w-0">
+                        <span className="material-symbols-outlined text-[#6C63FF] text-[18px] shrink-0">inventory_2</span>
+                        <span className="truncate"><strong className="text-[#25233A]">Format:</strong> {svc.format}</span>
                       </div>
                     </div>
                   </div>
 
                   {/* Card CTAs */}
-                  <div className={isFullSpan ? 'flex lg:flex-col justify-end items-center gap-3 lg:w-56 shrink-0 pt-4 lg:pt-0' : 'flex flex-col gap-2 mt-auto'}>
+                  <div className={isFullSpan ? 'flex flex-col sm:flex-row lg:flex-col justify-center lg:justify-end items-stretch gap-2.5 sm:gap-3 w-full lg:w-56 shrink-0 pt-4 lg:pt-0 border-t lg:border-t-0 border-[#F0EBFF]' : 'flex flex-col gap-2 mt-auto pt-2'}>
                     <button
                       type="button"
                       onClick={() => handleOpenServiceDetails(svc.id)}
-                      className="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-2xl bg-[#F3F0FF] text-[#6C63FF] text-xs sm:text-sm font-bold clay-card hover:bg-[#EBE5FF] transition-all cursor-pointer"
+                      className="w-full flex items-center justify-center gap-2 py-2.5 sm:py-3 px-4 rounded-xl sm:rounded-2xl bg-[#F3F0FF] text-[#6C63FF] text-xs sm:text-sm font-bold clay-card hover:bg-[#EBE5FF] transition-all cursor-pointer"
                     >
                       <span>View Details</span>
-                      <span className="material-symbols-outlined text-[18px]">arrow_forward</span>
+                      <span className="material-symbols-outlined text-[16px] sm:text-[18px]">arrow_forward</span>
                     </button>
                     <button
                       type="button"
                       onClick={() => handleOpenRequestModal(svc.title)}
-                      className="w-full flex items-center justify-center gap-1.5 py-2.5 px-4 rounded-2xl bg-white text-[#25233A] hover:text-[#6C63FF] text-xs font-bold clay-pill-inset transition-all cursor-pointer"
+                      className="w-full flex items-center justify-center gap-1.5 py-2 sm:py-2.5 px-4 rounded-xl sm:rounded-2xl bg-white text-[#25233A] hover:text-[#6C63FF] text-xs font-bold clay-pill-inset transition-all cursor-pointer"
                     >
                       <span className="material-symbols-outlined text-[16px]">add_circle</span>
                       <span>Request Service</span>
@@ -573,113 +573,80 @@ export function ServicesPage() {
           </div>
 
           {/* Reassurance & Quality Trust Section */}
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 mb-4">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 sm:gap-6 mb-4">
             {/* Trust Reassurances */}
-            <div className="lg:col-span-8 p-6 md:p-8 rounded-3xl bg-white clay-card flex flex-col justify-between">
+            <div className="lg:col-span-8 p-4 sm:p-6 md:p-8 rounded-2xl sm:rounded-3xl bg-white clay-card flex flex-col justify-between">
               <div>
-                <div className="flex items-center gap-2.5 mb-3">
-                  <span className="material-symbols-outlined text-[#6C63FF] text-[24px]" style={{ fontVariationSettings: "'FILL' 1" }}>
+                <div className="flex items-center gap-2.5 mb-2.5 sm:mb-3">
+                  <span className="material-symbols-outlined text-[#6C63FF] text-[22px] sm:text-[24px]" style={{ fontVariationSettings: "'FILL' 1" }}>
                     verified_user
                   </span>
-                  <h3 className="text-xl sm:text-2xl font-bold text-[#25233A]">
+                  <h3 className="text-lg sm:text-xl md:text-2xl font-bold text-[#25233A]">
                     Why Students Trust Assignment Hub
                   </h3>
                 </div>
-                <p className="text-xs sm:text-sm text-[#6E6A8A] mb-6">
+                <p className="text-xs sm:text-sm text-[#6E6A8A] mb-4 sm:mb-6 leading-relaxed">
                   Every submission passes rigorous formatting and originality reviews before delivery to your workspace.
                 </p>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div className="flex items-start gap-3 p-3.5 rounded-2xl bg-[#F3F0FF] clay-pill-inset">
-                  <span className="material-symbols-outlined text-[#6C63FF] text-[20px] mt-0.5">lock</span>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 sm:gap-4">
+                <div className="flex items-start gap-2.5 sm:gap-3 p-3 sm:p-3.5 rounded-xl sm:rounded-2xl bg-[#F3F0FF] clay-pill-inset">
+                  <span className="material-symbols-outlined text-[#6C63FF] text-[18px] sm:text-[20px] mt-0.5 shrink-0">lock</span>
                   <div>
-                    <p className="text-sm text-[#25233A] font-bold">100% Confidential</p>
-                    <p className="text-xs text-[#6E6A8A]">Your identity and academic files remain strictly private.</p>
+                    <p className="text-xs sm:text-sm text-[#25233A] font-bold">100% Confidential</p>
+                    <p className="text-[11px] sm:text-xs text-[#6E6A8A] leading-normal">Your identity and academic files remain strictly private.</p>
                   </div>
                 </div>
-                <div className="flex items-start gap-3 p-3.5 rounded-2xl bg-[#F3F0FF] clay-pill-inset">
-                  <span className="material-symbols-outlined text-[#6C63FF] text-[20px] mt-0.5">rule</span>
+                <div className="flex items-start gap-2.5 sm:gap-3 p-3 sm:p-3.5 rounded-xl sm:rounded-2xl bg-[#F3F0FF] clay-pill-inset">
+                  <span className="material-symbols-outlined text-[#6C63FF] text-[18px] sm:text-[20px] mt-0.5 shrink-0">rule</span>
                   <div>
-                    <p className="text-sm text-[#25233A] font-bold">Rubric Compliant</p>
-                    <p className="text-xs text-[#6E6A8A]">Aligned with standard APA, IEEE, Harvard or your college format.</p>
+                    <p className="text-xs sm:text-sm text-[#25233A] font-bold">Rubric Compliant</p>
+                    <p className="text-[11px] sm:text-xs text-[#6E6A8A] leading-normal">Aligned with standard APA, IEEE, Harvard or your college format.</p>
                   </div>
                 </div>
-                <div className="flex items-start gap-3 p-3.5 rounded-2xl bg-[#F3F0FF] clay-pill-inset">
-                  <span className="material-symbols-outlined text-[#FFB84D] text-[20px] mt-0.5">alarm_on</span>
+                <div className="flex items-start gap-2.5 sm:gap-3 p-3 sm:p-3.5 rounded-xl sm:rounded-2xl bg-[#F3F0FF] clay-pill-inset">
+                  <span className="material-symbols-outlined text-[#FFB84D] text-[18px] sm:text-[20px] mt-0.5 shrink-0">alarm_on</span>
                   <div>
-                    <p className="text-sm text-[#25233A] font-bold">On-Time Guarantee</p>
-                    <p className="text-xs text-[#6E6A8A]">Delivered ahead of agreed deadline for your final review.</p>
+                    <p className="text-xs sm:text-sm text-[#25233A] font-bold">On-Time Guarantee</p>
+                    <p className="text-[11px] sm:text-xs text-[#6E6A8A] leading-normal">Delivered ahead of agreed deadline for your final review.</p>
                   </div>
                 </div>
-                <div className="flex items-start gap-3 p-3.5 rounded-2xl bg-[#F3F0FF] clay-pill-inset">
-                  <span className="material-symbols-outlined text-[#6C63FF] text-[20px] mt-0.5">support_agent</span>
+                <div className="flex items-start gap-2.5 sm:gap-3 p-3 sm:p-3.5 rounded-xl sm:rounded-2xl bg-[#F3F0FF] clay-pill-inset">
+                  <span className="material-symbols-outlined text-[#6C63FF] text-[18px] sm:text-[20px] mt-0.5 shrink-0">support_agent</span>
                   <div>
-                    <p className="text-sm text-[#25233A] font-bold">Coordinator Support</p>
-                    <p className="text-xs text-[#6E6A8A]">Direct updates and clarification throughout each stage.</p>
+                    <p className="text-xs sm:text-sm text-[#25233A] font-bold">Coordinator Support</p>
+                    <p className="text-[11px] sm:text-xs text-[#6E6A8A] leading-normal">Direct updates and clarification throughout each stage.</p>
                   </div>
                 </div>
               </div>
             </div>
 
             {/* Quick Assistance Card */}
-            <div className="lg:col-span-4 p-6 md:p-8 rounded-3xl bg-[#6C63FF] text-white clay-card flex flex-col justify-between shadow-xl">
+            <div className="lg:col-span-4 p-5 sm:p-6 md:p-8 rounded-2xl sm:rounded-3xl bg-[#6C63FF] text-white clay-card flex flex-col justify-between shadow-xl">
               <div>
-                <div className="w-12 h-12 rounded-2xl bg-white/15 flex items-center justify-center text-white mb-4">
-                  <span className="material-symbols-outlined text-[24px]">contact_support</span>
+                <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl bg-white/15 flex items-center justify-center text-white mb-3 sm:mb-4">
+                  <span className="material-symbols-outlined text-[22px] sm:text-[24px]">contact_support</span>
                 </div>
-                <h3 className="text-xl sm:text-2xl font-bold text-white mb-2">
+                <h3 className="text-lg sm:text-xl md:text-2xl font-bold text-white mb-2 leading-snug">
                   Have a unique syllabus or urgent deadline?
                 </h3>
-                <p className="text-xs sm:text-sm text-white/80 leading-relaxed mb-6">
+                <p className="text-xs sm:text-sm text-white/80 leading-relaxed mb-4 sm:mb-6">
                   Get personalized assistance from an academic coordinator who will inspect your guidelines and provide instant schedule feasibility.
                 </p>
               </div>
               <button
                 type="button"
                 onClick={() => handleOpenRequestModal('Custom Syllabus / Urgent Inquiries')}
-                className="w-full inline-flex items-center justify-center gap-2 py-3.5 px-5 rounded-2xl bg-white text-[#6C63FF] text-xs sm:text-sm font-bold clay-card hover:bg-[#FAF8FF] transition-all cursor-pointer shadow-md"
+                className="w-full inline-flex items-center justify-center gap-2 py-3 sm:py-3.5 px-4 sm:px-5 rounded-xl sm:rounded-2xl bg-white text-[#6C63FF] text-xs sm:text-sm font-bold clay-card hover:bg-[#FAF8FF] transition-all cursor-pointer shadow-md"
               >
-                <span>Contact Academic Coordinator</span>
-                <span className="material-symbols-outlined text-[18px]">arrow_forward</span>
+                <span>Contact Coordinator</span>
+                <span className="material-symbols-outlined text-[16px] sm:text-[18px]">arrow_forward</span>
               </button>
             </div>
           </div>
         </div>
       </main>
-
-      {/* ======================================================== */}
-      {/* 3. MOBILE BOTTOM NAVIGATION                               */}
-      {/* ======================================================== */}
-      <nav className="fixed bottom-0 left-0 right-0 z-50 lg:hidden bg-white/95 backdrop-blur-xl border-t border-[#E2DCFF] shadow-lg px-2 py-2 flex items-center justify-around">
-        <Link
-          to="/dashboard"
-          className="flex flex-col items-center gap-1 py-1 px-3 rounded-xl text-xs text-[#6E6A8A] font-medium transition-colors"
-        >
-          <span className="material-symbols-outlined text-[22px]">home</span>
-          <span>Home</span>
-        </Link>
-        <span
-          className="flex flex-col items-center gap-1 py-1 px-3 rounded-xl text-xs text-[#6C63FF] font-bold transition-colors"
-        >
-          <span className="material-symbols-outlined text-[22px]">category</span>
-          <span>Services</span>
-        </span>
-        <Link
-          to="/my-requests"
-          className="flex flex-col items-center gap-1 py-1 px-3 rounded-xl text-xs text-[#6E6A8A] font-medium transition-colors"
-        >
-          <span className="material-symbols-outlined text-[22px]">task</span>
-          <span>Requests</span>
-        </Link>
-        <Link
-          to="/inquiries"
-          className="flex flex-col items-center gap-1 py-1 px-3 rounded-xl text-xs text-[#6E6A8A] font-medium transition-colors"
-        >
-          <span className="material-symbols-outlined text-[22px]">chat</span>
-          <span>Inquiries</span>
-        </Link>
-      </nav>
 
       {/* ======================================================== */}
       {/* 4. INTERACTIVE SERVICE DETAIL MODAL                       */}
