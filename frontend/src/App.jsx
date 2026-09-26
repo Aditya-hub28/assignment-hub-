@@ -9,6 +9,7 @@ import { LoginPage } from './pages/LoginPage';
 import { SignupPage } from './pages/SignupPage';
 import { ForgotPasswordPage } from './pages/ForgotPasswordPage';
 import { DashboardPage } from './pages/DashboardPage';
+import { ServicesPage } from './pages/ServicesPage';
 
 function App() {
   return (
@@ -21,41 +22,29 @@ function App() {
             <Route path="/signup" element={<SignupPage />} />
             <Route path="/forgot-password" element={<ForgotPasswordPage />} />
             
-            {/* Student Dashboard Routes */}
+            {/* Student Dashboard Route (Home view) */}
             <Route
               path="/dashboard"
               element={
                 <ProtectedRoute>
-                  <DashboardPage defaultTab="home" />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/services"
-              element={
-                <ProtectedRoute>
-                  <DashboardPage defaultTab="services" />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/my-requests"
-              element={
-                <ProtectedRoute>
-                  <DashboardPage defaultTab="my-requests" />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/inquiries"
-              element={
-                <ProtectedRoute>
-                  <DashboardPage defaultTab="inquiries" />
+                  <DashboardPage />
                 </ProtectedRoute>
               }
             />
 
-            {/* Fallback */}
+            {/* Dedicated Academic Services Page (Full-Width Category Bar) */}
+            <Route
+              path="/services"
+              element={
+                <ProtectedRoute>
+                  <ServicesPage />
+                </ProtectedRoute>
+              }
+            />
+
+            {/* Fallback to Dashboard */}
+            <Route path="/my-requests" element={<Navigate to="/dashboard" replace />} />
+            <Route path="/inquiries" element={<Navigate to="/dashboard" replace />} />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </BrowserRouter>
