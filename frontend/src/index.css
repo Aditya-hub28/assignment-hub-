@@ -1,0 +1,103 @@
+@import "tailwindcss";
+
+@theme {
+  --color-primary: #6C63FF;
+  --color-primary-container: #8B7CFF;
+  --color-secondary: #FFB84D;
+  --color-secondary-container: #FFF3DD;
+  --color-tertiary: #FF6584;
+  --color-surface: #FAF8FF;
+  --color-surface-container-lowest: #FFFFFF;
+  --color-surface-container-low: #F3F0FF;
+  --color-surface-container: #EBE5FF;
+  --color-surface-container-high: #E2DCFF;
+  --color-surface-container-highest: #D4CCFF;
+  --color-on-surface: #25233A;
+  --color-on-surface-variant: #6E6A8A;
+  --color-outline: #C8C2EA;
+  --color-success: #55C595;
+  --color-error: #BA1A1A;
+  --font-sans: "Plus Jakarta Sans", sans-serif;
+}
+
+body {
+  background-color: var(--color-surface);
+  color: var(--color-on-surface);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Claymorphic 3D Tactile Design Tokens */
+.clay-card {
+  background: #FFFFFF;
+  box-shadow: 
+    10px 16px 30px rgba(108, 99, 255, 0.12),
+    -6px -6px 16px #FFFFFF,
+    inset 2px 2px 4px rgba(255, 255, 255, 0.95),
+    inset -2px -2px 5px rgba(108, 99, 255, 0.05);
+}
+
+.clay-surface {
+  background: #FAF8FF;
+  box-shadow: 
+    12px 18px 36px rgba(108, 99, 255, 0.12),
+    -8px -8px 20px #FFFFFF,
+    inset 3px 3px 6px rgba(255, 255, 255, 0.9),
+    inset -3px -3px 8px rgba(108, 99, 255, 0.06);
+}
+
+.clay-btn-primary {
+  box-shadow: 
+    0 8px 20px rgba(108, 99, 255, 0.4),
+    inset 0 2px 4px rgba(255, 255, 255, 0.4),
+    inset 0 -3px 6px rgba(0, 0, 0, 0.2);
+}
+
+.clay-pill-inset {
+  box-shadow: 
+    inset 2px 3px 6px rgba(108, 99, 255, 0.1),
+    inset -2px -2px 5px #FFFFFF;
+}
+
+.clay-pill-outset {
+  box-shadow: 2px 3px 8px rgba(108, 99, 255, 0.12), inset 1px 1px 2px rgba(255, 255, 255, 0.95);
+}
+
+.clay-nav-shell {
+  box-shadow: 0 4px 20px rgba(108, 99, 255, 0.06), inset 0 -1px 0 rgba(226, 220, 255, 0.6);
+}
+
+@keyframes gentle-float {
+  0%, 100% { transform: translateY(0px) rotate(0deg); }
+  50% { transform: translateY(-7px) rotate(0.5deg); }
+}
+@keyframes gentle-float-alt {
+  0%, 100% { transform: translateY(0px) rotate(0deg); }
+  50% { transform: translateY(-9px) rotate(-1deg); }
+}
+
+.animate-float {
+  animation: gentle-float 5s ease-in-out infinite;
+}
+.animate-float-alt {
+  animation: gentle-float-alt 6.5s ease-in-out infinite;
+}
+
+.clay-btn {
+  transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.clay-btn:hover {
+  transform: translateY(-2px);
+}
+.clay-btn:active {
+  transform: translateY(2px) scale(0.98);
+  box-shadow: inset 0 4px 8px rgba(0, 0, 0, 0.25) !important;
+}
+
+.clay-hover-card {
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.clay-hover-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 12px 20px 38px rgba(108, 99, 255, 0.18), -8px -8px 22px rgba(255, 255, 255, 1), inset 3px 3px 6px rgba(255, 255, 255, 0.9), inset -3px -3px 8px rgba(108, 99, 255, 0.1);
+}

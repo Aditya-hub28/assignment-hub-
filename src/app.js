@@ -40,11 +40,30 @@ if (env.NODE_ENV !== 'test') {
 // Global API rate limiting for API routes
 app.use(env.API_PREFIX, globalLimiter);
 
-// Serve static frontend UI from public folder
-app.use(express.static(path.join(__dirname, '../public')));
+// Serve static frontend UI (React dist if built, otherwise public)
+const fs = require('fs');
+const frontendDistPath = path.join(__dirname, '../frontend/dist');
+
+if (fs.existsSync(frontendDistPath)) {
+  app.use(express.static(frontendDistPath));
+} else {
+  app.use(express.static(path.join(__dirname, '../public')));
+}
 
 // Mount API routes
 app.use(env.API_PREFIX, routes);
+
+// SPA client-side routing fallback (for non-API GET requests)
+app.use((req, res, next) => {
+  if (req.method !== 'GET' || req.path.startsWith('/api')) {
+    return next();
+  }
+  const reactIndex = path.join(__dirname, '../frontend/dist/index.html');
+  if (fs.existsSync(reactIndex)) {
+    return res.sendFile(reactIndex);
+  }
+  next();
+});
 
 // Handle 404 Route Not Found for API
 app.use(notFoundHandler);
