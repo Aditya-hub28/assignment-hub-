@@ -361,44 +361,37 @@ export function LandingPage() {
             </div>
           </div>
 
-          <div className="lg:col-span-5 flex justify-center z-10">
-            <div className="relative w-full max-w-md">
-              <div className="clay-surface rounded-3xl p-6 sm:p-8 relative">
-                <div className="flex items-center justify-between border-b border-[#E2DCFF] pb-4 mb-5">
-                  <div className="flex items-center space-x-3">
-                    <div className="w-10 h-10 rounded-2xl bg-primary/10 flex items-center justify-center text-primary font-bold">
-                      <span className="material-symbols-outlined text-[22px]">auto_stories</span>
-                    </div>
-                    <div>
-                      <h4 className="font-extrabold text-sm text-[#25233A]">Assignment Dispatch</h4>
-                      <p className="text-[11px] text-[#25233A]/60">Live academic tracking</p>
-                    </div>
-                  </div>
-                  <span className="px-3 py-1 rounded-full bg-[#EDFBF4] text-[#55C595] text-xs font-bold">Verified</span>
-                </div>
+          {/* Right Column: 3D Claymorphic Student Workspace Illustration & Floating Badges */}
+          <div className="lg:col-span-5 relative flex items-center justify-center pt-6 sm:pt-8 lg:pt-4">
+            <div className="relative w-full max-w-lg lg:max-w-none rounded-[2.5rem] bg-white p-3 sm:p-4 shadow-[12px_20px_45px_rgba(108,99,255,0.16),-8px_-8px_24px_#ffffff,inset_3px_3px_6px_rgba(255,255,255,0.95),inset_-3px_-3px_8px_rgba(108,99,255,0.08)] border border-white">
+              <div className="relative rounded-[2rem] overflow-hidden bg-[#FAF8FF]">
+                <img
+                  src="https://lh3.googleusercontent.com/aida/AEtjO1W_XExp-gwwWxEiGacmZSGWtla7n2fZavoM9OxEk7RZtWxgYjyFuZrP6kh5FhX_dFRBT8I5bbvnzAilE5WqvTZWj0rY7Ttz6PK0-csw4d6Lfzz1lxwpZ8V3DJrHB0t38E58Dw_R_f3bFSdRQMXzciLBk6pGonbg_oiG9Bo__jl2vOj-an2BZvNOCU7GBkzPwWWyk2-a5ZcA0L2MQ4X47sNduxI9Y6t8_-a_5TBh25LryZeLz-gMOQQSh-LC"
+                  alt="3D Clay Study Desk"
+                  className="w-full h-auto object-cover transform hover:scale-[1.02] transition-transform duration-500 ease-out"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-[#6C63FF]/10 via-transparent to-white/20 pointer-events-none"></div>
+              </div>
 
-                <div className="space-y-3.5 text-xs sm:text-sm font-medium">
-                  <div className="p-3.5 rounded-2xl bg-white/80 shadow-sm flex items-center justify-between">
-                    <span className="text-[#25233A]/70">Practical File (Python / DSA)</span>
-                    <span className="font-bold text-[#55C595]">Completed</span>
-                  </div>
-                  <div className="p-3.5 rounded-2xl bg-white/80 shadow-sm flex items-center justify-between">
-                    <span className="text-[#25233A]/70">Microcontroller Mini Project</span>
-                    <span className="font-bold text-[#6C63FF]">In Progress</span>
-                  </div>
-                  <div className="p-3.5 rounded-2xl bg-white/80 shadow-sm flex items-center justify-between">
-                    <span className="text-[#25233A]/70">Engineering CAD Drawing</span>
-                    <span className="font-bold text-[#FFB84D]">Review Stage</span>
-                  </div>
+              {/* Floating Clay Pill: Timely Delivery */}
+              <div className="animate-float absolute -bottom-5 -left-4 sm:-bottom-6 sm:-left-6 bg-white px-4 py-3 rounded-2xl shadow-[8px_12px_24px_rgba(108,99,255,0.16),-4px_-4px_12px_#ffffff,inset_2px_2px_4px_rgba(255,255,255,0.9)] border border-white flex items-center space-x-3 z-20">
+                <div className="w-10 h-10 rounded-xl bg-[#55C595]/20 flex items-center justify-center text-[#55C595]">
+                  <span className="material-symbols-outlined text-2xl font-bold">verified</span>
                 </div>
+                <div>
+                  <p className="text-xs font-bold text-[#25233A]">On-Time Submissions</p>
+                  <p className="text-[11px] font-semibold text-[#55C595]">100% Deadline Guarantee</p>
+                </div>
+              </div>
 
-                <div className="mt-6 pt-4 border-t border-[#E2DCFF] flex items-center justify-between">
-                  <div className="flex -space-x-2">
-                    <div className="w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center font-bold text-xs ring-2 ring-white">A</div>
-                    <div className="w-8 h-8 rounded-full bg-secondary text-white flex items-center justify-center font-bold text-xs ring-2 ring-white">R</div>
-                    <div className="w-8 h-8 rounded-full bg-tertiary text-white flex items-center justify-center font-bold text-xs ring-2 ring-white">P</div>
-                  </div>
-                  <span className="text-xs font-bold text-[#6C63FF]">10,000+ Students Helped</span>
+              {/* Floating Clay Pill: Top Grade GPA */}
+              <div className="animate-float-alt absolute -top-4 -right-3 sm:-top-5 sm:-right-5 bg-white px-4 py-2.5 rounded-2xl shadow-[8px_12px_24px_rgba(108,99,255,0.16),-4px_-4px_12px_#ffffff,inset_2px_2px_4px_rgba(255,255,255,0.9)] border border-white flex items-center space-x-2.5 z-20">
+                <div className="w-8 h-8 rounded-xl bg-[#FFB84D]/25 flex items-center justify-center text-[#FFB84D] font-extrabold text-sm">
+                  ★
+                </div>
+                <div>
+                  <p className="text-[11px] font-bold text-[#25233A]">Academic Quality</p>
+                  <p className="text-xs font-extrabold text-[#6C63FF]">A Grade (94%)</p>
                 </div>
               </div>
             </div>
