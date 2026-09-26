@@ -11,6 +11,7 @@ import { ForgotPasswordPage } from './pages/ForgotPasswordPage';
 import { DashboardPage } from './pages/DashboardPage';
 import { ServicesPage } from './pages/ServicesPage';
 import { MyRequestsPage } from './pages/MyRequestsPage';
+import { InquiriesPage } from './pages/InquiriesPage';
 
 function App() {
   return (
@@ -53,8 +54,17 @@ function App() {
               }
             />
 
-            {/* Fallback to Dashboard */}
-            <Route path="/inquiries" element={<Navigate to="/dashboard" replace />} />
+            {/* Dedicated Inquiries Page (Stitch Inquiries Chat Center) */}
+            <Route
+              path="/inquiries"
+              element={
+                <ProtectedRoute>
+                  <InquiriesPage />
+                </ProtectedRoute>
+              }
+            />
+
+            {/* Catch-all fallback */}
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </BrowserRouter>

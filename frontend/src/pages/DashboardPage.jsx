@@ -138,12 +138,12 @@ export function DashboardPage() {
             >
               My Requests
             </Link>
-            <a
-              href="#support-section"
+            <Link
+              to="/inquiries"
               className="px-5 py-2 rounded-full text-sm font-semibold text-[#464555] hover:text-[#1B192F] transition-all duration-200"
             >
               Inquiries
-            </a>
+            </Link>
           </nav>
 
           {/* Right Header Actions */}
@@ -676,6 +676,9 @@ export function DashboardPage() {
             </Link>
             <Link to="/my-requests" className="text-xs text-[#6E6A8A] hover:text-[#6C63FF] transition-colors">
               My Requests
+            </Link>
+            <Link to="/inquiries" className="text-xs text-[#6E6A8A] hover:text-[#6C63FF] transition-colors">
+              Inquiries
             </Link>
             <Link to="/" className="text-xs text-[#6E6A8A] hover:text-[#6C63FF] transition-colors">
               Landing Page ↗

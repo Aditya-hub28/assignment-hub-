@@ -737,6 +737,14 @@ export function MyRequestsPage() {
                     <span className="material-symbols-outlined text-[18px] text-[#4D41DF]">category</span>
                     <span>Academic Services</span>
                   </Link>
+                  <Link
+                    to="/inquiries"
+                    onClick={() => setUserDropdownOpen(false)}
+                    className="w-full text-left flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-semibold text-[#464555] hover:bg-[#F0EBFF] hover:text-[#1B192F] transition-all cursor-pointer"
+                  >
+                    <span className="material-symbols-outlined text-[18px] text-[#4D41DF]">chat</span>
+                    <span>Inquiries</span>
+                  </Link>
                   <div className="my-1 h-px bg-[#E4DFFE]"></div>
                   <button
                     onClick={handleLogoutClick}
