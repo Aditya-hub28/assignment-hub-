@@ -132,12 +132,12 @@ export function DashboardPage() {
             >
               Services
             </Link>
-            <a
-              href="#my-requests-section"
+            <Link
+              to="/my-requests"
               className="px-5 py-2 rounded-full text-sm font-semibold text-[#464555] hover:text-[#1B192F] transition-all duration-200"
             >
               My Requests
-            </a>
+            </Link>
             <a
               href="#support-section"
               className="px-5 py-2 rounded-full text-sm font-semibold text-[#464555] hover:text-[#1B192F] transition-all duration-200"
@@ -673,6 +673,9 @@ export function DashboardPage() {
             </Link>
             <Link to="/services" className="text-xs text-[#6E6A8A] hover:text-[#6C63FF] transition-colors">
               Services
+            </Link>
+            <Link to="/my-requests" className="text-xs text-[#6E6A8A] hover:text-[#6C63FF] transition-colors">
+              My Requests
             </Link>
             <Link to="/" className="text-xs text-[#6E6A8A] hover:text-[#6C63FF] transition-colors">
               Landing Page ↗

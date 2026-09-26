@@ -405,6 +405,14 @@ export function ServicesPage() {
                     <span className="material-symbols-outlined text-[18px] text-[#6C63FF]">dashboard</span>
                     <span>Student Dashboard</span>
                   </Link>
+                  <Link
+                    to="/my-requests"
+                    onClick={() => setUserDropdownOpen(false)}
+                    className="w-full text-left flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-xs font-semibold text-[#6E6A8A] hover:bg-[#F3F0FF] hover:text-[#25233A] transition-all cursor-pointer"
+                  >
+                    <span className="material-symbols-outlined text-[18px] text-[#6C63FF]">task</span>
+                    <span>My Requests</span>
+                  </Link>
                   <div className="my-1 h-px bg-[#E2DCFF]"></div>
                   <button
                     onClick={handleLogoutClick}

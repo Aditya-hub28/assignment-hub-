@@ -10,6 +10,7 @@ import { SignupPage } from './pages/SignupPage';
 import { ForgotPasswordPage } from './pages/ForgotPasswordPage';
 import { DashboardPage } from './pages/DashboardPage';
 import { ServicesPage } from './pages/ServicesPage';
+import { MyRequestsPage } from './pages/MyRequestsPage';
 
 function App() {
   return (
@@ -42,8 +43,17 @@ function App() {
               }
             />
 
+            {/* Dedicated My Requests Page (Stitch Academic Tracker) */}
+            <Route
+              path="/my-requests"
+              element={
+                <ProtectedRoute>
+                  <MyRequestsPage />
+                </ProtectedRoute>
+              }
+            />
+
             {/* Fallback to Dashboard */}
-            <Route path="/my-requests" element={<Navigate to="/dashboard" replace />} />
             <Route path="/inquiries" element={<Navigate to="/dashboard" replace />} />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
