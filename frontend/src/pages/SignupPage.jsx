@@ -105,7 +105,16 @@ export function SignupPage() {
         showToast('Registration successful! Welcome to Assignment Hub.', 'success');
         navigate('/dashboard');
       } else {
-        throw new Error('Session data not returned.');
+        // Fallback: If session not included in response, login automatically with form credentials
+        try {
+          await api.auth.login({ email: email.trim(), password });
+          await refreshProfile();
+          showToast('Registration successful! Welcome to Assignment Hub.', 'success');
+          navigate('/dashboard');
+        } catch {
+          showToast('Registration completed successfully! Please sign in.', 'success');
+          navigate('/login', { state: { email: email.trim() } });
+        }
       }
     } catch (err) {
       const msg = typeof err === 'string'

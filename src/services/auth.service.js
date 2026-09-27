@@ -113,8 +113,29 @@ class AuthService {
       profile = await profileService.getProfile(authUserId);
     }
 
+    // 5. Generate active session so user is immediately logged in
+    let session = null;
+    try {
+      const { data: signInData } = await supabase.auth.signInWithPassword({
+        email: verifiedRecord.email,
+        password: verifiedRecord.rawPassword
+      });
+
+      if (signInData?.session) {
+        session = {
+          accessToken: signInData.session.access_token,
+          refreshToken: signInData.session.refresh_token,
+          expiresIn: signInData.session.expires_in,
+          tokenType: signInData.session.token_type
+        };
+      }
+    } catch (e) {
+      // Registration is verified; sign-in error will fall back to manual login
+    }
+
     return {
       message: 'Registration and mobile verification completed successfully.',
+      session,
       user: {
         id: authUserId,
         email: verifiedRecord.email,
