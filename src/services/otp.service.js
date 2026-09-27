@@ -129,6 +129,7 @@ class OtpService {
 
     return {
       verificationId: data.id,
+      verification_id: data.id,
       email,
       expiresAt: data.expires_at,
       resendCooldownSeconds: env.OTP.RESEND_COOLDOWN_SECONDS,
@@ -316,6 +317,7 @@ class OtpService {
 
     return {
       verificationId: updated.id,
+      verification_id: updated.id,
       email: record.email,
       expiresAt: updated.expires_at,
       resendsRemaining: updated.max_resends - updated.resend_count,

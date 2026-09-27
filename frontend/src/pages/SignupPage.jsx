@@ -62,14 +62,14 @@ export function SignupPage() {
         password
       });
 
-      const verId = res?.data?.verification_id;
+      const verId = res?.data?.verification_id || res?.data?.verificationId || res?.verification_id || res?.verificationId;
       if (verId) {
         setVerificationId(verId);
         setStep(2);
         setResendCooldown(60);
         showToast('OTP sent to your email address! Please check your inbox.', 'success');
       } else {
-        throw new Error('Verification ID not received.');
+        throw new Error('Verification ID not received from server.');
       }
     } catch (err) {
       const msg = typeof err === 'string'
