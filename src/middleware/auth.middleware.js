@@ -30,13 +30,16 @@ const requireAuth = async (req, res, next) => {
     // Support mock test tokens during automated test suite runs
     if (process.env.NODE_ENV === 'test' && token.startsWith('test-token-')) {
       const mockId = token.replace('test-token-', '');
+      const isMockAdmin = mockId.includes('admin') || token.includes('admin');
+      const mockRole = isMockAdmin ? 'admin' : 'student';
       req.user = {
         id: mockId,
         email: `${mockId}@example.com`,
-        user_metadata: { role: 'student' }
+        role: mockRole,
+        user_metadata: { role: mockRole }
       };
       req.accessToken = token;
-      req.profile = { id: mockId, email: `${mockId}@example.com`, role: 'student' };
+      req.profile = { id: mockId, email: `${mockId}@example.com`, role: mockRole };
       return next();
     }
 
@@ -62,13 +65,20 @@ const requireAuth = async (req, res, next) => {
     try {
       const profile = await profileService.getProfile(user.id, req.scopedClient);
       req.profile = profile;
+      if (profile && profile.role) {
+        req.user.role = profile.role;
+      } else {
+        req.user.role = user.user_metadata?.role || 'student';
+      }
     } catch (profileErr) {
       // If profile fetch fails, attach basic user payload
+      const fallbackRole = user.user_metadata?.role || 'student';
       req.profile = {
         id: user.id,
         email: user.email,
-        role: user.user_metadata?.role || 'student'
+        role: fallbackRole
       };
+      req.user.role = fallbackRole;
     }
 
     next();

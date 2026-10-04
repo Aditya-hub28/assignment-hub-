@@ -41,8 +41,24 @@ const generateRequestId = async () => {
   const year = now.getFullYear();
   const month = String(now.getMonth() + 1).padStart(2, '0');
   const day = String(now.getDate()).padStart(2, '0');
-  const prefix = `REQ-${year}${month}${day}-`;
+  const dayKey = `${year}${month}${day}`;
+  const prefix = `REQ-${dayKey}-`;
 
+  try {
+    // 1. Try atomic PostgreSQL sequence function with FOR UPDATE locking
+    const { data: nextId, error: rpcErr } = await supabaseAdmin.rpc('get_next_request_id', {
+      prefix,
+      day_key: dayKey
+    });
+
+    if (!rpcErr && nextId) {
+      return nextId;
+    }
+  } catch (rpcErr) {
+    console.warn('[SERVICE_REQUEST] Atomic RPC call failed, falling back to query:', rpcErr.message);
+  }
+
+  // 2. Fallback query if RPC is unavailable
   try {
     const { data, error } = await supabaseAdmin
       .from('service_requests')

@@ -32,4 +32,8 @@ router.use('/inquiries', inquiryRoutes);
 // Notifications routes
 router.use('/notifications', notificationRoutes);
 
+// Admin routes (requires authentication & admin role)
+const adminRoutes = require('./admin.routes');
+router.use('/admin', adminRoutes);
+
 module.exports = router;
