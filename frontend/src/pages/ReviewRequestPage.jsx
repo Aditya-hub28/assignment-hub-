@@ -182,12 +182,12 @@ export function ReviewRequestPage() {
 
                 <div className="p-4 rounded-2xl bg-[#F6F1FF] clay-pill-inset flex items-start gap-3">
                   <div className="w-9 h-9 rounded-full bg-white text-[#4D41DF] flex items-center justify-center shrink-0 clay-card shadow-sm">
-                    <span className="material-symbols-outlined text-[18px]">bookmark_manager</span>
+                    <span className="material-symbols-outlined text-[18px]">verified</span>
                   </div>
                   <div className="flex flex-col text-left">
-                    <span className="text-[11px] font-bold text-[#464555]">Format / Standard</span>
+                    <span className="text-[11px] font-bold text-[#464555]">Academic Standard</span>
                     <span className="text-sm font-bold text-[#1B192F] truncate max-w-[140px]">
-                      {formData.serviceSpecific?.citationStandard || formData.serviceSpecific?.techStack || 'College Standard'}
+                      {formData.serviceSpecific?.techStack || formData.subject || 'University Standard'}
                     </span>
                   </div>
                 </div>

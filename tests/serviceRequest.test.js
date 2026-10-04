@@ -14,8 +14,7 @@ describe('Service Requests API Test Suite', () => {
         deadline: sampleDeadline,
         serviceSpecific: {
           numberOfPages: 12,
-          formatStyle: 'Typed (Digital PDF / Word)',
-          collegeTemplate: 'Standard IEEE Two-Column'
+          formatStyle: 'Typed (Digital PDF / Word)'
         },
         files: [
           {

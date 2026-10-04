@@ -342,31 +342,6 @@ export function ServiceRequestFormPage() {
                         </div>
                       </div>
                     </div>
-
-                    <div className="flex flex-col gap-2">
-                      <label className="text-sm font-bold text-[#1B192F]">
-                        College Format / Citation Standard <span className="text-red-500">*</span>
-                      </label>
-                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
-                        {['Course Syllabus Template', 'IEEE Academic Style', 'APA 7th Edition'].map((cit) => (
-                          <button
-                            key={cit}
-                            type="button"
-                            onClick={() => updateFormData({ serviceSpecific: { citationStandard: cit } })}
-                            className={`p-3 px-4 rounded-2xl font-bold text-xs sm:text-sm flex items-center gap-2 transition-all cursor-pointer ${
-                              formData.serviceSpecific?.citationStandard === cit
-                                ? 'bg-[#E3DFFF] text-[#4D41DF] shadow-inner'
-                                : 'bg-[#F6F1FF] text-[#464555] hover:bg-[#F0EBFF]'
-                            }`}
-                          >
-                            <span className="material-symbols-outlined text-[18px] text-[#4D41DF]">
-                              {formData.serviceSpecific?.citationStandard === cit ? 'check_circle' : 'article'}
-                            </span>
-                            <span>{cit}</span>
-                          </button>
-                        ))}
-                      </div>
-                    </div>
                   </div>
                 )}
 

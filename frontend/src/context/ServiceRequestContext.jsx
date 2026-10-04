@@ -18,7 +18,6 @@ const DEFAULT_FORM_DATA = {
   serviceSpecific: {
     numberOfPages: '12 Pages (~3,000 words)',
     deliveryFormat: 'Typed (Doc/PDF)',
-    citationStandard: 'Course Syllabus Template',
     techStack: 'Python, FastAPI, PostgreSQL, Docker',
     gitRepo: '',
     includeUnitTests: true,
