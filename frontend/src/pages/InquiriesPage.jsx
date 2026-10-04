@@ -340,8 +340,8 @@ export function InquiriesPage() {
               <div className="relative shrink-0">
                 <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-[#4D41DF] to-[#7B70FF] text-white flex items-center justify-center font-bold text-xs shadow-[0_2px_8px_rgba(108,99,255,0.3)]">
                   {activeInquiry.assignedSpecialist
-                    ? activeInquiry.assignedSpecialist.split(' ').map((n) => n[0]).slice(0, 2).join('')
-                    : 'AH'}
+                    ? activeInquiry.assignedSpecialist.charAt(0).toUpperCase()
+                    : 'A'}
                 </div>
                 <span className="absolute bottom-0 right-0 w-3 h-3 rounded-full bg-emerald-500 border-2 border-white" />
               </div>
@@ -350,7 +350,7 @@ export function InquiriesPage() {
               <div className="min-w-0">
                 <div className="flex items-center gap-1">
                   <h2 className="text-sm font-bold text-[#1B192F] truncate">
-                    {activeInquiry.assignedSpecialist || 'Academic Specialist'}
+                    {activeInquiry.assignedSpecialist || 'Admin'}
                   </h2>
                   <span className="material-symbols-outlined text-[15px] text-[#4D41DF] shrink-0">verified</span>
                 </div>
@@ -405,11 +405,11 @@ export function InquiriesPage() {
             <div className="flex flex-col items-center justify-center py-4 px-4 text-center">
               <div className="w-16 h-16 rounded-full bg-gradient-to-tr from-[#4D41DF] to-[#7B70FF] text-white flex items-center justify-center font-bold text-lg shadow-[0_4px_16px_rgba(108,99,255,0.25)] mb-2">
                 {activeInquiry.assignedSpecialist
-                  ? activeInquiry.assignedSpecialist.split(' ').map((n) => n[0]).slice(0, 2).join('')
-                  : 'AH'}
+                  ? activeInquiry.assignedSpecialist.charAt(0).toUpperCase()
+                  : 'A'}
               </div>
               <h3 className="text-sm font-extrabold text-[#1B192F]">
-                {activeInquiry.assignedSpecialist || 'AssignmentHub Academic Specialist'}
+                {activeInquiry.assignedSpecialist || 'Admin'}
               </h3>
               <p className="text-xs text-[#777587] mt-0.5 max-w-xs line-clamp-1">{activeInquiry.title}</p>
               <div className="inline-flex items-center gap-1 mt-2 px-2.5 py-0.5 rounded-full bg-[#F0EBFF] text-[#464555] text-[10px] font-medium">
@@ -848,7 +848,7 @@ export function InquiriesPage() {
                             <div className={`max-w-lg sm:max-w-xl flex flex-col ${isStudent ? 'items-end' : 'items-start'}`}>
                               <div className="flex items-center gap-2 mb-1 px-1">
                                 <span className="text-xs font-bold text-[#1B192F]">
-                                  {isStudent ? 'You' : msg.senderName || 'Academic Coordinator'}
+                                  {isStudent ? 'You' : msg.senderName || 'Admin'}
                                 </span>
                                 <span className="text-[11px] text-[#777587]">
                                   {formatTime(msg.createdAt)}
@@ -928,7 +928,7 @@ export function InquiriesPage() {
                   <span className="material-symbols-outlined text-5xl text-[#4D41DF]/40 mb-2">chat_bubble_outline</span>
                   <p className="text-base font-semibold text-[#1B192F]">Select an inquiry to view conversation</p>
                   <p className="text-xs text-[#777587] mt-1 max-w-sm">
-                    Select any linked request from the list on the left to review communication updates with your academic specialist.
+                    Select any linked request from the list on the left to review communication updates with Admin.
                   </p>
                 </div>
               )}

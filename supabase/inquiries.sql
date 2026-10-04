@@ -16,7 +16,7 @@ CREATE TABLE IF NOT EXISTS public.inquiries (
     deadline TIMESTAMPTZ,
     status TEXT NOT NULL DEFAULT 'active' CHECK (status IN ('active', 'in-progress', 'resolved', 'closed')),
     status_label TEXT DEFAULT 'In Progress',
-    assigned_specialist TEXT DEFAULT 'Dr. Marcus Vance (Academic Coordinator)',
+    assigned_specialist TEXT DEFAULT 'Admin',
     latest_message TEXT,
     latest_message_time TIMESTAMPTZ DEFAULT NOW(),
     unread_count INTEGER DEFAULT 0,
