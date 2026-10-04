@@ -22,7 +22,32 @@ export function ProfilePage() {
   const role = profile?.role || 'student';
   const joinDate = profile?.createdAt || user?.created_at;
 
-  // Edit state
+  // Academic Details Storage Key
+  const storageKey = `ah_academic_details_${profile?.id || user?.id || user?.email || 'student'}`;
+
+  // Academic Details State
+  const [academicDetails, setAcademicDetails] = useState(() => {
+    try {
+      const saved = localStorage.getItem(storageKey);
+      if (saved) return JSON.parse(saved);
+    } catch {
+      // ignore
+    }
+    return {
+      studentName: '',
+      branch: '',
+      year: '',
+      semester: '',
+      division: '',
+      rollNo: ''
+    };
+  });
+
+  const [isEditingAcademic, setIsEditingAcademic] = useState(false);
+  const [academicForm, setAcademicForm] = useState(academicDetails);
+  const [isSavingAcademic, setIsSavingAcademic] = useState(false);
+
+  // Edit basic name state
   const [isEditing, setIsEditing] = useState(false);
   const [editName, setEditName] = useState(fullName);
   const [isSaving, setIsSaving] = useState(false);
@@ -30,9 +55,44 @@ export function ProfilePage() {
   // Stats state
   const [stats, setStats] = useState({ totalRequests: 0, activeInquiries: 0 });
 
+  // Calculate profile completion percentage
+  // By default after login: 50% complete (basic registration/auth info exists).
+  // Once academic details (branch, year, semester) are added: 100% complete!
+  const hasAcademicDetails = Boolean(
+    academicDetails.branch &&
+    academicDetails.year &&
+    academicDetails.semester
+  );
+  const profileCompletionPercent = hasAcademicDetails ? 100 : 50;
+
   useEffect(() => {
     setEditName(fullName);
   }, [fullName]);
+
+  useEffect(() => {
+    // When user changes or on mount, load user-specific academic details
+    try {
+      const saved = localStorage.getItem(storageKey);
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        setAcademicDetails(parsed);
+        setAcademicForm(parsed);
+      } else {
+        const initialForm = {
+          studentName: fullName,
+          branch: '',
+          year: '',
+          semester: '',
+          division: '',
+          rollNo: ''
+        };
+        setAcademicDetails(initialForm);
+        setAcademicForm(initialForm);
+      }
+    } catch {
+      // ignore
+    }
+  }, [storageKey, fullName]);
 
   // Fetch quick stats
   useEffect(() => {
@@ -55,7 +115,7 @@ export function ProfilePage() {
     fetchStats();
   }, []);
 
-  const handleSave = async (e) => {
+  const handleSaveName = async (e) => {
     e.preventDefault();
     if (!editName.trim() || editName.trim() === fullName) {
       setIsEditing(false);
@@ -65,10 +125,54 @@ export function ProfilePage() {
     try {
       await updateProfile({ full_name: editName.trim() });
       setIsEditing(false);
+      // Also update studentName in academic details if present
+      const updatedAcademics = { ...academicDetails, studentName: editName.trim() };
+      setAcademicDetails(updatedAcademics);
+      localStorage.setItem(storageKey, JSON.stringify(updatedAcademics));
     } catch (err) {
       showToast(err.message || 'Failed to update profile.', 'error');
     } finally {
       setIsSaving(false);
+    }
+  };
+
+  const handleSaveAcademicDetails = async (e) => {
+    e.preventDefault();
+    if (!academicForm.branch || !academicForm.year || !academicForm.semester) {
+      showToast('Please fill in Branch, Academic Year, and Semester.', 'error');
+      return;
+    }
+
+    setIsSavingAcademic(true);
+    try {
+      const payload = {
+        studentName: academicForm.studentName?.trim() || fullName,
+        branch: academicForm.branch.trim(),
+        year: academicForm.year.trim(),
+        semester: academicForm.semester.trim(),
+        division: academicForm.division?.trim() || '',
+        rollNo: academicForm.rollNo?.trim() || ''
+      };
+
+      // Save to local storage for persistence across reloads
+      localStorage.setItem(storageKey, JSON.stringify(payload));
+      setAcademicDetails(payload);
+      setIsEditingAcademic(false);
+
+      // If user also changed their full name in the form, sync it
+      if (payload.studentName && payload.studentName !== fullName) {
+        try {
+          await updateProfile({ full_name: payload.studentName });
+        } catch {
+          // ignore backend sync error if any
+        }
+      }
+
+      showToast('Academic details saved! Profile is now 100% complete.', 'success');
+    } catch (err) {
+      showToast(err.message || 'Failed to save academic details.', 'error');
+    } finally {
+      setIsSavingAcademic(false);
     }
   };
 
@@ -123,7 +227,7 @@ export function ProfilePage() {
                 {/* Name & Role */}
                 <div className="flex flex-col items-center sm:items-start gap-1.5 flex-1 min-w-0">
                   {isEditing ? (
-                    <form onSubmit={handleSave} className="flex items-center gap-2 w-full max-w-sm">
+                    <form onSubmit={handleSaveName} className="flex items-center gap-2 w-full max-w-sm">
                       <input
                         type="text"
                         value={editName}
@@ -165,7 +269,7 @@ export function ProfilePage() {
 
                   <p className="text-sm text-[#6E6A8A] font-medium">{email}</p>
 
-                  <div className="flex items-center gap-2 mt-1">
+                  <div className="flex flex-wrap items-center gap-2 mt-1">
                     <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#EDE8FA] text-[#6C63FF] text-xs font-bold">
                       <span className="material-symbols-outlined text-[14px]">school</span>
                       {role === 'admin' ? 'Admin' : 'Student'}
@@ -174,9 +278,76 @@ export function ProfilePage() {
                       <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
                       Active
                     </span>
+
+                    {/* Profile Completion Badge: Only 50% after login until academic details are filled */}
+                    {profileCompletionPercent < 100 ? (
+                      <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#FFF4E5] text-[#D97706] text-xs font-extrabold border border-[#FDE68A] shadow-xs">
+                        <span className="material-symbols-outlined text-[14px]">hourglass_top</span>
+                        50% Complete
+                      </span>
+                    ) : (
+                      <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 text-emerald-700 text-xs font-extrabold border border-emerald-200 shadow-xs">
+                        <span className="material-symbols-outlined text-[14px]">verified</span>
+                        100% Complete
+                      </span>
+                    )}
                   </div>
                 </div>
               </div>
+            </div>
+          </section>
+
+          {/* ============================================ */}
+          {/* Profile Completion Progress Banner           */}
+          {/* ============================================ */}
+          <section className="w-full bg-white rounded-3xl clay-card p-5 sm:p-6 border border-[#E2DCFF]/60 relative overflow-hidden">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-2 mb-1.5">
+                  <span className="text-sm font-extrabold text-[#25233A]">Profile Completion</span>
+                  <span
+                    className={`px-2.5 py-0.5 rounded-full text-xs font-extrabold ${
+                      profileCompletionPercent === 100
+                        ? 'bg-emerald-100 text-emerald-800'
+                        : 'bg-[#FFEDD5] text-[#C2410C]'
+                    }`}
+                  >
+                    {profileCompletionPercent}%
+                  </span>
+                </div>
+                <p className="text-xs text-[#6E6A8A] font-medium leading-relaxed">
+                  {profileCompletionPercent === 100
+                    ? 'Your academic profile is 100% complete and verified. Your course specifics are synced for proper rubric formatting!'
+                    : 'Your profile is 50% complete. Please add your academic details (Branch, Year, Semester & Roll Number) below to reach 100% completion.'}
+                </p>
+
+                {/* Progress Track */}
+                <div className="w-full h-3 bg-[#EDE8FA] rounded-full mt-3 overflow-hidden p-0.5 clay-pill-inset">
+                  <div
+                    className={`h-full rounded-full transition-all duration-500 shadow-sm ${
+                      profileCompletionPercent === 100
+                        ? 'bg-gradient-to-r from-emerald-400 to-emerald-600'
+                        : 'bg-gradient-to-r from-[#FFB84D] to-[#6C63FF]'
+                    }`}
+                    style={{ width: `${profileCompletionPercent}%` }}
+                  />
+                </div>
+              </div>
+
+              {profileCompletionPercent < 100 && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setIsEditingAcademic(true);
+                    const el = document.getElementById('academic-details-section');
+                    if (el) el.scrollIntoView({ behavior: 'smooth' });
+                  }}
+                  className="shrink-0 px-4 py-2.5 rounded-full bg-[#6C63FF] hover:bg-[#5b52f5] text-white text-xs font-bold transition-all shadow-md active:scale-95 flex items-center gap-1.5 cursor-pointer self-start sm:self-center"
+                >
+                  <span>Complete Academic Details</span>
+                  <span className="material-symbols-outlined text-[16px]">arrow_downward</span>
+                </button>
+              )}
             </div>
           </section>
 
@@ -268,6 +439,257 @@ export function ProfilePage() {
                 <p className="text-sm font-bold text-[#25233A]">{formatJoinDate(joinDate)}</p>
               </div>
             </div>
+          </section>
+
+          {/* ============================================ */}
+          {/* Academic Details Section                     */}
+          {/* ============================================ */}
+          <section id="academic-details-section" className="w-full bg-white rounded-3xl clay-card p-6 sm:p-8 scroll-mt-28">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6 pb-4 border-b border-[#F0EBFF]">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-2xl bg-[#EDE8FA] flex items-center justify-center shrink-0">
+                  <span className="material-symbols-outlined text-[22px] text-[#6C63FF]">school</span>
+                </div>
+                <div>
+                  <h2 className="text-lg font-extrabold text-[#25233A] leading-tight">Academic Details</h2>
+                  <p className="text-xs text-[#6E6A8A] font-medium">Department, year, semester, and college identification</p>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-2 self-start sm:self-center">
+                {hasAcademicDetails ? (
+                  <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 text-emerald-700 text-xs font-bold border border-emerald-200">
+                    <span className="material-symbols-outlined text-[14px]">check_circle</span>
+                    <span>Completed (100%)</span>
+                  </span>
+                ) : (
+                  <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#FFF4E5] text-[#D97706] text-xs font-bold border border-[#FDE68A]">
+                    <span className="material-symbols-outlined text-[14px]">hourglass_top</span>
+                    <span>Needs Details (50%)</span>
+                  </span>
+                )}
+
+                {!isEditingAcademic && hasAcademicDetails && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setAcademicForm(academicDetails);
+                      setIsEditingAcademic(true);
+                    }}
+                    className="px-3.5 py-1.5 rounded-full bg-[#EDE8FA] hover:bg-[#E2DCFF] text-[#6C63FF] text-xs font-bold transition-all flex items-center gap-1 cursor-pointer"
+                  >
+                    <span className="material-symbols-outlined text-[15px]">edit</span>
+                    <span>Edit</span>
+                  </button>
+                )}
+              </div>
+            </div>
+
+            {isEditingAcademic || !hasAcademicDetails ? (
+              <form onSubmit={handleSaveAcademicDetails} className="flex flex-col gap-4">
+                {!hasAcademicDetails && (
+                  <div className="p-4 rounded-2xl bg-[#FFF9F0] border border-[#FFE7C2] flex items-start sm:items-center gap-3 text-xs text-[#9A5B00]">
+                    <span className="material-symbols-outlined text-[22px] text-[#FFB84D] shrink-0">assignment_late</span>
+                    <span>
+                      Your profile is currently at <strong>50%</strong>. Please fill your branch, academic year, and semester below so our coordinators format your assignments according to your college's official guidelines (updates to <strong>100%</strong>).
+                    </span>
+                  </div>
+                )}
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  {/* Student Full Name */}
+                  <div>
+                    <label className="block text-xs font-bold text-[#25233A] mb-1.5">
+                      Student Full Name <span className="text-red-500">*</span>
+                    </label>
+                    <input
+                      type="text"
+                      required
+                      value={academicForm.studentName || ''}
+                      onChange={(e) => setAcademicForm({ ...academicForm, studentName: e.target.value })}
+                      placeholder="e.g. John Doe"
+                      className="w-full px-4 py-2.5 rounded-xl bg-[#FAF8FF] border border-[#E2DCFF] text-sm text-[#25233A] font-semibold focus:outline-none focus:ring-2 focus:ring-[#6C63FF]/30 focus:border-[#6C63FF] transition-all"
+                    />
+                  </div>
+
+                  {/* College / Institution */}
+                  <div>
+                    <label className="block text-xs font-bold text-[#25233A] mb-1.5">
+                      Campus / College
+                    </label>
+                    <input
+                      type="text"
+                      disabled
+                      value={collegeName}
+                      className="w-full px-4 py-2.5 rounded-xl bg-[#F0EBFF]/60 border border-[#E2DCFF] text-sm text-[#6E6A8A] font-medium cursor-not-allowed"
+                    />
+                  </div>
+
+                  {/* Branch / Department */}
+                  <div>
+                    <label className="block text-xs font-bold text-[#25233A] mb-1.5">
+                      Branch / Department <span className="text-red-500">*</span>
+                    </label>
+                    <select
+                      required
+                      value={academicForm.branch || ''}
+                      onChange={(e) => setAcademicForm({ ...academicForm, branch: e.target.value })}
+                      className="w-full px-4 py-2.5 rounded-xl bg-[#FAF8FF] border border-[#E2DCFF] text-sm text-[#25233A] font-semibold focus:outline-none focus:ring-2 focus:ring-[#6C63FF]/30 focus:border-[#6C63FF] transition-all cursor-pointer"
+                    >
+                      <option value="">Select Branch / Department</option>
+                      <option value="Computer Engineering">Computer Engineering</option>
+                      <option value="Information Technology (IT)">Information Technology (IT)</option>
+                      <option value="Artificial Intelligence & Data Science">Artificial Intelligence & Data Science</option>
+                      <option value="Electronics & Telecommunication (EXTC)">Electronics & Telecommunication (EXTC)</option>
+                      <option value="Mechanical Engineering">Mechanical Engineering</option>
+                      <option value="Civil Engineering">Civil Engineering</option>
+                      <option value="Electrical Engineering">Electrical Engineering</option>
+                      <option value="Chemical Engineering">Chemical Engineering</option>
+                      <option value="Biotechnology">Biotechnology</option>
+                      <option value="Business Administration / Management">Business Administration / Management</option>
+                      <option value="Commerce & Accounting">Commerce & Accounting</option>
+                      <option value="Science / Humanities">Science / Humanities</option>
+                      <option value="Other">Other / Custom Course</option>
+                    </select>
+                  </div>
+
+                  {/* Academic Year */}
+                  <div>
+                    <label className="block text-xs font-bold text-[#25233A] mb-1.5">
+                      Academic Year <span className="text-red-500">*</span>
+                    </label>
+                    <select
+                      required
+                      value={academicForm.year || ''}
+                      onChange={(e) => setAcademicForm({ ...academicForm, year: e.target.value })}
+                      className="w-full px-4 py-2.5 rounded-xl bg-[#FAF8FF] border border-[#E2DCFF] text-sm text-[#25233A] font-semibold focus:outline-none focus:ring-2 focus:ring-[#6C63FF]/30 focus:border-[#6C63FF] transition-all cursor-pointer"
+                    >
+                      <option value="">Select Academic Year</option>
+                      <option value="First Year (FE)">First Year (FE)</option>
+                      <option value="Second Year (SE)">Second Year (SE)</option>
+                      <option value="Third Year (TE)">Third Year (TE)</option>
+                      <option value="Final Year (BE / B.Tech)">Final Year (BE / B.Tech)</option>
+                      <option value="Postgraduate (ME / M.Tech / MBA)">Postgraduate (ME / M.Tech / MBA)</option>
+                    </select>
+                  </div>
+
+                  {/* Current Semester */}
+                  <div>
+                    <label className="block text-xs font-bold text-[#25233A] mb-1.5">
+                      Current Semester <span className="text-red-500">*</span>
+                    </label>
+                    <select
+                      required
+                      value={academicForm.semester || ''}
+                      onChange={(e) => setAcademicForm({ ...academicForm, semester: e.target.value })}
+                      className="w-full px-4 py-2.5 rounded-xl bg-[#FAF8FF] border border-[#E2DCFF] text-sm text-[#25233A] font-semibold focus:outline-none focus:ring-2 focus:ring-[#6C63FF]/30 focus:border-[#6C63FF] transition-all cursor-pointer"
+                    >
+                      <option value="">Select Semester</option>
+                      <option value="Semester 1">Semester 1</option>
+                      <option value="Semester 2">Semester 2</option>
+                      <option value="Semester 3">Semester 3</option>
+                      <option value="Semester 4">Semester 4</option>
+                      <option value="Semester 5">Semester 5</option>
+                      <option value="Semester 6">Semester 6</option>
+                      <option value="Semester 7">Semester 7</option>
+                      <option value="Semester 8">Semester 8</option>
+                    </select>
+                  </div>
+
+                  {/* Division / Section */}
+                  <div>
+                    <label className="block text-xs font-bold text-[#25233A] mb-1.5">
+                      Division / Section <span className="text-[#6E6A8A] font-normal">(Optional)</span>
+                    </label>
+                    <input
+                      type="text"
+                      value={academicForm.division || ''}
+                      onChange={(e) => setAcademicForm({ ...academicForm, division: e.target.value })}
+                      placeholder="e.g. Div A, Div B"
+                      className="w-full px-4 py-2.5 rounded-xl bg-[#FAF8FF] border border-[#E2DCFF] text-sm text-[#25233A] font-semibold focus:outline-none focus:ring-2 focus:ring-[#6C63FF]/30 focus:border-[#6C63FF] transition-all"
+                    />
+                  </div>
+
+                  {/* Roll No / PRN */}
+                  <div className="sm:col-span-2">
+                    <label className="block text-xs font-bold text-[#25233A] mb-1.5">
+                      Roll Number / PRN / Student ID <span className="text-[#6E6A8A] font-normal">(Optional)</span>
+                    </label>
+                    <input
+                      type="text"
+                      value={academicForm.rollNo || ''}
+                      onChange={(e) => setAcademicForm({ ...academicForm, rollNo: e.target.value })}
+                      placeholder="e.g. 2024-COMP-042 or Roll No. 28"
+                      className="w-full px-4 py-2.5 rounded-xl bg-[#FAF8FF] border border-[#E2DCFF] text-sm text-[#25233A] font-semibold focus:outline-none focus:ring-2 focus:ring-[#6C63FF]/30 focus:border-[#6C63FF] transition-all"
+                    />
+                  </div>
+                </div>
+
+                {/* Form Action Buttons */}
+                <div className="flex items-center gap-3 mt-3">
+                  <button
+                    type="submit"
+                    disabled={isSavingAcademic}
+                    className="px-6 py-2.5 rounded-full bg-[#6C63FF] hover:bg-[#5b52f5] text-white text-sm font-bold shadow-md transition-all active:scale-95 disabled:opacity-50 cursor-pointer flex items-center gap-2"
+                  >
+                    <span className="material-symbols-outlined text-[18px]">save</span>
+                    <span>{isSavingAcademic ? 'Saving...' : 'Save Academic Details'}</span>
+                  </button>
+
+                  {hasAcademicDetails && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setAcademicForm(academicDetails);
+                        setIsEditingAcademic(false);
+                      }}
+                      className="px-5 py-2.5 rounded-full bg-[#FAF8FF] hover:bg-[#F0EBFF] text-[#6E6A8A] text-sm font-bold transition-all cursor-pointer"
+                    >
+                      Cancel
+                    </button>
+                  )}
+                </div>
+              </form>
+            ) : (
+              /* Read-Only Grid Display */
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5">
+                {/* Student Full Name */}
+                <div className="p-4 rounded-2xl bg-[#FAF8FF] border border-[#E2DCFF]/60 flex flex-col justify-between">
+                  <p className="text-[10px] font-bold text-[#6E6A8A] uppercase tracking-wider mb-1">Student Name</p>
+                  <p className="text-sm font-bold text-[#25233A]">{academicDetails.studentName || fullName}</p>
+                </div>
+
+                {/* Branch / Stream */}
+                <div className="p-4 rounded-2xl bg-[#FAF8FF] border border-[#E2DCFF]/60 flex flex-col justify-between">
+                  <p className="text-[10px] font-bold text-[#6E6A8A] uppercase tracking-wider mb-1">Branch / Department</p>
+                  <p className="text-sm font-bold text-[#25233A]">{academicDetails.branch}</p>
+                </div>
+
+                {/* Academic Year */}
+                <div className="p-4 rounded-2xl bg-[#FAF8FF] border border-[#E2DCFF]/60 flex flex-col justify-between">
+                  <p className="text-[10px] font-bold text-[#6E6A8A] uppercase tracking-wider mb-1">Academic Year</p>
+                  <p className="text-sm font-bold text-[#25233A]">{academicDetails.year}</p>
+                </div>
+
+                {/* Current Semester */}
+                <div className="p-4 rounded-2xl bg-[#FAF8FF] border border-[#E2DCFF]/60 flex flex-col justify-between">
+                  <p className="text-[10px] font-bold text-[#6E6A8A] uppercase tracking-wider mb-1">Current Semester</p>
+                  <p className="text-sm font-bold text-[#25233A]">{academicDetails.semester}</p>
+                </div>
+
+                {/* Division */}
+                <div className="p-4 rounded-2xl bg-[#FAF8FF] border border-[#E2DCFF]/60 flex flex-col justify-between">
+                  <p className="text-[10px] font-bold text-[#6E6A8A] uppercase tracking-wider mb-1">Division / Section</p>
+                  <p className="text-sm font-bold text-[#25233A]">{academicDetails.division || 'Not specified'}</p>
+                </div>
+
+                {/* Roll No / PRN */}
+                <div className="p-4 rounded-2xl bg-[#FAF8FF] border border-[#E2DCFF]/60 flex flex-col justify-between">
+                  <p className="text-[10px] font-bold text-[#6E6A8A] uppercase tracking-wider mb-1">Roll No / PRN</p>
+                  <p className="text-sm font-bold text-[#25233A]">{academicDetails.rollNo || 'Not specified'}</p>
+                </div>
+              </div>
+            )}
           </section>
 
           {/* ============================================ */}
