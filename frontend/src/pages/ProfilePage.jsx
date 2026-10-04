@@ -538,18 +538,10 @@ export function ProfilePage() {
                     >
                       <option value="">Select Branch / Department</option>
                       <option value="Computer Engineering">Computer Engineering</option>
-                      <option value="Information Technology (IT)">Information Technology (IT)</option>
-                      <option value="Artificial Intelligence & Data Science">Artificial Intelligence & Data Science</option>
-                      <option value="Electronics & Telecommunication (EXTC)">Electronics & Telecommunication (EXTC)</option>
+                      <option value="Information Technology">Information Technology</option>
+                      <option value="CSE (AIML)">CSE (AIML)</option>
+                      <option value="Electronics and Computer Engineering">Electronics and Computer Engineering</option>
                       <option value="Mechanical Engineering">Mechanical Engineering</option>
-                      <option value="Civil Engineering">Civil Engineering</option>
-                      <option value="Electrical Engineering">Electrical Engineering</option>
-                      <option value="Chemical Engineering">Chemical Engineering</option>
-                      <option value="Biotechnology">Biotechnology</option>
-                      <option value="Business Administration / Management">Business Administration / Management</option>
-                      <option value="Commerce & Accounting">Commerce & Accounting</option>
-                      <option value="Science / Humanities">Science / Humanities</option>
-                      <option value="Other">Other / Custom Course</option>
                     </select>
                   </div>
 
