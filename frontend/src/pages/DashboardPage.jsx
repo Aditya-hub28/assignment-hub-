@@ -104,12 +104,8 @@ export function DashboardPage() {
           {/* Logo & Student Workspace Badge */}
           <div className="flex items-center gap-3">
             <Link to="/dashboard" className="flex items-center gap-3 transition-transform hover:scale-105 active:scale-95">
-              <div className="w-10 h-10 rounded-2xl bg-white p-1.5 flex items-center justify-center clay-card shadow-sm border border-white">
-                <img
-                  src="https://lh3.googleusercontent.com/aida/AEtjO1X7S3rvjHLD2T2ZSwRsAwkZbxRDZ3YNIAMeXlPmZ5YGr9s0jmRhVDu9igu3_DdKtupdlp3mEkDiN7knq6FeOvbUtMAJIxKxPM0Q5vKgd3Crfg46CCu6JcYx8-YzIi8xpHxqy7Z-cdIxtXmLNNbaKoSgetaOV7FNhBRQvSqqts2tOh2Oo8VRN_QNKn7MrlxXMtvopLUFksqqXbuO-7ckIfqhBG5mccZLghWmgFvfefJGR8ffAM9YKkdxAT-P"
-                  alt="Assignment Hub Logo"
-                  className="w-full h-full object-contain"
-                />
+              <div className="w-10 h-10 rounded-2xl bg-[#6C63FF] text-white flex items-center justify-center clay-btn-primary shadow-sm shrink-0">
+                <span className="material-symbols-outlined text-[24px]">school</span>
               </div>
               <span className="hidden sm:inline-block text-xl font-extrabold text-[#25233A] tracking-tight">
                 Assignment<span className="text-[#6C63FF]">Hub</span>

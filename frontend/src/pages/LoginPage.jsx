@@ -47,12 +47,8 @@ export function LoginPage() {
       <header className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5">
         <div className="flex items-center justify-between">
           <Link to="/" className="flex items-center gap-3 transition-transform hover:scale-105">
-            <div className="w-10 h-10 rounded-2xl bg-white p-1.5 flex items-center justify-center shadow-md border border-white">
-              <img
-                src="https://lh3.googleusercontent.com/aida/AEtjO1X7S3rvjHLD2T2ZSwRsAwkZbxRDZ3YNIAMeXlPmZ5YGr9s0jmRhVDu9igu3_DdKtupdlp3mEkDiN7knq6FeOvbUtMAJIxKxPM0Q5vKgd3Crfg46CCu6JcYx8-YzIi8xpHxqy7Z-cdIxtXmLNNbaKoSgetaOV7FNhBRQvSqqts2tOh2Oo8VRN_QNKn7MrlxXMtvopLUFksqqXbuO-7ckIfqhBG5mccZLghWmgFvfefJGR8ffAM9YKkdxAT-P"
-                alt="Assignment Hub Logo"
-                className="w-full h-full object-contain"
-              />
+            <div className="w-10 h-10 rounded-2xl bg-[#6C63FF] text-white flex items-center justify-center clay-btn-primary shadow-sm shrink-0">
+              <span className="material-symbols-outlined text-[24px]">school</span>
             </div>
             <div className="flex flex-col">
               <span className="text-xl font-extrabold tracking-tight text-[#25233A] leading-none">
@@ -109,6 +105,7 @@ export function LoginPage() {
               <img
                 src="https://lh3.googleusercontent.com/aida/AEtjO1XhgMa1PzO9gK8xCGhHfIARCvX1nH_ZPCmFInL6QqasJxHBEYTLzVg7O1Jx3qE1ifwuDIXbHNn6jkSab1FRsJRaSz5fK8hPUkzGfkB1mFHDS5DtQb2XTtzSCuzaL8tBT0ifuQMQPInRP06AE9sDuPuLNc2CWmumiYs2yfZSQl8HNykfc54jDxXVFAW-wJHstOZulpJD1ykLyYuWAuc3bMkAagr9fPKmmVrXgWM0OgtRvelPbINQk4_ZbDkJ"
                 alt="Student study desk 3D clay illustration"
+                onError={(e) => { e.currentTarget.style.display = 'none'; }}
                 className="w-full h-auto object-cover rounded-2xl transform hover:scale-[1.02] transition-transform duration-500"
               />
 
@@ -125,12 +122,8 @@ export function LoginPage() {
             <div className="clay-surface rounded-3xl p-7 sm:p-9">
               <div className="flex items-center justify-between mb-6">
                 <div className="flex items-center gap-3">
-                  <div className="w-11 h-11 rounded-2xl bg-[#F3F0FF] p-2 flex items-center justify-center border border-white">
-                    <img
-                      src="https://lh3.googleusercontent.com/aida/AEtjO1X7S3rvjHLD2T2ZSwRsAwkZbxRDZ3YNIAMeXlPmZ5YGr9s0jmRhVDu9igu3_DdKtupdlp3mEkDiN7knq6FeOvbUtMAJIxKxPM0Q5vKgd3Crfg46CCu6JcYx8-YzIi8xpHxqy7Z-cdIxtXmLNNbaKoSgetaOV7FNhBRQvSqqts2tOh2Oo8VRN_QNKn7MrlxXMtvopLUFksqqXbuO-7ckIfqhBG5mccZLghWmgFvfefJGR8ffAM9YKkdxAT-P"
-                      alt="Cap Icon"
-                      className="w-full h-full object-contain"
-                    />
+                  <div className="w-11 h-11 rounded-2xl bg-[#6C63FF] text-white flex items-center justify-center clay-btn-primary shadow-sm shrink-0">
+                    <span className="material-symbols-outlined text-[24px]">school</span>
                   </div>
                   <div>
                     <span className="text-xs font-bold text-[#6C63FF] uppercase tracking-wider block">Student Login</span>

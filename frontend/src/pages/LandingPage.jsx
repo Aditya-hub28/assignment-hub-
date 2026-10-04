@@ -190,8 +190,8 @@ export function LandingPage() {
           
           {/* Logo */}
           <a href="#hero" onClick={(e) => scrollToSection(e, 'hero')} className="flex items-center space-x-3 group cursor-pointer">
-            <div className="w-10 h-10 md:w-11 md:h-11 rounded-2xl bg-[#F3F0FF] p-1.5 flex items-center justify-center shadow-[inset_1px_1px_3px_rgba(255,255,255,0.9),3px_4px_10px_rgba(108,99,255,0.15)] group-hover:scale-105 transition-transform duration-200">
-              <img src="https://lh3.googleusercontent.com/aida/AEtjO1X7S3rvjHLD2T2ZSwRsAwkZbxRDZ3YNIAMeXlPmZ5YGr9s0jmRhVDu9igu3_DdKtupdlp3mEkDiN7knq6FeOvbUtMAJIxKxPM0Q5vKgd3Crfg46CCu6JcYx8-YzIi8xpHxqy7Z-cdIxtXmLNNbaKoSgetaOV7FNhBRQvSqqts2tOh2Oo8VRN_QNKn7MrlxXMtvopLUFksqqXbuO-7ckIfqhBG5mccZLghWmgFvfefJGR8ffAM9YKkdxAT-P" alt="Assignment Hub Logo" className="w-full h-full object-contain" />
+            <div className="w-10 h-10 md:w-11 md:h-11 rounded-2xl bg-[#6C63FF] text-white flex items-center justify-center clay-btn-primary shadow-sm group-hover:scale-105 transition-transform duration-200 shrink-0">
+              <span className="material-symbols-outlined text-[24px]">school</span>
             </div>
             <div className="flex flex-col">
               <span className="text-xl font-extrabold tracking-tight text-[#25233A]">Assignment<span className="text-[#6C63FF]">Hub</span></span>
@@ -368,6 +368,7 @@ export function LandingPage() {
                 <img
                   src="https://lh3.googleusercontent.com/aida/AEtjO1W_XExp-gwwWxEiGacmZSGWtla7n2fZavoM9OxEk7RZtWxgYjyFuZrP6kh5FhX_dFRBT8I5bbvnzAilE5WqvTZWj0rY7Ttz6PK0-csw4d6Lfzz1lxwpZ8V3DJrHB0t38E58Dw_R_f3bFSdRQMXzciLBk6pGonbg_oiG9Bo__jl2vOj-an2BZvNOCU7GBkzPwWWyk2-a5ZcA0L2MQ4X47sNduxI9Y6t8_-a_5TBh25LryZeLz-gMOQQSh-LC"
                   alt="3D Clay Study Desk"
+                  onError={(e) => { e.currentTarget.style.display = 'none'; }}
                   className="w-full h-auto object-cover transform hover:scale-[1.02] transition-transform duration-500 ease-out"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-[#6C63FF]/10 via-transparent to-white/20 pointer-events-none"></div>

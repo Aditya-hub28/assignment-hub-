@@ -157,12 +157,8 @@ export function SignupPage() {
       <header className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 pb-2 relative z-10">
         <div className="flex items-center justify-between">
           <Link to="/" className="flex items-center gap-3 group transition-transform active:scale-95">
-            <div className="w-11 h-11 rounded-2xl bg-white flex items-center justify-center p-1.5 shadow-[0_8px_18px_-4px_rgba(108,99,255,0.25),inset_0_2px_3px_rgba(255,255,255,0.9)] border border-white">
-              <img
-                src="https://lh3.googleusercontent.com/aida/AEtjO1X7S3rvjHLD2T2ZSwRsAwkZbxRDZ3YNIAMeXlPmZ5YGr9s0jmRhVDu9igu3_DdKtupdlp3mEkDiN7knq6FeOvbUtMAJIxKxPM0Q5vKgd3Crfg46CCu6JcYx8-YzIi8xpHxqy7Z-cdIxtXmLNNbaKoSgetaOV7FNhBRQvSqqts2tOh2Oo8VRN_QNKn7MrlxXMtvopLUFksqqXbuO-7ckIfqhBG5mccZLghWmgFvfefJGR8ffAM9YKkdxAT-P"
-                alt="Assignment Hub Logo"
-                className="w-full h-full object-contain"
-              />
+            <div className="w-11 h-11 rounded-2xl bg-[#6C63FF] text-white flex items-center justify-center clay-btn-primary shadow-sm shrink-0">
+              <span className="material-symbols-outlined text-[24px]">school</span>
             </div>
             <div className="flex flex-col">
               <span className="text-xl font-extrabold tracking-tight text-[#25233A] leading-none">
@@ -204,6 +200,7 @@ export function SignupPage() {
               <img
                 src="https://lh3.googleusercontent.com/aida/AEtjO1WLgx6xQH6y5EApJgLdclwWkE7NPSSGoxzikZfrUyXvU0ZE2C--9bXjOSX0Di39Vwv-b3u1iNo1mau64_q0y-93R6VxS1mFTV-bQjAlalx6nK5lxeKHMYm-8W8_SVqELuP6WKgRWtSKjMZPvpEeNIH42M79v_fSmRD7xCyl21OuhZLwYJAPAsCCehvgnc094QLhNxP9j77XTU7bXONTzzrjZ_4ngm2ThdEaJyta_2O4ma4kL5dOH4mKL28"
                 alt="Student Registration 3D Clay Illustration"
+                onError={(e) => { e.currentTarget.style.display = 'none'; }}
                 className="w-full h-auto object-contain transform hover:scale-[1.02] transition-transform duration-500"
               />
             </div>

@@ -74,12 +74,8 @@ export function ForgotPasswordPage() {
       <header className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 pb-2 relative z-10">
         <div className="flex items-center justify-between">
           <Link to="/" className="flex items-center gap-3 group transition-transform active:scale-95">
-            <div className="w-11 h-11 rounded-2xl bg-white flex items-center justify-center p-1.5 shadow-[0_8px_18px_-4px_rgba(108,99,255,0.25),inset_0_2px_3px_rgba(255,255,255,0.9)] border border-white">
-              <img
-                src="https://lh3.googleusercontent.com/aida/AEtjO1X7S3rvjHLD2T2ZSwRsAwkZbxRDZ3YNIAMeXlPmZ5YGr9s0jmRhVDu9igu3_DdKtupdlp3mEkDiN7knq6FeOvbUtMAJIxKxPM0Q5vKgd3Crfg46CCu6JcYx8-YzIi8xpHxqy7Z-cdIxtXmLNNbaKoSgetaOV7FNhBRQvSqqts2tOh2Oo8VRN_QNKn7MrlxXMtvopLUFksqqXbuO-7ckIfqhBG5mccZLghWmgFvfefJGR8ffAM9YKkdxAT-P"
-                alt="Assignment Hub Logo"
-                className="w-full h-full object-contain"
-              />
+            <div className="w-11 h-11 rounded-2xl bg-[#6C63FF] text-white flex items-center justify-center clay-btn-primary shadow-sm shrink-0">
+              <span className="material-symbols-outlined text-[24px]">school</span>
             </div>
             <div className="flex flex-col">
               <span className="text-xl font-extrabold tracking-tight text-[#25233A] leading-none">
@@ -127,6 +123,7 @@ export function ForgotPasswordPage() {
               <img
                 src="https://lh3.googleusercontent.com/aida/AEtjO1VJc_OwqFu4_llcIu__ne58STyoFg-x2omnaL9HEFe2hL9CbA33TMPTjhl_W3ZGIXwmoM5JyD8DHoUJjqKPO3ES4IH7hkkM0cgOtDzzF0KL8JFypKFPFv6wHGGNgRofJ3SrP2juN16K4ONS2xtYiGyS4TuvmTibSUeQU3ZcNGxkJJl99-n4F02sqiVEHu1r83rqXHcO48I0K-DJWBoao7oAwL4zNBCeVMcdC28G60_NVrW63-BB1AuAUfS_"
                 alt="Password recovery 3D clay render"
+                onError={(e) => { e.currentTarget.style.display = 'none'; }}
                 className="w-full h-auto object-cover rounded-2xl transform hover:scale-[1.02] transition-transform duration-500"
               />
             </div>
