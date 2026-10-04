@@ -578,6 +578,8 @@ export function LandingPage() {
             <a href="#how-it-works" onClick={(e) => scrollToSection(e, 'how-it-works')} className="hover:text-[#6C63FF]">How It Works</a>
             <a href="#benefits" onClick={(e) => scrollToSection(e, 'benefits')} className="hover:text-[#6C63FF]">Benefits</a>
             <a href="#faqs" onClick={(e) => scrollToSection(e, 'faqs')} className="hover:text-[#6C63FF]">FAQs</a>
+            <Link to="/terms" className="hover:text-[#6C63FF]">Terms</Link>
+            <Link to="/privacy-policy" className="hover:text-[#6C63FF]">Privacy</Link>
           </div>
         </div>
       </footer>

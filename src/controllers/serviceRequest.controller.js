@@ -53,7 +53,7 @@ class ServiceRequestController {
       const user = req.user || null;
       const { id } = req.params;
 
-      const request = await serviceRequestService.getRequestById(id, user?.id);
+      const request = await serviceRequestService.getRequestById(id, user?.id, user?.email);
 
       if (!request) {
         return res.status(404).json({

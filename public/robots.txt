@@ -1,0 +1,21 @@
+User-agent: *
+Allow: /
+Allow: /services
+Allow: /privacy-policy
+Allow: /terms
+Allow: /login
+Allow: /signup
+Allow: /forgot-password
+
+# Disallow private student workspace and API endpoints from indexing
+Disallow: /dashboard
+Disallow: /my-requests
+Disallow: /inquiries
+Disallow: /profile
+Disallow: /services/new
+Disallow: /services/custom
+Disallow: /services/review
+Disallow: /services/success
+Disallow: /api/
+
+Sitemap: https://assignmenthub.in/sitemap.xml

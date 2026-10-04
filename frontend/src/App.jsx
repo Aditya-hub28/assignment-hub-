@@ -18,6 +18,9 @@ import { RequestSuccessPage } from './pages/RequestSuccessPage';
 import { MyRequestsPage } from './pages/MyRequestsPage';
 import { InquiriesPage } from './pages/InquiriesPage';
 import { ProfilePage } from './pages/ProfilePage';
+import { PrivacyPolicyPage } from './pages/PrivacyPolicyPage';
+import { TermsPage } from './pages/TermsPage';
+import { NotFoundPage } from './pages/NotFoundPage';
 
 function App() {
   return (
@@ -129,8 +132,12 @@ function App() {
                 }
               />
 
-              {/* Catch-all fallback */}
-              <Route path="*" element={<Navigate to="/" replace />} />
+              {/* Public Legal & Policy Pages */}
+              <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
+              <Route path="/terms" element={<TermsPage />} />
+
+              {/* Catch-all 404 handler */}
+              <Route path="*" element={<NotFoundPage />} />
             </Routes>
           </BrowserRouter>
         </ServiceRequestProvider>

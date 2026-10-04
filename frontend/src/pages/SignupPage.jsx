@@ -352,8 +352,13 @@ export function SignupPage() {
 
                   <p className="text-center text-xs text-[#25233A]/60 mt-2">
                     By signing up, you agree to our{' '}
-                    <span className="underline font-semibold cursor-pointer">Terms of Service</span> and{' '}
-                    <span className="underline font-semibold cursor-pointer">Academic Honor Code</span>.
+                    <Link to="/terms" target="_blank" rel="noopener noreferrer" className="underline font-semibold text-[#6C63FF] hover:text-[#5b52f5]">
+                      Terms of Service
+                    </Link>{' '}
+                    and{' '}
+                    <Link to="/privacy-policy" target="_blank" rel="noopener noreferrer" className="underline font-semibold text-[#6C63FF] hover:text-[#5b52f5]">
+                      Privacy Policy
+                    </Link>.
                   </p>
                 </form>
               )}
