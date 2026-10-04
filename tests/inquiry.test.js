@@ -91,5 +91,53 @@ describe('Inquiries API Test Suite', () => {
       expect(res.status).toBe(400);
       expect(res.body.success).toBe(false);
     });
+
+    it('should persist sent message in inquiry history on subsequent fetch', async () => {
+      const res = await request(app).get(`/api/v1/inquiries/${linkedInquiryId}`);
+      expect(res.status).toBe(200);
+      expect(res.body.data.messages.length).toBeGreaterThanOrEqual(2);
+      const lastMsg = res.body.data.messages[res.body.data.messages.length - 1];
+      expect(lastMsg.content).toBe('Hello, can you confirm if Helm chart templates are required in Section 2?');
+    });
+  });
+
+  describe('Inquiry Security & Duplicate Prevention', () => {
+    it('should prevent duplicate inquiries for the same request', async () => {
+      const inquiryService = require('../src/services/inquiry.service');
+      const inq1 = await inquiryService.createInquiryForRequest({
+        id: createdRequestId,
+        title: 'Microservices with Kubernetes and Istio'
+      });
+      const inq2 = await inquiryService.createInquiryForRequest({
+        id: createdRequestId,
+        title: 'Microservices with Kubernetes and Istio'
+      });
+      expect(inq1.id).toBe(inq2.id);
+    });
+
+    it('should deny unauthorized user from accessing another user inquiry', async () => {
+      const inquiryService = require('../src/services/inquiry.service');
+      // Create inquiry owned by student A
+      const privateInquiry = await inquiryService.createInquiryForRequest({
+        id: 'REQ-20261004-999',
+        userId: 'user-aaa-111',
+        userEmail: 'studentA@college.edu',
+        title: 'Private Research Thesis'
+      });
+
+      // User B attempts to access it
+      await expect(
+        inquiryService.getInquiryById(privateInquiry.id, 'user-bbb-222', 'studentB@college.edu')
+      ).rejects.toThrow('Access denied');
+
+      // User B attempts to send message to it
+      await expect(
+        inquiryService.addMessage(
+          privateInquiry.id,
+          { content: 'Hacking attempt' },
+          { id: 'user-bbb-222', email: 'studentB@college.edu' }
+        )
+      ).rejects.toThrow('Access denied');
+    });
   });
 });
