@@ -322,54 +322,6 @@ class InquiryService {
       // Non-blocking fallback
     }
 
-    // Simulate coordinator reply after student sends message
-    setTimeout(() => {
-      try {
-        const liveAll = loadLocalInquiries();
-        const liveInq = liveAll.find((i) => i.id === inq.id);
-        if (liveInq) {
-          const autoReply = {
-            id: `MSG-${Date.now()}-TEAM`,
-            inquiryId: inq.id,
-            requestId: inq.requestId,
-            senderRole: 'team',
-            senderName: inq.assignedSpecialist || 'AssignmentHub Academic Team',
-            senderBadge: 'Coordinator',
-            content: `Thank you for your update regarding ${inq.title}. Our academic desk has logged this note into your request file. We will keep you posted on the deliverable progression!`,
-            createdAt: new Date().toISOString()
-          };
-          liveInq.messages.push(autoReply);
-          liveInq.latestMessage = autoReply.content;
-          liveInq.latestMessageTime = autoReply.createdAt;
-          liveInq.updatedAt = autoReply.createdAt;
-          saveLocalInquiries(liveAll);
-
-          // Persist coordinator reply to Supabase
-          if (supabaseAdmin) {
-            supabaseAdmin.from('inquiry_messages').insert({
-              id: autoReply.id,
-              inquiry_id: autoReply.inquiryId,
-              request_id: autoReply.requestId,
-              sender_id: 'team',
-              sender_role: autoReply.senderRole,
-              sender_name: autoReply.senderName,
-              sender_badge: autoReply.senderBadge,
-              content: autoReply.content,
-              created_at: autoReply.createdAt
-            }).then(() => {
-              supabaseAdmin.from('inquiries').update({
-                latest_message: autoReply.content,
-                latest_message_time: autoReply.createdAt,
-                updated_at: autoReply.createdAt
-              }).eq('id', liveInq.id);
-            }).catch(() => {});
-          }
-        }
-      } catch (e) {
-        console.warn('[INQUIRY_AUTOREPLY_ERROR]', e.message);
-      }
-    }, 1500);
-
     saveLocalInquiries(all);
 
     return {

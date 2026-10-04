@@ -25,13 +25,33 @@ export function InquiriesPage() {
   // Mobile navigation state: show list or chat thread
   const [showMobileChat, setShowMobileChat] = useState(false);
 
-  const messagesEndRef = useRef(null);
+  // Separate container refs for smooth, non-jumping scroll
+  const chatContainerRef = useRef(null);
+  const mobileChatContainerRef = useRef(null);
+  const prevMessagesCountRef = useRef(0);
 
   // Parse query params (e.g., ?requestId=REQ-...)
   const queryRequestId = useMemo(() => {
     const params = new URLSearchParams(location.search);
     return params.get('requestId') || params.get('inquiryId');
   }, [location.search]);
+
+  // Scroll to bottom without page jumping
+  const scrollToBottom = (smooth = true) => {
+    const behavior = smooth ? 'smooth' : 'auto';
+    if (chatContainerRef.current) {
+      chatContainerRef.current.scrollTo({
+        top: chatContainerRef.current.scrollHeight,
+        behavior
+      });
+    }
+    if (mobileChatContainerRef.current) {
+      mobileChatContainerRef.current.scrollTo({
+        top: mobileChatContainerRef.current.scrollHeight,
+        behavior
+      });
+    }
+  };
 
   // Fetch inquiries from backend
   const fetchInquiries = async (silent = false) => {
@@ -109,12 +129,29 @@ export function InquiriesPage() {
     return inquiries.find((i) => i.id === selectedInquiryId) || null;
   }, [inquiries, selectedInquiryId]);
 
-  // Scroll to bottom when messages update
+  // Auto-scroll when active inquiry changes (instant, no user scroll needed)
   useEffect(() => {
-    if (activeInquiry?.messages?.length) {
-      messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    if (selectedInquiryId) {
+      const timer = setTimeout(() => {
+        scrollToBottom(false);
+      }, 50);
+      return () => clearTimeout(timer);
     }
-  }, [activeInquiry?.messages?.length, selectedInquiryId]);
+  }, [selectedInquiryId, showMobileChat]);
+
+  // Auto-scroll when new messages arrive
+  useEffect(() => {
+    const currentCount = activeInquiry?.messages?.length || 0;
+    if (currentCount > 0 && currentCount !== prevMessagesCountRef.current) {
+      const isInitial = prevMessagesCountRef.current === 0;
+      prevMessagesCountRef.current = currentCount;
+      const timer = setTimeout(() => {
+        scrollToBottom(!isInitial);
+      }, 60);
+      return () => clearTimeout(timer);
+    }
+    prevMessagesCountRef.current = currentCount;
+  }, [activeInquiry?.messages?.length]);
 
   // Filtered inquiries list
   const filteredInquiries = useMemo(() => {
@@ -186,6 +223,8 @@ export function InquiriesPage() {
       } else {
         await fetchInquiries(true);
       }
+
+      setTimeout(() => scrollToBottom(true), 60);
     } catch (err) {
       console.error('Failed to send message:', err);
       addToast(err.message || 'Failed to send message. Please try again.', 'error');
@@ -235,8 +274,225 @@ export function InquiriesPage() {
 
   return (
     <div className="min-h-screen bg-[#FCF8FF] text-[#1B192F] flex flex-col font-['Plus_Jakarta_Sans',sans-serif]">
-      <Navbar />
+      {/* Hide Navbar when viewing full-screen mobile Instagram DM chat */}
+      <div className={showMobileChat ? 'hidden lg:block' : 'block'}>
+        <Navbar />
+      </div>
 
+      {/* ========================================================= */}
+      {/* MOBILE INSTAGRAM-STYLE CHAT VIEW (Active when showMobileChat) */}
+      {/* ========================================================= */}
+      {showMobileChat && activeInquiry && (
+        <div className="lg:hidden fixed inset-0 z-50 bg-[#FAF8FF] flex flex-col h-[100dvh] w-full overflow-hidden">
+          {/* Top Instagram App Bar */}
+          <div className="px-3.5 py-2.5 bg-white/95 backdrop-blur-md border-b border-[#F0EBFF] flex items-center justify-between shadow-[0_2px_12px_rgba(108,99,255,0.06)] shrink-0 z-10">
+            <div className="flex items-center gap-2.5 min-w-0">
+              {/* Back Arrow */}
+              <button
+                onClick={() => setShowMobileChat(false)}
+                className="p-1 -ml-1 text-[#1B192F] hover:bg-[#F6F1FF] rounded-full active:scale-95 transition-transform"
+                aria-label="Back to inquiries list"
+              >
+                <span className="material-symbols-outlined text-[26px]">arrow_back</span>
+              </button>
+
+              {/* Specialist Profile Photo with Online Indicator */}
+              <div className="relative shrink-0">
+                <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-[#4D41DF] to-[#7B70FF] text-white flex items-center justify-center font-bold text-xs shadow-[0_2px_8px_rgba(108,99,255,0.3)]">
+                  {activeInquiry.assignedSpecialist
+                    ? activeInquiry.assignedSpecialist.split(' ').map((n) => n[0]).slice(0, 2).join('')
+                    : 'AH'}
+                </div>
+                <span className="absolute bottom-0 right-0 w-3 h-3 rounded-full bg-emerald-500 border-2 border-white" />
+              </div>
+
+              {/* Specialist Name & Context */}
+              <div className="min-w-0">
+                <div className="flex items-center gap-1">
+                  <h2 className="text-sm font-bold text-[#1B192F] truncate">
+                    {activeInquiry.assignedSpecialist || 'Academic Specialist'}
+                  </h2>
+                  <span className="material-symbols-outlined text-[15px] text-[#4D41DF] shrink-0">verified</span>
+                </div>
+                <p className="text-[11px] text-[#777587] truncate">
+                  <span className="font-semibold text-[#4D41DF]">{activeInquiry.requestId || activeInquiry.id}</span>
+                  {' • '}
+                  <span>{activeInquiry.title}</span>
+                </p>
+              </div>
+            </div>
+
+            {/* Quick Actions (Info & Copy ID) */}
+            <div className="flex items-center gap-1 shrink-0">
+              <button
+                type="button"
+                onClick={() => handleCopyReqId(activeInquiry.requestId || activeInquiry.id)}
+                className="p-2 text-[#777587] hover:text-[#4D41DF] rounded-full active:scale-95 transition-all"
+                title="Copy Request ID"
+              >
+                <span className="material-symbols-outlined text-[20px]">
+                  {copiedId === (activeInquiry.requestId || activeInquiry.id) ? 'check' : 'content_copy'}
+                </span>
+              </button>
+              <Link
+                to={`/my-requests?highlight=${activeInquiry.requestId}`}
+                className="p-2 text-[#4D41DF] hover:bg-[#F6F1FF] rounded-full active:scale-95 transition-all"
+                title="View Full Request Details"
+              >
+                <span className="material-symbols-outlined text-[22px]">info</span>
+              </Link>
+            </div>
+          </div>
+
+          {/* Context Banner */}
+          <div className="bg-[#F0EBFF]/90 backdrop-blur-xs px-3.5 py-1.5 flex items-center justify-between text-[11px] border-b border-[#EAE5FF] shrink-0">
+            <span className="flex items-center gap-1.5 text-[#464555] truncate">
+              <span className="material-symbols-outlined text-[14px] text-[#7F5300]">timer</span>
+              Target Due: <strong className="text-[#1B192F]">{formatDate(activeInquiry.deadline) || 'Flexible'}</strong>
+            </span>
+            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-white text-[#422DB2] text-[10px] font-bold shadow-xs shrink-0">
+              <span className="w-1.5 h-1.5 rounded-full bg-[#5846C8] animate-pulse" />
+              {activeInquiry.statusLabel || (activeInquiry.status === 'resolved' ? 'Resolved' : 'Active')}
+            </span>
+          </div>
+
+          {/* Instagram Message Feed */}
+          <div
+            ref={mobileChatContainerRef}
+            className="flex-1 overflow-y-auto px-3.5 py-4 space-y-3.5 bg-gradient-to-b from-[#FCF8FF] to-white overscroll-contain"
+          >
+            {/* Conversation Header Intro Card */}
+            <div className="flex flex-col items-center justify-center py-4 px-4 text-center">
+              <div className="w-16 h-16 rounded-full bg-gradient-to-tr from-[#4D41DF] to-[#7B70FF] text-white flex items-center justify-center font-bold text-lg shadow-[0_4px_16px_rgba(108,99,255,0.25)] mb-2">
+                {activeInquiry.assignedSpecialist
+                  ? activeInquiry.assignedSpecialist.split(' ').map((n) => n[0]).slice(0, 2).join('')
+                  : 'AH'}
+              </div>
+              <h3 className="text-sm font-extrabold text-[#1B192F]">
+                {activeInquiry.assignedSpecialist || 'AssignmentHub Academic Specialist'}
+              </h3>
+              <p className="text-xs text-[#777587] mt-0.5 max-w-xs line-clamp-1">{activeInquiry.title}</p>
+              <div className="inline-flex items-center gap-1 mt-2 px-2.5 py-0.5 rounded-full bg-[#F0EBFF] text-[#464555] text-[10px] font-medium">
+                <span className="material-symbols-outlined text-[12px] text-[#4D41DF]">verified_user</span>
+                FERPA Compliant Academic Stream
+              </div>
+            </div>
+
+            {/* Date Marker */}
+            <div className="flex justify-center my-2">
+              <span className="text-[10px] font-semibold text-[#8E8C9D] bg-white/80 px-2.5 py-1 rounded-full border border-[#F0EBFF] shadow-xs">
+                {formatDate(activeInquiry.createdAt)}
+              </span>
+            </div>
+
+            {/* Message Bubbles */}
+            {activeInquiry.messages && activeInquiry.messages.length > 0 ? (
+              activeInquiry.messages.map((msg, index) => {
+                const isStudent =
+                  msg.senderRole === 'user' || msg.senderRole === 'student' || msg.senderId === user?.id;
+
+                return (
+                  <div
+                    key={msg.id || index}
+                    className={`flex items-end gap-1.5 ${isStudent ? 'justify-end' : 'justify-start'}`}
+                  >
+                    {!isStudent && (
+                      <div className="w-7 h-7 rounded-full bg-[#E4DFFE] text-[#170065] flex items-center justify-center shrink-0 font-bold text-[10px] mb-1">
+                        <span className="material-symbols-outlined text-[15px] text-[#4D41DF]">school</span>
+                      </div>
+                    )}
+
+                    <div className={`max-w-[78%] flex flex-col ${isStudent ? 'items-end' : 'items-start'}`}>
+                      <div
+                        className={`px-4 py-2.5 rounded-2xl text-[13.5px] leading-relaxed break-words ${
+                          isStudent
+                            ? 'bg-[#4D41DF] text-white rounded-tr-xs shadow-[0_2px_8px_rgba(108,99,255,0.25)]'
+                            : 'bg-white text-[#1B192F] border border-[#F0EBFF] rounded-tl-xs shadow-[0_2px_8px_rgba(108,99,255,0.05)]'
+                        }`}
+                      >
+                        <p className="whitespace-pre-wrap">{msg.content || msg.text}</p>
+                      </div>
+
+                      <div
+                        className={`flex items-center gap-1 mt-0.5 px-1 text-[10px] text-[#8E8C9D] ${
+                          isStudent ? 'justify-end' : 'justify-start'
+                        }`}
+                      >
+                        <span>{formatTime(msg.createdAt)}</span>
+                        {isStudent && (
+                          <span className="material-symbols-outlined text-[12px] text-[#4D41DF]">done_all</span>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                );
+              })
+            ) : (
+              <div className="text-center py-8 text-gray-400 text-xs">
+                No messages yet. Send your message below!
+              </div>
+            )}
+          </div>
+
+          {/* Quick Prompts Strip */}
+          <div className="bg-[#FAF8FF] px-3 py-1.5 border-t border-[#F0EBFF] overflow-x-auto flex items-center gap-1.5 shrink-0 no-scrollbar">
+            <button
+              type="button"
+              onClick={() => handleSendMessage(null, 'Can I review the draft citations and structure?')}
+              className="px-3 py-1 rounded-full bg-white border border-[#EAE5FF] text-[#1B192F] text-[11px] font-medium whitespace-nowrap active:scale-95 transition-all shadow-xs"
+            >
+              Draft citations?
+            </button>
+            <button
+              type="button"
+              onClick={() => handleSendMessage(null, 'Could you confirm the expected delivery timeline?')}
+              className="px-3 py-1 rounded-full bg-white border border-[#EAE5FF] text-[#1B192F] text-[11px] font-medium whitespace-nowrap active:scale-95 transition-all shadow-xs"
+            >
+              Timeline status
+            </button>
+            <button
+              type="button"
+              onClick={() => handleSendMessage(null, 'I have additional rubric guidelines to share.')}
+              className="px-3 py-1 rounded-full bg-white border border-[#EAE5FF] text-[#1B192F] text-[11px] font-medium whitespace-nowrap active:scale-95 transition-all shadow-xs"
+            >
+              Rubric update
+            </button>
+          </div>
+
+          {/* Instagram Bottom Input Bar */}
+          <div className="p-2.5 bg-white/95 backdrop-blur-md border-t border-[#F0EBFF] shrink-0 pb-[max(0.6rem,env(safe-area-inset-bottom))]">
+            <form onSubmit={handleSendMessage} className="flex items-center gap-2">
+              <div className="flex-1 flex items-center bg-[#F6F1FF] rounded-full px-4 py-1.5 border border-[#ECE7FA] focus-within:border-[#4D41DF]/40 focus-within:bg-white transition-all">
+                <input
+                  type="text"
+                  value={messageInput}
+                  onChange={(e) => setMessageInput(e.target.value)}
+                  placeholder="Message..."
+                  className="w-full bg-transparent text-sm text-[#1B192F] placeholder:text-[#8E8C9D] focus:outline-none"
+                  disabled={isSending}
+                />
+              </div>
+
+              <button
+                type="submit"
+                disabled={!messageInput.trim() || isSending}
+                className={`w-9 h-9 rounded-full flex items-center justify-center transition-all shrink-0 ${
+                  messageInput.trim() && !isSending
+                    ? 'bg-[#4D41DF] text-white shadow-[0_2px_8px_rgba(108,99,255,0.35)] active:scale-95'
+                    : 'bg-[#EAE5FF] text-[#8E8C9D] cursor-not-allowed opacity-60'
+                }`}
+                aria-label="Send message"
+              >
+                <span className="material-symbols-outlined text-[18px]">send</span>
+              </button>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* ========================================================= */}
+      {/* MAIN DESKTOP & MOBILE LIST VIEW */}
+      {/* ========================================================= */}
       <main className="w-full flex-1 pt-24 px-4 sm:px-6 lg:px-12 max-w-7xl mx-auto pb-24 lg:pb-12">
         {/* Page Header */}
         <section className="flex flex-col gap-4 mb-6">
@@ -384,14 +640,14 @@ export function InquiriesPage() {
 
         {/* Main 2-Column Claymorphic Workspace Interface */}
         {inquiries.length > 0 && (
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start min-h-[700px]">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start lg:h-[calc(100vh-13.5rem)]">
             {/* LEFT COLUMN: Inquiries List */}
             <aside
-              className={`lg:col-span-5 xl:col-span-4 flex flex-col gap-3 ${
+              className={`lg:col-span-5 xl:col-span-4 flex flex-col gap-3 h-full overflow-hidden ${
                 showMobileChat ? 'hidden lg:flex' : 'flex'
               }`}
             >
-              <div className="flex items-center justify-between px-1">
+              <div className="flex items-center justify-between px-1 shrink-0">
                 <span className="text-xs uppercase tracking-wider text-[#464555] font-bold">
                   Linked Requests &amp; Threads
                 </span>
@@ -404,7 +660,7 @@ export function InquiriesPage() {
                   <p className="text-xs text-[#464555]">No inquiries match your search or filter.</p>
                 </div>
               ) : (
-                <div className="flex flex-col gap-3">
+                <div className="flex flex-col gap-3 overflow-y-auto pr-1 pb-4">
                   {filteredInquiries.map((inq) => {
                     const isSelected = inq.id === selectedInquiryId;
                     const isResolved = inq.status === 'resolved';
@@ -416,7 +672,7 @@ export function InquiriesPage() {
                           setSelectedInquiryId(inq.id);
                           setShowMobileChat(true);
                         }}
-                        className={`group cursor-pointer p-4 rounded-2xl transition-all relative overflow-hidden ${
+                        className={`group cursor-pointer p-4 rounded-2xl transition-all relative overflow-hidden shrink-0 ${
                           isSelected
                             ? 'bg-white shadow-[12px_16px_32px_rgba(108,99,255,0.14),-8px_-8px_24px_rgba(255,255,255,0.95)] ring-2 ring-[#4D41DF]/30'
                             : 'bg-white/80 hover:bg-white shadow-[6px_10px_22px_rgba(108,99,255,0.06),-4px_-4px_16px_rgba(255,255,255,0.9)] hover:shadow-[12px_16px_32px_rgba(108,99,255,0.12)]'
@@ -495,28 +751,15 @@ export function InquiriesPage() {
               )}
             </aside>
 
-            {/* RIGHT COLUMN: Active Request Chat Workspace */}
+            {/* RIGHT COLUMN: Active Request Chat Workspace (Desktop) */}
             <main
-              className={`lg:col-span-7 xl:col-span-8 flex flex-col rounded-3xl bg-white shadow-[12px_16px_36px_rgba(108,99,255,0.12),-8px_-8px_24px_rgba(255,255,255,0.95)] overflow-hidden ${
-                showMobileChat ? 'flex' : 'hidden lg:flex'
-              }`}
+              className="hidden lg:flex lg:col-span-7 xl:col-span-8 flex-col rounded-3xl bg-white shadow-[12px_16px_36px_rgba(108,99,255,0.12),-8px_-8px_24px_rgba(255,255,255,0.95)] overflow-hidden h-full"
             >
               {activeInquiry ? (
                 <>
                   {/* Sticky Request Context Bar Header */}
-                  <div className="sticky top-0 z-20 px-5 py-4 bg-white/95 backdrop-blur-md shadow-[0_4px_16px_rgba(108,99,255,0.05)] border-b border-[#F0EBFF]">
-                    {/* Mobile Back Button */}
-                    <div className="lg:hidden mb-2">
-                      <button
-                        onClick={() => setShowMobileChat(false)}
-                        className="inline-flex items-center gap-1 text-xs font-bold text-[#4D41DF] hover:underline"
-                      >
-                        <span className="material-symbols-outlined text-[16px]">arrow_back</span>
-                        Back to Inquiries List
-                      </button>
-                    </div>
-
-                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                  <div className="px-5 py-4 bg-white/95 backdrop-blur-md shadow-[0_4px_16px_rgba(108,99,255,0.05)] border-b border-[#F0EBFF] shrink-0">
+                    <div className="flex flex-row items-center justify-between gap-3">
                       <div className="space-y-1">
                         <div className="flex items-center flex-wrap gap-2">
                           <button
@@ -538,13 +781,13 @@ export function InquiriesPage() {
                             {activeInquiry.statusLabel || (activeInquiry.status === 'resolved' ? 'Resolved' : 'In Progress')}
                           </span>
                         </div>
-                        <h2 className="text-lg sm:text-xl font-bold text-[#1B192F] tracking-tight mt-1 line-clamp-2">
+                        <h2 className="text-lg font-bold text-[#1B192F] tracking-tight mt-1 line-clamp-1">
                           {activeInquiry.title}
                         </h2>
                       </div>
 
                       {/* Deadline Info & Quick Link to Full Request View */}
-                      <div className="flex items-center sm:flex-col sm:items-end gap-2 shrink-0">
+                      <div className="flex flex-col items-end gap-1.5 shrink-0">
                         <div className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-[#FFDDB3] text-[#291800] text-xs font-semibold shadow-[inset_1px_1px_2px_rgba(255,255,255,0.8)]">
                           <span className="material-symbols-outlined text-[15px] text-[#7F5300]">timer</span>
                           <span>Due: {formatDueTime(activeInquiry.deadline)}</span>
@@ -560,13 +803,16 @@ export function InquiriesPage() {
                     </div>
 
                     {/* Academic Specialist Metadata Strip */}
-                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mt-3 pt-2 bg-[#F6F1FF] px-3.5 py-2 rounded-xl shadow-[inset_1px_1px_2px_rgba(37,35,58,0.04),inset_-1px_-1px_2px_rgba(255,255,255,0.8)]">
+                    <div className="flex items-center justify-between gap-2 mt-3 pt-2 bg-[#F6F1FF] px-3.5 py-2 rounded-xl shadow-[inset_1px_1px_2px_rgba(37,35,58,0.04),inset_-1px_-1px_2px_rgba(255,255,255,0.8)]">
                       <div className="flex items-center gap-2">
                         <div className="w-6 h-6 rounded-full bg-[#675DF9] text-white flex items-center justify-center font-bold text-[10px] shadow-[inset_1px_1px_2px_rgba(255,255,255,0.6)]">
                           AH
                         </div>
                         <p className="text-xs text-[#1B192F] font-medium">
-                          Assigned Support: <span className="text-[#4D41DF] font-bold">{activeInquiry.assignedSpecialist || 'Dr. Marcus Vance (Specialist)'}</span>
+                          Assigned Specialist:{' '}
+                          <span className="text-[#4D41DF] font-bold">
+                            {activeInquiry.assignedSpecialist || 'Dr. Marcus Vance (Specialist)'}
+                          </span>
                         </p>
                       </div>
                       <div className="flex items-center gap-2">
@@ -582,8 +828,11 @@ export function InquiriesPage() {
                     </div>
                   </div>
 
-                  {/* Scrollable Message Conversation Stream */}
-                  <div className="flex-1 p-4 sm:p-6 space-y-4 overflow-y-auto max-h-[500px] min-h-[380px] bg-gradient-to-b from-[#FCF8FF] to-white">
+                  {/* Scrollable Message Conversation Stream (Desktop) */}
+                  <div
+                    ref={chatContainerRef}
+                    className="flex-1 p-5 space-y-4 overflow-y-auto bg-gradient-to-b from-[#FCF8FF] to-white overscroll-contain"
+                  >
                     {/* System Event Pill */}
                     <div className="flex justify-center">
                       <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#F0EBFF] text-[#464555] text-[11px] font-medium shadow-[inset_1px_1px_2px_rgba(255,255,255,0.8)]">
@@ -597,7 +846,8 @@ export function InquiriesPage() {
                     {/* Messages */}
                     {activeInquiry.messages && activeInquiry.messages.length > 0 ? (
                       activeInquiry.messages.map((msg, index) => {
-                        const isStudent = msg.senderRole === 'user' || msg.senderRole === 'student' || msg.senderId === user?.id;
+                        const isStudent =
+                          msg.senderRole === 'user' || msg.senderRole === 'student' || msg.senderId === user?.id;
                         return (
                           <div
                             key={msg.id || index}
@@ -650,11 +900,10 @@ export function InquiriesPage() {
                         No messages yet. Send your first message below!
                       </div>
                     )}
-                    <div ref={messagesEndRef} />
                   </div>
 
-                  {/* Chat Input Area */}
-                  <div className="p-4 sm:p-5 bg-[#F6F1FF] border-t border-[#EAE5FF] flex flex-col gap-2.5">
+                  {/* Chat Input Area (Desktop) */}
+                  <div className="p-4 sm:p-5 bg-[#F6F1FF] border-t border-[#EAE5FF] flex flex-col gap-2.5 shrink-0">
                     {/* Suggested Prompt Chips */}
                     <div className="flex items-center gap-1.5 overflow-x-auto pb-1 text-xs">
                       <span className="text-[11px] text-[#464555] font-semibold whitespace-nowrap">Suggested:</span>
@@ -728,7 +977,8 @@ export function InquiriesPage() {
         )}
       </main>
 
-      <MobileBottomNav />
+      {/* Hide bottom nav on mobile when chatting in Instagram-style view */}
+      {!showMobileChat && <MobileBottomNav />}
     </div>
   );
 }
