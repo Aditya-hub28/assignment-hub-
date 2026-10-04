@@ -85,7 +85,21 @@ class ServiceRequestController {
 
       const fileData = await serviceRequestService.getAuthorizedFile(id, filename, user);
 
-      // Securely serve file as attachment
+      if (fileData.type === 'signed_url') {
+        // Return signed URL JSON if explicitly requested
+        if (req.query.action === 'url' || req.headers.accept?.includes('application/json')) {
+          return res.status(200).json({
+            success: true,
+            downloadUrl: fileData.signedUrl,
+            filename: fileData.downloadName,
+            expiresIn: fileData.expiresIn
+          });
+        }
+        // Redirect browser to secure short-lived Supabase signed URL
+        return res.redirect(302, fileData.signedUrl);
+      }
+
+      // Legacy fallback for local files
       return res.download(fileData.filePath, fileData.downloadName);
     } catch (error) {
       next(error);

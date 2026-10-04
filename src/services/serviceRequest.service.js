@@ -2,6 +2,7 @@ const fs = require('fs');
 const path = require('path');
 const { supabaseAdmin } = require('../config/supabase');
 const inquiryService = require('./inquiry.service');
+const storageService = require('./storage.service');
 
 const DATA_DIR = path.resolve(process.cwd(), 'data');
 const REQUESTS_FILE = path.join(DATA_DIR, 'service_requests.json');
@@ -76,44 +77,74 @@ const generateRequestId = (existingRequests = []) => {
 };
 
 /**
- * Process and save base64 / dataUrl files to disk if present, returning cleaned metadata
+ * Process and save base64 / dataUrl files to Supabase Storage, returning cleaned metadata
  */
-const processFiles = (files = [], requestId) => {
+const processFiles = async (files = [], requestId, user = null) => {
   if (!Array.isArray(files) || files.length === 0) {
     return [];
   }
 
-  const targetDir = path.join(UPLOADS_DIR, requestId);
-  if (!fs.existsSync(targetDir)) {
-    fs.mkdirSync(targetDir, { recursive: true });
-  }
-
-  return files.map((file, idx) => {
+  const processed = [];
+  for (let idx = 0; idx < files.length; idx++) {
+    const file = files[idx];
     const ext = file.extension || file.name.split('.').pop().toLowerCase();
-    const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, '_');
-    let relativeUrl = null;
+    const safeName = path.basename(file.name).replace(/[^a-zA-Z0-9._-]/g, '_');
+    const fileNameOnDisk = `${Date.now()}_${idx}_${safeName}`;
+    let relativeUrl = `/api/v1/services/requests/${requestId}/files/${fileNameOnDisk}`;
+    let storagePath = null;
 
-    if (file.data && typeof file.data === 'string' && file.data.includes('base64,')) {
+    if (file.data && typeof file.data === 'string') {
       try {
-        const base64Data = file.data.split('base64,')[1];
+        const base64Data = file.data.includes('base64,') ? file.data.split('base64,')[1] : file.data;
         const buffer = Buffer.from(base64Data, 'base64');
-        const fileNameOnDisk = `${Date.now()}_${idx}_${safeName}`;
-        const filePath = path.join(targetDir, fileNameOnDisk);
-        fs.writeFileSync(filePath, buffer);
-        relativeUrl = `/api/v1/services/requests/${requestId}/files/${fileNameOnDisk}`;
+
+        // Upload to private Supabase Storage bucket: service-request-files
+        const uploadResult = await storageService.uploadFile({
+          userId: user?.id,
+          requestId,
+          filename: fileNameOnDisk,
+          buffer,
+          mimeType: file.type || ext,
+          fileSize: file.size || buffer.length
+        });
+
+        storagePath = uploadResult.storagePath;
+
+        // Write local backup for offline/legacy compatibility without depending on it
+        try {
+          const targetDir = path.join(UPLOADS_DIR, requestId);
+          if (!fs.existsSync(targetDir)) {
+            fs.mkdirSync(targetDir, { recursive: true });
+          }
+          fs.writeFileSync(path.join(targetDir, fileNameOnDisk), buffer);
+        } catch {}
       } catch (err) {
-        console.warn(`[WARN] Could not write file ${file.name} to disk:`, err.message);
+        console.warn(`[STORAGE] Upload failed for ${file.name}, trying local fallback:`, err.message);
+        try {
+          const targetDir = path.join(UPLOADS_DIR, requestId);
+          if (!fs.existsSync(targetDir)) {
+            fs.mkdirSync(targetDir, { recursive: true });
+          }
+          const base64Data = file.data.includes('base64,') ? file.data.split('base64,')[1] : file.data;
+          const buffer = Buffer.from(base64Data, 'base64');
+          fs.writeFileSync(path.join(targetDir, fileNameOnDisk), buffer);
+        } catch (localErr) {
+          console.error('[STORAGE] Both Supabase and local save failed:', localErr.message);
+        }
       }
     }
 
-    return {
+    processed.push({
       name: file.name,
       size: file.size,
       type: file.type || ext,
       extension: ext,
-      url: relativeUrl || file.url || null
-    };
-  });
+      storagePath,
+      url: relativeUrl
+    });
+  }
+
+  return processed;
 };
 
 /**
@@ -127,7 +158,7 @@ class ServiceRequestService {
     const allRequests = loadLocalRequests();
     const requestId = generateRequestId(allRequests);
 
-    const processedFiles = processFiles(payload.files, requestId);
+    const processedFiles = await processFiles(payload.files, requestId, user);
 
     const newRequest = {
       id: requestId,
@@ -275,35 +306,51 @@ class ServiceRequestService {
 
     // Path traversal defense
     const safeFileName = path.basename(filename);
-    const targetDir = path.join(UPLOADS_DIR, requestId);
-    const resolvedPath = path.resolve(targetDir, safeFileName);
 
-    if (!resolvedPath.startsWith(path.resolve(targetDir))) {
-      const err = new Error('Invalid file path traversal detected.');
-      err.status = 400;
-      err.code = 'BAD_REQUEST';
-      throw err;
-    }
+    // Identify original clean filename and record if present
+    const originalFile = (request.files || []).find((f) => {
+      const diskPart = f.url?.split('/').pop();
+      return diskPart === safeFileName || f.name === safeFileName || (f.storagePath && f.storagePath.endsWith(`/${safeFileName}`));
+    });
 
-    if (!fs.existsSync(resolvedPath)) {
+    if (!originalFile) {
       const err = new Error(`File "${safeFileName}" was not found for this request.`);
       err.status = 404;
       err.code = 'NOT_FOUND';
       throw err;
     }
 
-    // Identify original clean filename if recorded
-    const originalFile = (request.files || []).find((f) => {
-      const diskPart = f.url?.split('/').pop();
-      return diskPart === safeFileName || f.name === safeFileName;
-    });
+    const downloadName = originalFile.name || safeFileName.replace(/^\d+_\d+_/, '');
+    const userFolder = request.userId ? String(request.userId).trim() : 'unauthenticated';
+    const storagePath = originalFile.storagePath || `${userFolder}/${requestId}/${safeFileName}`;
 
-    const downloadName = originalFile?.name || safeFileName.replace(/^\d+_\d+_/, '');
+    // Prefer Supabase Storage signed URL
+    try {
+      const { signedUrl, expiresIn } = await storageService.getSignedUrl(storagePath, 300);
+      return {
+        type: 'signed_url',
+        signedUrl,
+        storagePath,
+        downloadName,
+        expiresIn
+      };
+    } catch (storageErr) {
+      // Backward compatibility fallback: check legacy local storage if file exists on disk
+      const targetDir = path.join(UPLOADS_DIR, requestId);
+      const resolvedPath = path.resolve(targetDir, safeFileName);
+      if (resolvedPath.startsWith(path.resolve(targetDir)) && fs.existsSync(resolvedPath)) {
+        return {
+          type: 'local_file',
+          filePath: resolvedPath,
+          downloadName
+        };
+      }
 
-    return {
-      filePath: resolvedPath,
-      downloadName
-    };
+      const err = new Error(`File "${safeFileName}" was not found in secure storage.`);
+      err.status = 404;
+      err.code = 'NOT_FOUND';
+      throw err;
+    }
   }
 }
 

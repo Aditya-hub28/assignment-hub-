@@ -48,7 +48,7 @@ describe('Security & Production Verification Test Suite', () => {
       expect(fileObj.url.includes('/uploads/')).toBe(false);
     });
 
-    it('should allow User Alpha (owner) to download their uploaded file', async () => {
+    it('should allow User Alpha (owner) to obtain a secure signed URL or redirect to Supabase Storage', async () => {
       // First get the request to know the exact stored disk filename in the URL
       const reqRes = await request(app)
         .get(`/api/v1/services/requests/${userARequestId}`)
@@ -57,25 +57,36 @@ describe('Security & Production Verification Test Suite', () => {
       expect(reqRes.status).toBe(200);
       const fileUrl = reqRes.body.data.files[0].url;
 
-      const fileRes = await request(app)
+      // 1. Request as JSON URL action
+      const jsonRes = await request(app)
+        .get(`${fileUrl}?action=url`)
+        .set('Authorization', userAToken);
+
+      expect(jsonRes.status).toBe(200);
+      expect(jsonRes.body.success).toBe(true);
+      expect(jsonRes.body.downloadUrl).toBeDefined();
+      expect(jsonRes.body.downloadUrl).toContain('supabase.co/storage/v1/object/sign/service-request-files');
+
+      // 2. Direct GET redirects with 302 to Supabase signed URL
+      const directRes = await request(app)
         .get(fileUrl)
         .set('Authorization', userAToken);
 
-      expect(fileRes.status).toBe(200);
-      expect(fileRes.headers['content-disposition']).toContain(sampleFileName);
+      expect(directRes.status).toBe(302);
+      expect(directRes.headers.location).toContain('supabase.co/storage/v1/object/sign/service-request-files');
     });
 
-    it('should allow User Alpha to download via query parameter token', async () => {
+    it('should allow User Alpha to access file via query parameter token', async () => {
       const reqRes = await request(app)
         .get(`/api/v1/services/requests/${userARequestId}`)
         .set('Authorization', userAToken);
 
       const fileUrl = reqRes.body.data.files[0].url;
       const fileRes = await request(app)
-        .get(`${fileUrl}?token=test-token-user-alpha`);
+        .get(`${fileUrl}?token=test-token-user-alpha&action=url`);
 
       expect(fileRes.status).toBe(200);
-      expect(fileRes.headers['content-disposition']).toContain(sampleFileName);
+      expect(fileRes.body.downloadUrl).toBeDefined();
     });
 
     it('should DENY User Bravo from downloading User Alpha\'s file (403 Forbidden)', async () => {

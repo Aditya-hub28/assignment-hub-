@@ -132,7 +132,8 @@ export function MyRequestsPage() {
     if (!file?.url) return;
     try {
       const token = authStorage.getAccessToken();
-      const res = await fetch(file.url, {
+      // Request secure short-lived signed URL from authorized backend endpoint
+      const res = await fetch(`${file.url}?action=url`, {
         headers: token ? { Authorization: `Bearer ${token}` } : {}
       });
       if (res.status === 401 || res.status === 403) {
@@ -143,11 +144,21 @@ export function MyRequestsPage() {
         showToast('File download failed or file was not found.', 'error');
         return;
       }
-      const blob = await res.blob();
+      const data = await res.json().catch(() => ({}));
+      const downloadTarget = data.downloadUrl || file.url;
+
+      // Fetch file blob using the short-lived signed URL
+      const fileRes = await fetch(downloadTarget);
+      if (!fileRes.ok) {
+        // Fallback: direct window navigation to signed URL
+        window.open(downloadTarget, '_blank');
+        return;
+      }
+      const blob = await fileRes.blob();
       const blobUrl = window.URL.createObjectURL(blob);
       const tempLink = document.createElement('a');
       tempLink.href = blobUrl;
-      tempLink.download = file.name || 'document';
+      tempLink.download = file.name || data.filename || 'document';
       document.body.appendChild(tempLink);
       tempLink.click();
       window.URL.revokeObjectURL(blobUrl);

@@ -61,10 +61,14 @@ export function ServiceRequestProvider({ children }) {
 
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Sync to sessionStorage
+  // Sync to sessionStorage (strip large base64 data to prevent sessionStorage quota exceeded errors)
   useEffect(() => {
     try {
-      sessionStorage.setItem('ah_service_form', JSON.stringify(formData));
+      const sanitized = {
+        ...formData,
+        files: (formData.files || []).map(({ data, ...rest }) => rest)
+      };
+      sessionStorage.setItem('ah_service_form', JSON.stringify(sanitized));
     } catch {
       // ignore
     }
@@ -100,7 +104,7 @@ export function ServiceRequestProvider({ children }) {
     }));
   };
 
-  const addFiles = (fileList) => {
+  const addFiles = async (fileList) => {
     const newFiles = Array.from(fileList);
     const currentFiles = formData.files || [];
     let currentTotal = currentFiles.reduce((acc, f) => acc + (f.size || 0), 0);
@@ -118,13 +122,22 @@ export function ServiceRequestProvider({ children }) {
         break;
       }
 
+      // Read file as base64 data URL
+      const dataUrl = await new Promise((resolve) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = () => resolve(null);
+        reader.readAsDataURL(f);
+      });
+
       currentTotal += f.size;
       validToAdd.push({
         name: f.name,
         size: f.size,
         type: f.type || 'application/octet-stream',
         extension: ext,
-        lastModified: f.lastModified
+        lastModified: f.lastModified,
+        data: dataUrl
       });
     }
 
@@ -189,7 +202,8 @@ export function ServiceRequestProvider({ children }) {
           name: f.name,
           size: f.size,
           type: f.type,
-          extension: f.extension
+          extension: f.extension,
+          data: f.data
         })),
         userName: profile?.full_name || user?.user_metadata?.full_name || 'Student',
         userEmail: user?.email || ''
