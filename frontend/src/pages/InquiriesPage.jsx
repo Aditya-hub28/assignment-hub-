@@ -509,7 +509,7 @@ export function InquiriesPage() {
       {/* ========================================================= */}
       {/* MAIN DESKTOP & MOBILE LIST VIEW */}
       {/* ========================================================= */}
-      <main className="w-full flex-1 pt-20 lg:pt-22 px-3 sm:px-6 lg:px-8 max-w-[1440px] mx-auto pb-20 lg:pb-8">
+      <main className="w-full flex-1 pt-24 sm:pt-28 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto pb-24 sm:pb-28 lg:pb-12">
         {/* Page Header */}
         <section className="flex flex-col gap-3 mb-4">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
@@ -651,7 +651,7 @@ export function InquiriesPage() {
 
         {/* Main 2-Column Claymorphic Workspace Interface */}
         {inquiries.length > 0 && (
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start lg:h-[calc(100vh-9.5rem)] min-h-[660px]">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 lg:h-[calc(100vh-16rem)] min-h-[600px]">
             {/* LEFT COLUMN: Inquiries List */}
             <aside
               className={`lg:col-span-4 xl:col-span-4 flex flex-col gap-2.5 h-full overflow-hidden ${

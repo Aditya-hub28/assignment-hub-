@@ -201,7 +201,7 @@ export function ProfilePage() {
       <Navbar activePage="profile" />
 
       {/* Main Content */}
-      <main className="w-full pt-24 sm:pt-28 pb-28 sm:pb-32 lg:pb-16 px-3.5 sm:px-6 lg:px-8 max-w-4xl mx-auto flex-grow">
+      <main className="w-full pt-24 sm:pt-28 pb-28 sm:pb-32 lg:pb-16 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto flex-grow">
         <div className="flex flex-col w-full gap-6 animate-in fade-in duration-300">
 
           {/* ============================================ */}
