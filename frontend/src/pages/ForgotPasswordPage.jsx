@@ -130,7 +130,7 @@ export function ForgotPasswordPage() {
 
           {/* Right Column: Recovery Form Card */}
           <div className="lg:col-span-6 w-full max-w-md mx-auto">
-            <div className="clay-surface rounded-3xl p-7 sm:p-9">
+            <div className="clay-surface rounded-3xl p-5 sm:p-7 md:p-9">
               
               <div className="flex flex-col items-center text-center space-y-2 mb-6">
                 <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-[#6C63FF] to-[#8B7CFF] flex items-center justify-center text-white shadow-[0_8px_20px_rgba(108,99,255,0.35)]">

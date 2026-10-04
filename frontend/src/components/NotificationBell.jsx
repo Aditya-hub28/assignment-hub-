@@ -143,7 +143,7 @@ export function NotificationBell({ onSelectInquiry }) {
       {/* Claymorphic Notification Dropdown Popup */}
       {isOpen && (
         <div
-          className="fixed inset-x-3 top-18 sm:inset-x-auto sm:right-0 sm:top-14 w-auto sm:w-[420px] max-w-[96vw] sm:max-w-[90vw] rounded-2xl sm:rounded-3xl bg-surface-container-lowest shadow-[24px_32px_60px_rgba(37,35,58,0.25),-12px_-12px_32px_rgba(255,255,255,0.95)] z-50 flex flex-col overflow-hidden transition-all border border-surface-container-high/40 animate-in fade-in zoom-in-95 duration-150"
+          className="fixed inset-x-3 top-20 sm:inset-x-auto sm:right-0 sm:top-14 w-auto sm:w-[420px] max-w-[96vw] sm:max-w-[90vw] rounded-2xl sm:rounded-3xl bg-surface-container-lowest shadow-[24px_32px_60px_rgba(37,35,58,0.25),-12px_-12px_32px_rgba(255,255,255,0.95)] z-50 flex flex-col overflow-hidden transition-all border border-surface-container-high/40 animate-in fade-in zoom-in-95 duration-150"
         >
           {/* Top indicator / caret on desktop */}
           <div className="hidden sm:block absolute -top-2 right-4 w-4 h-4 bg-surface-container-lowest rotate-45 shadow-[-2px_-2px_4px_rgba(0,0,0,0.03)] border-t border-l border-surface-container-high/30"></div>

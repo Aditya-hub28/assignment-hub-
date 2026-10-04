@@ -42,7 +42,7 @@ export function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#FAF8FF] flex flex-col justify-between font-sans selection:bg-[#6C63FF] selection:text-white">
+    <div className="min-h-screen bg-[#FAF8FF] flex flex-col justify-between font-sans selection:bg-[#6C63FF] selection:text-white overflow-x-hidden">
       {/* Header */}
       <header className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5">
         <div className="flex items-center justify-between">
@@ -118,7 +118,7 @@ export function LoginPage() {
 
           {/* Right Column: Login Card */}
           <div className="lg:col-span-6 w-full max-w-md mx-auto">
-            <div className="clay-surface rounded-3xl p-7 sm:p-9">
+            <div className="clay-surface rounded-3xl p-5 sm:p-7 md:p-9">
               <div className="flex items-center justify-between mb-6">
                 <div className="flex items-center gap-3">
                   <div className="w-11 h-11 rounded-2xl bg-white p-1 flex items-center justify-center clay-card shadow-sm shrink-0 border border-[#6C63FF]/20">

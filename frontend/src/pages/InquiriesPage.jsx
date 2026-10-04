@@ -3,7 +3,7 @@ import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
 import { MobileBottomNav } from '../components/MobileBottomNav';
-import { NotificationBell } from '../components/NotificationBell';
+import { Navbar } from '../components/Navbar';
 
 // Dataset aligned with Stitch Screen 303be452a5684a22ad716eaa66b36904
 const INITIAL_INQUIRIES = [
@@ -239,7 +239,6 @@ export function InquiriesPage() {
   const [selectedInquiry, setSelectedInquiry] = useState(null);
   const [drawerMobileTab, setDrawerMobileTab] = useState('chat'); // 'chat' | 'details'
   const [replyText, setReplyText] = useState('');
-  const [userDropdownOpen, setUserDropdownOpen] = useState(false);
 
   // New inquiry form state
   const [formSubject, setFormSubject] = useState('');
@@ -248,7 +247,6 @@ export function InquiriesPage() {
   const [formMessage, setFormMessage] = useState('');
   const [formAttachment, setFormAttachment] = useState('syllabus_clause_revision.pdf (1.2 MB)');
 
-  const userDropdownRef = useRef(null);
   const threadEndRef = useRef(null);
 
   // Auto scroll in conversation drawer
@@ -257,17 +255,6 @@ export function InquiriesPage() {
       threadEndRef.current.scrollIntoView({ behavior: 'smooth' });
     }
   }, [selectedInquiry, selectedInquiry?.thread, drawerMobileTab]);
-
-  // Click outside listener for user dropdown
-  useEffect(() => {
-    function handleClickOutside(event) {
-      if (userDropdownRef.current && !userDropdownRef.current.contains(event.target)) {
-        setUserDropdownOpen(false);
-      }
-    }
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
 
   // Compute stat counts
   const statCounts = useMemo(() => {
@@ -407,135 +394,22 @@ export function InquiriesPage() {
   return (
     <div className="min-h-screen bg-surface font-sans text-on-surface antialiased selection:bg-primary-fixed selection:text-on-primary-fixed flex flex-col relative">
       {/* ─────────────────────────────────────────────────────────────
-          1. TOP NAVIGATION BAR (Fixed Claymorphic & Mobile-Optimized)
+          1. TOP NAVIGATION BAR (Unified Reusable Component)
       ────────────────────────────────────────────────────────────── */}
-      <header className="fixed top-0 w-full z-40 bg-surface/95 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)] border-b border-surface-container/50">
-        <div className="h-16 sm:h-20 w-full px-4 sm:px-8 lg:px-12 flex items-center justify-between gap-3 sm:gap-6">
-          {/* Logo & Workspace Pill */}
-          <Link to="/dashboard" className="flex items-center gap-2 sm:gap-3.5 group shrink-0">
-            <div className="w-9 h-9 sm:w-11 sm:h-11 rounded-xl sm:rounded-2xl bg-white p-1 flex items-center justify-center shadow-sm group-hover:scale-105 transition-transform border border-primary/20 clay-card shrink-0">
-              <img src="/logo.png" alt="Assignment Hub" className="w-full h-full object-contain" />
-            </div>
-            <div className="flex items-center gap-2">
-              <span className="font-extrabold text-lg sm:text-[22px] text-on-surface tracking-tight">
-                Assignment<span className="text-primary">Hub</span>
-              </span>
-              <span className="hidden md:inline-block px-3 py-1 rounded-full bg-surface-container-high text-primary text-xs uppercase tracking-wider font-bold">
-                Student Workspace
-              </span>
-            </div>
-          </Link>
-
-          {/* Desktop Nav Links */}
-          <nav className="hidden lg:flex items-center gap-1 p-1 rounded-full bg-surface-container-low shadow-[inset_1px_1px_2px_rgba(37,35,58,0.04)]">
-            <Link
-              to="/dashboard"
-              className="px-5 py-2 rounded-full text-sm font-semibold text-on-surface-variant hover:text-on-surface hover:bg-surface-container transition-all"
-            >
-              Home
-            </Link>
-            <Link
-              to="/services"
-              className="px-5 py-2 rounded-full text-sm font-semibold text-on-surface-variant hover:text-on-surface hover:bg-surface-container transition-all"
-            >
-              Services
-            </Link>
-            <Link
-              to="/my-requests"
-              className="px-5 py-2 rounded-full text-sm font-semibold text-on-surface-variant hover:text-on-surface hover:bg-surface-container transition-all"
-            >
-              My Requests
-            </Link>
-            <Link
-              to="/inquiries"
-              className="px-5 py-2 rounded-full text-sm font-bold bg-surface-container-highest text-primary shadow-[inset_2px_2px_4px_rgba(255,255,255,0.8),inset_-2px_-2px_4px_rgba(108,99,255,0.12)] transition-all"
-            >
-              Inquiries
-            </Link>
-          </nav>
-
-          {/* Right Header Actions */}
-          <div className="flex items-center gap-2 sm:gap-3">
-            {/* New Request Button */}
-            <Link
-              to="/request-assignment"
-              className="hidden sm:flex items-center gap-1.5 px-4 sm:px-5 py-2 sm:py-2.5 rounded-full bg-primary text-white text-xs sm:text-sm font-bold shadow-[6px_10px_20px_rgba(108,99,255,0.35)] hover:bg-primary-container hover:-translate-y-0.5 transition-all"
-            >
-              <span className="material-symbols-outlined text-[18px]">add</span>
-              <span>New Request</span>
-            </Link>
-
-            {/* ── Notification Bell with Claymorphic Popup Dropdown ── */}
-            <NotificationBell
-              onSelectInquiry={(inqId) => {
-                const match = inquiries.find(i => i.id === inqId);
-                if (match) {
-                  setSelectedInquiry(match);
-                  setDrawerMobileTab('chat');
-                }
-              }}
-            />
-
-            {/* Profile Dropdown */}
-            <div className="relative" ref={userDropdownRef}>
-              <div
-                onClick={() => setUserDropdownOpen(prev => !prev)}
-                className="flex items-center gap-1.5 sm:gap-2 p-1 sm:pr-3 rounded-full bg-surface-container-low hover:bg-surface-container transition-all cursor-pointer shadow-[inset_1px_1px_2px_rgba(255,255,255,0.8)]"
-              >
-                <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-primary flex items-center justify-center text-white text-[11px] sm:text-xs font-bold">
-                  {user?.name ? user.name.slice(0, 2).toUpperCase() : 'AK'}
-                </div>
-                <span className="hidden md:inline text-xs sm:text-sm font-semibold text-on-surface">
-                  {user?.name || 'Aditya K.'}
-                </span>
-                <span className="material-symbols-outlined text-on-surface-variant text-[16px] sm:text-[18px]">expand_more</span>
-              </div>
-
-              {userDropdownOpen && (
-                <div className="absolute right-0 top-11 sm:top-12 w-48 rounded-2xl bg-surface-container-lowest shadow-[12px_16px_32px_rgba(37,35,58,0.15)] p-2 z-50 border border-surface-container">
-                  <div className="px-3 py-2 border-b border-surface-container">
-                    <p className="text-xs font-bold text-on-surface">{user?.name || 'Aditya K.'}</p>
-                    <p className="text-[11px] text-on-surface-variant truncate">{user?.email || 'aditya@student.edu'}</p>
-                  </div>
-                  <Link
-                    to="/dashboard"
-                    onClick={() => setUserDropdownOpen(false)}
-                    className="flex items-center gap-2 px-3 py-2 text-xs font-medium text-on-surface hover:bg-surface-container rounded-xl transition-colors"
-                  >
-                    <span className="material-symbols-outlined text-[16px]">dashboard</span>
-                    Dashboard
-                  </Link>
-                  <Link
-                    to="/my-requests"
-                    onClick={() => setUserDropdownOpen(false)}
-                    className="flex items-center gap-2 px-3 py-2 text-xs font-medium text-on-surface hover:bg-surface-container rounded-xl transition-colors"
-                  >
-                    <span className="material-symbols-outlined text-[16px]">inventory_2</span>
-                    My Requests
-                  </Link>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setUserDropdownOpen(false);
-                      logout();
-                      navigate('/login');
-                    }}
-                    className="w-full flex items-center gap-2 px-3 py-2 text-xs font-medium text-error hover:bg-error-container/30 rounded-xl transition-colors text-left"
-                  >
-                    <span className="material-symbols-outlined text-[16px]">logout</span>
-                    Logout
-                  </button>
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
-      </header>
+      <Navbar
+        onSelectInquiry={(inqId) => {
+          const match = inquiries.find((i) => i.id === inqId);
+          if (match) {
+            setSelectedInquiry(match);
+            setDrawerMobileTab('chat');
+          }
+        }}
+      />
 
       {/* ─────────────────────────────────────────────────────────────
           2. MAIN CONTENT AREA (Responsive Margins & Paddings)
       ────────────────────────────────────────────────────────────── */}
-      <main className="w-full pt-20 sm:pt-28 pb-24 lg:pb-16 px-3.5 sm:px-8 lg:px-12 max-w-7xl mx-auto flex-1 flex flex-col gap-6 sm:gap-10">
+      <main className="w-full pt-24 sm:pt-28 pb-28 sm:pb-32 lg:pb-16 px-3.5 sm:px-8 lg:px-12 max-w-7xl mx-auto flex-1 flex flex-col gap-6 sm:gap-10">
         {/* 1. PAGE HEADER */}
         <section className="flex flex-col md:flex-row md:items-end justify-between gap-4 sm:gap-6 pb-1 sm:pb-2">
           <div className="flex flex-col gap-1.5 sm:gap-2 max-w-2xl">

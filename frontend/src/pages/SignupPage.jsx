@@ -224,7 +224,7 @@ export function SignupPage() {
 
           {/* Right Column: Registration / OTP Card */}
           <div className="lg:col-span-7">
-            <div className="clay-surface rounded-3xl p-6 sm:p-10">
+            <div className="clay-surface rounded-3xl p-5 sm:p-7 md:p-10">
               
               <div className="flex items-center justify-between mb-6">
                 <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#FAF8FF] border border-[#E2DCFF]">

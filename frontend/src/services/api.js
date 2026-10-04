@@ -104,5 +104,10 @@ export const api = {
   user: {
     getProfile: () => request('/user/profile', { method: 'GET' }),
     updateProfile: (body) => request('/user/profile', { method: 'PUT', body })
+  },
+  services: {
+    createRequest: (body) => request('/services/requests', { method: 'POST', body }),
+    getRequests: () => request('/services/requests', { method: 'GET' }),
+    getRequestById: (id) => request(`/services/requests/${id}`, { method: 'GET' })
   }
 };

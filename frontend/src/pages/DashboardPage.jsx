@@ -3,14 +3,13 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
 import { MobileBottomNav } from '../components/MobileBottomNav';
-import { NotificationBell } from '../components/NotificationBell';
+import { Navbar } from '../components/Navbar';
 
 export function DashboardPage() {
   const { user, profile, logout, updateProfile } = useAuth();
   const { showToast } = useToast();
   const navigate = useNavigate();
 
-  const [userDropdownOpen, setUserDropdownOpen] = useState(false);
   const [profileModalOpen, setProfileModalOpen] = useState(false);
   const [requestModalOpen, setRequestModalOpen] = useState(false);
 
@@ -53,12 +52,11 @@ export function DashboardPage() {
       if (e.key === 'Escape') {
         if (requestModalOpen) setRequestModalOpen(false);
         if (profileModalOpen) setProfileModalOpen(false);
-        if (userDropdownOpen) setUserDropdownOpen(false);
       }
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [requestModalOpen, profileModalOpen, userDropdownOpen]);
+  }, [requestModalOpen, profileModalOpen]);
 
   const handleOpenRequestModal = (serviceName = 'Assignment Writing') => {
     setReqService(serviceName);
@@ -96,127 +94,17 @@ export function DashboardPage() {
     <div className="min-h-screen bg-[#FAF8FF] flex flex-col justify-between font-sans text-[#25233A] relative">
       
       {/* ======================================================== */}
-      {/* 1. TOP NAVBAR (Home Active, Services links to /services) */}
+      {/* 1. TOP NAVBAR (Unified Reusable Component)               */}
       {/* ======================================================== */}
-      <header className="fixed top-0 left-0 right-0 z-50 bg-[#FAF8FF]/95 backdrop-blur-xl border-b border-[#E2DCFF]/50 shadow-[0_4px_20px_rgba(108,99,255,0.04)]">
-        <div className="h-20 max-w-7xl mx-auto px-4 md:px-6 lg:px-8 flex items-center justify-between gap-4">
-          
-          {/* Logo & Student Workspace Badge */}
-          <div className="flex items-center gap-3">
-            <Link to="/dashboard" className="flex items-center gap-3 transition-transform hover:scale-105 active:scale-95">
-              <div className="w-10 h-10 rounded-2xl bg-white p-1 flex items-center justify-center clay-card shadow-sm shrink-0 border border-[#6C63FF]/20">
-                <img src="/logo.png" alt="Assignment Hub" className="w-full h-full object-contain" />
-              </div>
-              <span className="hidden sm:inline-block text-xl font-extrabold text-[#25233A] tracking-tight">
-                Assignment<span className="text-[#6C63FF]">Hub</span>
-              </span>
-            </Link>
-
-            <span className="hidden md:inline-flex items-center px-3.5 py-1 rounded-full bg-[#EDE8FA] text-[#6E6A8A] text-xs font-semibold clay-pill-inset">
-              Student Workspace
-            </span>
-          </div>
-
-          {/* Centered Nav Pills */}
-          <nav className="hidden lg:flex items-center gap-1.5 px-3 py-1.5 bg-[#EDE8FA] rounded-full clay-pill-inset">
-            <span
-              className="px-5 py-2 rounded-full text-sm font-bold bg-[#DCD6FF] text-[#4D41DF] shadow-sm cursor-default"
-            >
-              Home
-            </span>
-            <Link
-              to="/services"
-              className="px-5 py-2 rounded-full text-sm font-semibold text-[#464555] hover:text-[#1B192F] transition-all duration-200"
-            >
-              Services
-            </Link>
-            <Link
-              to="/my-requests"
-              className="px-5 py-2 rounded-full text-sm font-semibold text-[#464555] hover:text-[#1B192F] transition-all duration-200"
-            >
-              My Requests
-            </Link>
-            <Link
-              to="/inquiries"
-              className="px-5 py-2 rounded-full text-sm font-semibold text-[#464555] hover:text-[#1B192F] transition-all duration-200"
-            >
-              Inquiries
-            </Link>
-          </nav>
-
-          {/* Right Header Actions */}
-          <div className="flex items-center gap-3">
-            <button
-              onClick={() => handleOpenRequestModal()}
-              className="hidden sm:inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-[#6C63FF] text-white text-xs font-bold clay-btn-primary hover:bg-[#5b52f5] transition-all cursor-pointer shadow-md"
-            >
-              <span className="material-symbols-outlined text-[16px]">add</span>
-              <span>New Request</span>
-            </button>
-
-            {/* Notification Bell with Dropdown Popup */}
-            <NotificationBell />
-
-            {/* User Profile Pill & Dropdown */}
-            <div className="relative">
-              <button
-                onClick={() => setUserDropdownOpen(!userDropdownOpen)}
-                className="flex items-center gap-2 p-1.5 pr-3 rounded-full bg-white clay-card hover:bg-[#FAF8FF] transition-all cursor-pointer border border-white"
-              >
-                <div className="w-8 h-8 rounded-full bg-[#6C63FF] text-white flex items-center justify-center font-bold text-xs shadow-sm">
-                  {initial}
-                </div>
-                <span className="hidden md:inline-block text-sm text-[#25233A] font-semibold max-w-[120px] truncate">
-                  {firstName}
-                </span>
-                <span className="material-symbols-outlined text-[18px] text-[#6E6A8A]">expand_more</span>
-              </button>
-
-              {userDropdownOpen && (
-                <div className="absolute right-0 mt-2 w-56 rounded-2xl bg-white p-2 z-50 clay-card shadow-2xl border border-white">
-                  <div className="px-3 py-2 border-b border-[#E2DCFF] mb-1">
-                    <p className="text-xs text-[#6E6A8A] font-medium">Signed in as</p>
-                    <p className="text-sm font-bold text-[#25233A] truncate">{email}</p>
-                  </div>
-                  <button
-                    onClick={() => {
-                      setUserDropdownOpen(false);
-                      setProfileModalOpen(true);
-                    }}
-                    className="w-full text-left flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-xs font-semibold text-[#6E6A8A] hover:bg-[#F3F0FF] hover:text-[#25233A] transition-all cursor-pointer"
-                  >
-                    <span className="material-symbols-outlined text-[18px] text-[#6C63FF]">person</span>
-                    <span>My Profile</span>
-                  </button>
-                  <button
-                    onClick={() => {
-                      setUserDropdownOpen(false);
-                      setProfileModalOpen(true);
-                    }}
-                    className="w-full text-left flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-xs font-semibold text-[#6E6A8A] hover:bg-[#F3F0FF] hover:text-[#25233A] transition-all cursor-pointer"
-                  >
-                    <span className="material-symbols-outlined text-[18px] text-[#FFB84D]">settings</span>
-                    <span>Account Settings</span>
-                  </button>
-                  <div className="my-1 h-px bg-[#E2DCFF]"></div>
-                  <button
-                    onClick={handleLogoutClick}
-                    className="w-full text-left flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-xs font-semibold text-[#BA1A1A] hover:bg-[#FFF2F2] transition-all cursor-pointer"
-                  >
-                    <span className="material-symbols-outlined text-[18px]">logout</span>
-                    <span>Logout</span>
-                  </button>
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
-      </header>
+      <Navbar
+        onNewRequest={() => handleOpenRequestModal()}
+        onOpenProfile={() => setProfileModalOpen(true)}
+      />
 
       {/* ======================================================== */}
       {/* 2. MAIN DASHBOARD CONTENT                                */}
       {/* ======================================================== */}
-      <main className="w-full pt-24 sm:pt-28 pb-24 lg:pb-16 px-3.5 sm:px-6 lg:px-8 max-w-7xl mx-auto flex-grow">
+      <main className="w-full pt-24 sm:pt-28 pb-28 sm:pb-32 lg:pb-16 px-3.5 sm:px-6 lg:px-8 max-w-7xl mx-auto flex-grow">
         <div className="flex flex-col w-full gap-10 animate-in fade-in duration-300">
           
           {/* Greeting Banner */}
@@ -290,16 +178,16 @@ export function DashboardPage() {
             </div>
 
             {/* Action Buttons */}
-            <div className="flex flex-col sm:flex-row items-center gap-4">
+            <div className="flex flex-col sm:flex-row items-center gap-3 sm:gap-4 w-full sm:w-auto">
               <button
                 onClick={() => handleOpenRequestModal()}
-                className="px-8 py-3.5 rounded-full bg-[#6C63FF] text-white text-sm font-bold clay-btn-primary hover:scale-105 active:scale-95 transition-all text-center cursor-pointer shadow-lg"
+                className="w-full sm:w-auto px-8 py-3.5 rounded-full bg-[#6C63FF] text-white text-sm font-bold clay-btn-primary hover:scale-105 active:scale-95 transition-all text-center cursor-pointer shadow-lg"
               >
                 + New Request
               </button>
               <Link
                 to="/services"
-                className="px-7 py-3.5 rounded-full bg-[#EDE8FA] text-[#6C63FF] text-sm font-bold clay-card hover:bg-[#E2DCFF] transition-all cursor-pointer"
+                className="w-full sm:w-auto px-7 py-3.5 rounded-full bg-[#EDE8FA] text-[#6C63FF] text-sm font-bold clay-card hover:bg-[#E2DCFF] transition-all text-center cursor-pointer"
               >
                 Explore Services
               </Link>
@@ -333,16 +221,16 @@ export function DashboardPage() {
               </div>
 
               {/* Actions */}
-              <div className="flex flex-col sm:flex-row items-center gap-4 shrink-0">
+              <div className="flex flex-col sm:flex-row items-center gap-3 sm:gap-4 w-full md:w-auto shrink-0">
                 <button
                   onClick={() => handleOpenRequestModal()}
-                  className="px-8 py-4 rounded-full bg-[#6C63FF] text-white text-sm font-bold clay-btn-primary hover:scale-105 active:scale-95 transition-all text-center cursor-pointer shadow-lg"
+                  className="w-full sm:w-auto px-8 py-4 rounded-full bg-[#6C63FF] text-white text-sm font-bold clay-btn-primary hover:scale-105 active:scale-95 transition-all text-center cursor-pointer shadow-lg"
                 >
                   + New Request
                 </button>
                 <Link
                   to="/services"
-                  className="px-7 py-4 rounded-full bg-white text-[#6C63FF] text-sm font-bold clay-card hover:bg-[#F3F0FF] transition-all text-center cursor-pointer"
+                  className="w-full sm:w-auto px-7 py-4 rounded-full bg-white text-[#6C63FF] text-sm font-bold clay-card hover:bg-[#F3F0FF] transition-all text-center cursor-pointer"
                 >
                   Explore Services
                 </Link>
@@ -528,17 +416,17 @@ export function DashboardPage() {
                 />
               </div>
 
-              <div className="flex items-center justify-end gap-3 pt-4 border-t border-[#F0EBFF]">
+              <div className="flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-end gap-2.5 sm:gap-3 pt-4 border-t border-[#F0EBFF]">
                 <button
                   type="button"
                   onClick={() => setRequestModalOpen(false)}
-                  className="px-5 py-2.5 rounded-full text-xs font-bold text-[#25233A]/70 hover:bg-[#FAF8FF] cursor-pointer"
+                  className="w-full sm:w-auto px-5 py-2.5 rounded-full text-xs font-bold text-[#25233A]/70 hover:bg-[#FAF8FF] text-center cursor-pointer"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-6 py-2.5 rounded-full bg-[#6C63FF] text-white text-xs font-bold clay-btn-primary hover:bg-[#5b52f5] transition-all cursor-pointer shadow-md"
+                  className="w-full sm:w-auto px-6 py-2.5 rounded-full bg-[#6C63FF] text-white text-xs font-bold clay-btn-primary hover:bg-[#5b52f5] transition-all text-center cursor-pointer shadow-md"
                 >
                   Submit Academic Request
                 </button>
@@ -615,11 +503,11 @@ export function DashboardPage() {
                 </div>
               </div>
 
-              <div className="flex items-center justify-between pt-4 border-t border-[#F0EBFF]">
+              <div className="flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-between gap-3 pt-4 border-t border-[#F0EBFF]">
                 <button
                   type="button"
                   onClick={handleLogoutClick}
-                  className="text-xs font-bold text-[#BA1A1A] hover:underline flex items-center gap-1 cursor-pointer"
+                  className="text-xs font-bold text-[#BA1A1A] hover:underline flex items-center justify-center sm:justify-start gap-1 py-1 cursor-pointer"
                 >
                   <span className="material-symbols-outlined text-[16px]">logout</span>
                   <span>Sign out of this session</span>
@@ -629,14 +517,14 @@ export function DashboardPage() {
                   <button
                     type="button"
                     onClick={() => setProfileModalOpen(false)}
-                    className="px-4 py-2 rounded-xl text-xs font-bold text-[#25233A]/70 hover:bg-[#FAF8FF] cursor-pointer"
+                    className="flex-1 sm:flex-initial px-4 py-2.5 rounded-xl text-xs font-bold text-[#25233A]/70 hover:bg-[#FAF8FF] text-center cursor-pointer"
                   >
                     Close
                   </button>
                   <button
                     type="submit"
                     disabled={isUpdatingProfile}
-                    className="px-5 py-2.5 rounded-xl bg-[#6C63FF] text-white text-xs font-bold clay-btn-primary hover:bg-[#5b52f5] transition-all cursor-pointer disabled:opacity-60"
+                    className="flex-1 sm:flex-initial px-5 py-2.5 rounded-xl bg-[#6C63FF] text-white text-xs font-bold clay-btn-primary hover:bg-[#5b52f5] transition-all text-center cursor-pointer disabled:opacity-60"
                   >
                     {isUpdatingProfile ? 'Saving...' : 'Save Changes'}
                   </button>
@@ -675,7 +563,7 @@ export function DashboardPage() {
           </div>
         </div>
       </footer>
-      <MobileBottomNav activeTab="home" />
+      <MobileBottomNav activeTab="home" onOpenProfile={() => setProfileModalOpen(true)} />
     </div>
   );
 }

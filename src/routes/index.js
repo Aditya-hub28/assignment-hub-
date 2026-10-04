@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const authRoutes = require('./auth.routes');
 const userRoutes = require('./user.routes');
+const serviceRequestRoutes = require('./serviceRequest.routes');
 
 // Health check endpoint
 router.get('/health', (req, res) => {
@@ -18,5 +19,9 @@ router.use('/auth', authRoutes);
 
 // User and Profile routes
 router.use('/user', userRoutes);
+
+// Service Request routes
+router.use('/services', serviceRequestRoutes);
+router.use('/requests', serviceRequestRoutes);
 
 module.exports = router;

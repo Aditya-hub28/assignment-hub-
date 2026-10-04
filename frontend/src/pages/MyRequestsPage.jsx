@@ -1,9 +1,10 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
 import { MobileBottomNav } from '../components/MobileBottomNav';
-import { NotificationBell } from '../components/NotificationBell';
+import { Navbar } from '../components/Navbar';
+import { api } from '../services/api';
 
 // Comprehensive dataset matching Stitch Screen 37d3a96fee0f40fa9cb599ac62a83700 (12 Total, 3 Pending, 5 In Progress, 4 Completed, 1 Cancelled)
 const INITIAL_REQUESTS = [
@@ -412,6 +413,94 @@ export function MyRequestsPage() {
 
   // Requests state
   const [requestsList, setRequestsList] = useState(INITIAL_REQUESTS);
+
+  // Sync submitted requests from backend API and local cache
+  useEffect(() => {
+    const fetchRequests = async () => {
+      try {
+        let backendItems = [];
+        try {
+          const res = await api.services.getRequests();
+          if (res && res.data && Array.isArray(res.data)) {
+            backendItems = res.data;
+          }
+        } catch {
+          // graceful fallback
+        }
+
+        const localItems = JSON.parse(localStorage.getItem('ah_user_requests') || '[]');
+        const combined = [...backendItems, ...localItems];
+
+        if (combined.length > 0) {
+          const formatted = combined.map((r) => {
+            const dateStr = r.createdAt
+              ? new Date(r.createdAt).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })
+              : new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+            const deadlineStr = r.deadline
+              ? new Date(r.deadline).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })
+              : '';
+            return {
+              id: r.id,
+              service: r.isCustom ? (r.customServiceName || r.service) : r.service,
+              icon: r.service?.toLowerCase().includes('coding')
+                ? 'code'
+                : r.service?.toLowerCase().includes('ppt')
+                ? 'slideshow'
+                : r.service?.toLowerCase().includes('drawing')
+                ? 'draw'
+                : r.service?.toLowerCase().includes('physics')
+                ? 'science'
+                : 'edit_note',
+              title: r.title,
+              status: r.status || 'pending',
+              statusLabel: '● Pending',
+              statusBadgeClass: 'bg-[#FFB951] text-[#291800]',
+              description: r.description,
+              requirements: r.additionalInstructions || r.description,
+              submitted: dateStr,
+              date: r.createdAt ? r.createdAt.split('T')[0] : new Date().toISOString().split('T')[0],
+              deadline: deadlineStr,
+              deadlineDate: r.deadline ? (typeof r.deadline === 'string' ? r.deadline.split('T')[0] : '') : '',
+              progress: r.progress || 0,
+              expectedCompletion: 'Under review',
+              pendingNotice: 'Academic team is reviewing your files and requirements.',
+              timeline: {
+                step1: dateStr,
+                step2: 'Under review by coordinator',
+                step3: 'Pending assignment',
+                step4: 'Pending completion'
+              },
+              submittedFiles: (r.files || []).map((f) => ({
+                name: f.name,
+                size:
+                  f.size > 1024 * 1024
+                    ? `${(f.size / (1024 * 1024)).toFixed(1)} MB`
+                    : `${Math.round(f.size / 1024)} KB`
+              })),
+              btnText: 'Cancel Request',
+              btnClass: 'bg-[#FFDAD6] text-[#BA1A1A] hover:bg-[#ffc8c2] clay-card-sm'
+            };
+          });
+
+          setRequestsList((prev) => {
+            const seen = new Set();
+            const deduped = [];
+            for (const item of [...formatted, ...prev]) {
+              if (item.id && !seen.has(item.id)) {
+                seen.add(item.id);
+                deduped.push(item);
+              }
+            }
+            return deduped;
+          });
+        }
+      } catch (err) {
+        console.warn('Error loading dynamic requests in MyRequestsPage:', err);
+      }
+    };
+
+    fetchRequests();
+  }, []);
   const [activeFilter, setActiveFilter] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [sortBy, setSortBy] = useState('latest');
@@ -423,7 +512,6 @@ export function MyRequestsPage() {
   // Modals state
   const [requestModalOpen, setRequestModalOpen] = useState(false);
   const [profileModalOpen, setProfileModalOpen] = useState(false);
-  const [userDropdownOpen, setUserDropdownOpen] = useState(false);
 
   // New Request Form state
   const [reqTitle, setReqTitle] = useState('');
@@ -623,140 +711,17 @@ export function MyRequestsPage() {
   return (
     <div className="min-h-screen bg-[#FCF8FF] font-['Plus_Jakarta_Sans',sans-serif] text-[#1B192F] flex flex-col selection:bg-[#4D41DF]/20 selection:text-[#4D41DF]">
       {/* ======================================================== */}
-      {/* 1. TOP NAVBAR (Matching Stitch Work Tracking Center)      */}
+      {/* 1. TOP NAVBAR (Unified Reusable Component)               */}
       {/* ======================================================== */}
-      <header className="fixed top-0 left-0 right-0 z-40 bg-[#FCF8FF]/90 backdrop-blur-xl border-b border-[#EAE5FF]/60 shadow-[0_10px_25px_rgba(108,99,255,0.05),inset_0_1px_2px_rgba(255,255,255,0.85)]">
-        <div className="h-20 max-w-7xl mx-auto px-4 md:px-6 lg:px-8 flex items-center justify-between gap-4">
-          {/* Brand & Workspace Pill */}
-          <div className="flex items-center gap-3">
-            <Link
-              to="/dashboard"
-              className="flex items-center gap-3 transition-transform hover:scale-[1.02] active:scale-95"
-            >
-              <div className="w-10 h-10 rounded-2xl bg-white p-1 flex items-center justify-center clay-card shadow-sm shrink-0 border border-[#4D41DF]/20">
-                <img src="/logo.png" alt="Assignment Hub" className="w-full h-full object-contain" />
-              </div>
-              <span className="font-bold text-xl text-[#1B192F] tracking-tight">Assignment Hub</span>
-            </Link>
-            <span className="hidden md:inline-flex items-center px-3.5 py-1 rounded-full bg-[#F0EBFF] text-[#464555] text-xs font-semibold clay-pill-inset">
-              Student Workspace
-            </span>
-          </div>
-
-          {/* Main Navigation Links */}
-          <nav className="hidden lg:flex items-center gap-1.5 px-2 py-1.5 bg-[#F6F1FF] rounded-full clay-pill-inset">
-            <Link
-              to="/dashboard"
-              className="px-4 py-2 rounded-full text-sm font-semibold text-[#464555] hover:text-[#1B192F] transition-all"
-            >
-              Home
-            </Link>
-            <Link
-              to="/services"
-              className="px-4 py-2 rounded-full text-sm font-semibold text-[#464555] hover:text-[#1B192F] transition-all"
-            >
-              Services
-            </Link>
-            <span
-              className="px-4 py-2 rounded-full text-sm font-bold bg-white text-[#4D41DF] shadow-sm clay-card-sm cursor-default"
-            >
-              My Requests
-            </span>
-            <Link
-              to="/inquiries"
-              className="px-4 py-2 rounded-full text-sm font-semibold text-[#464555] hover:text-[#1B192F] transition-all"
-            >
-              Inquiries
-            </Link>
-          </nav>
-
-          {/* Action & Profile Block */}
-          <div className="flex items-center gap-3">
-            <button
-              onClick={() => setRequestModalOpen(true)}
-              className="hidden sm:inline-flex items-center gap-1.5 px-4 py-2.5 rounded-full bg-[#4D41DF] font-bold text-sm text-white clay-btn-primary hover:-translate-y-0.5 transition-transform cursor-pointer shadow-md"
-            >
-              <span className="material-symbols-outlined text-[18px]">add</span>
-              <span>New Request</span>
-            </button>
-
-            {/* Notification Bell Badge with interactive Claymorphic Popup */}
-            <NotificationBell />
-
-            {/* User Profile Pill */}
-            <div className="relative">
-              <button
-                onClick={() => setUserDropdownOpen(!userDropdownOpen)}
-                className="flex items-center gap-2.5 p-1.5 pr-3.5 rounded-full bg-white clay-card hover:bg-[#F6F1FF] transition-all cursor-pointer border border-white"
-              >
-                <div className="w-8 h-8 rounded-full bg-[#4D41DF] flex items-center justify-center text-white font-bold text-xs shadow-sm">
-                  {initial}
-                </div>
-                <span className="hidden md:inline-block text-sm font-semibold text-[#1B192F] max-w-[120px] truncate">
-                  {firstName}
-                </span>
-                <span className="material-symbols-outlined text-[18px] text-[#464555]">expand_more</span>
-              </button>
-
-              {userDropdownOpen && (
-                <div className="absolute right-0 mt-2 w-56 rounded-2xl bg-white p-2 z-50 clay-card shadow-2xl border border-white">
-                  <div className="px-3 py-2 border-b border-[#E4DFFE] mb-1">
-                    <p className="text-xs text-[#464555] font-medium">Signed in as</p>
-                    <p className="text-sm font-bold text-[#1B192F] truncate">{email}</p>
-                  </div>
-                  <button
-                    onClick={() => {
-                      setUserDropdownOpen(false);
-                      setProfileModalOpen(true);
-                    }}
-                    className="w-full text-left flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-semibold text-[#464555] hover:bg-[#F0EBFF] hover:text-[#1B192F] transition-all cursor-pointer"
-                  >
-                    <span className="material-symbols-outlined text-[18px] text-[#4D41DF]">person</span>
-                    <span>My Profile</span>
-                  </button>
-                  <Link
-                    to="/dashboard"
-                    onClick={() => setUserDropdownOpen(false)}
-                    className="w-full text-left flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-semibold text-[#464555] hover:bg-[#F0EBFF] hover:text-[#1B192F] transition-all cursor-pointer"
-                  >
-                    <span className="material-symbols-outlined text-[18px] text-[#4D41DF]">dashboard</span>
-                    <span>Student Dashboard</span>
-                  </Link>
-                  <Link
-                    to="/services"
-                    onClick={() => setUserDropdownOpen(false)}
-                    className="w-full text-left flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-semibold text-[#464555] hover:bg-[#F0EBFF] hover:text-[#1B192F] transition-all cursor-pointer"
-                  >
-                    <span className="material-symbols-outlined text-[18px] text-[#4D41DF]">category</span>
-                    <span>Academic Services</span>
-                  </Link>
-                  <Link
-                    to="/inquiries"
-                    onClick={() => setUserDropdownOpen(false)}
-                    className="w-full text-left flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-semibold text-[#464555] hover:bg-[#F0EBFF] hover:text-[#1B192F] transition-all cursor-pointer"
-                  >
-                    <span className="material-symbols-outlined text-[18px] text-[#4D41DF]">chat</span>
-                    <span>Inquiries</span>
-                  </Link>
-                  <div className="my-1 h-px bg-[#E4DFFE]"></div>
-                  <button
-                    onClick={handleLogoutClick}
-                    className="w-full text-left flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-semibold text-[#BA1A1A] hover:bg-[#FFDAD6] transition-all cursor-pointer"
-                  >
-                    <span className="material-symbols-outlined text-[18px]">logout</span>
-                    <span>Logout</span>
-                  </button>
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
-      </header>
+      <Navbar
+        onNewRequest={() => setRequestModalOpen(true)}
+        onOpenProfile={() => setProfileModalOpen(true)}
+      />
 
       {/* ======================================================== */}
       {/* 2. MAIN WORK TRACKING CENTER VIEW                         */}
       {/* ======================================================== */}
-      <main className="w-full pt-24 sm:pt-28 pb-24 lg:pb-20 bg-[#FCF8FF] min-h-[calc(100vh-140px)] flex-grow">
+      <main className="w-full pt-24 sm:pt-28 pb-28 sm:pb-32 lg:pb-20 bg-[#FCF8FF] min-h-[calc(100vh-140px)] flex-grow">
         <div className="max-w-7xl mx-auto px-3.5 sm:px-6 lg:px-8 space-y-6 sm:space-y-8">
           
           {/* Page Heading & Refined Subtitle */}
@@ -818,11 +783,11 @@ export function MyRequestsPage() {
 
           {/* STATUS FILTERS BAR */}
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-            <nav aria-label="Status Filters" className="inline-flex flex-wrap items-center gap-1.5 p-1.5 bg-[#F6F1FF] rounded-2xl clay-pill-inset">
+            <nav aria-label="Status Filters" className="flex items-center gap-1.5 p-1.5 bg-[#F6F1FF] rounded-2xl clay-pill-inset overflow-x-auto no-scrollbar max-w-full">
               <button
                 type="button"
                 onClick={() => setActiveFilter('all')}
-                className={`px-4 py-2 rounded-xl text-xs md:text-sm transition-all cursor-pointer ${
+                className={`shrink-0 whitespace-nowrap px-4 py-2 rounded-xl text-xs md:text-sm transition-all cursor-pointer ${
                   activeFilter === 'all'
                     ? 'bg-white text-[#4D41DF] shadow-sm font-bold'
                     : 'text-[#464555] hover:text-[#1B192F] font-medium'
@@ -834,7 +799,7 @@ export function MyRequestsPage() {
               <button
                 type="button"
                 onClick={() => setActiveFilter('pending')}
-                className={`px-4 py-2 rounded-xl text-xs md:text-sm transition-all cursor-pointer ${
+                className={`shrink-0 whitespace-nowrap px-4 py-2 rounded-xl text-xs md:text-sm transition-all cursor-pointer ${
                   activeFilter === 'pending'
                     ? 'bg-white text-[#4D41DF] shadow-sm font-bold'
                     : 'text-[#464555] hover:text-[#1B192F] font-medium'
@@ -846,7 +811,7 @@ export function MyRequestsPage() {
               <button
                 type="button"
                 onClick={() => setActiveFilter('in-progress')}
-                className={`px-4 py-2 rounded-xl text-xs md:text-sm transition-all cursor-pointer ${
+                className={`shrink-0 whitespace-nowrap px-4 py-2 rounded-xl text-xs md:text-sm transition-all cursor-pointer ${
                   activeFilter === 'in-progress'
                     ? 'bg-white text-[#4D41DF] shadow-sm font-bold'
                     : 'text-[#464555] hover:text-[#1B192F] font-medium'
@@ -858,7 +823,7 @@ export function MyRequestsPage() {
               <button
                 type="button"
                 onClick={() => setActiveFilter('completed')}
-                className={`px-4 py-2 rounded-xl text-xs md:text-sm transition-all cursor-pointer ${
+                className={`shrink-0 whitespace-nowrap px-4 py-2 rounded-xl text-xs md:text-sm transition-all cursor-pointer ${
                   activeFilter === 'completed'
                     ? 'bg-white text-[#4D41DF] shadow-sm font-bold'
                     : 'text-[#464555] hover:text-[#1B192F] font-medium'
@@ -870,7 +835,7 @@ export function MyRequestsPage() {
               <button
                 type="button"
                 onClick={() => setActiveFilter('cancelled')}
-                className={`px-4 py-2 rounded-xl text-xs md:text-sm transition-all cursor-pointer ${
+                className={`shrink-0 whitespace-nowrap px-4 py-2 rounded-xl text-xs md:text-sm transition-all cursor-pointer ${
                   activeFilter === 'cancelled'
                     ? 'bg-white text-[#4D41DF] shadow-sm font-bold'
                     : 'text-[#464555] hover:text-[#1B192F] font-medium'
@@ -880,7 +845,7 @@ export function MyRequestsPage() {
               </button>
             </nav>
 
-            <span className="text-xs font-semibold text-[#464555] self-end sm:self-center">
+            <span className="text-xs font-semibold text-[#464555] self-start sm:self-center">
               Showing {filteredRequests.length} of {stats.total} requests
             </span>
           </div>
@@ -1578,17 +1543,17 @@ export function MyRequestsPage() {
                 />
               </div>
 
-              <div className="flex items-center justify-end gap-3 pt-4 border-t border-[#F0EBFF]">
+              <div className="flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-end gap-2.5 sm:gap-3 pt-4 border-t border-[#F0EBFF]">
                 <button
                   type="button"
                   onClick={() => setRequestModalOpen(false)}
-                  className="px-5 py-2.5 rounded-full text-xs font-bold text-[#464555] hover:bg-[#F6F1FF] cursor-pointer"
+                  className="w-full sm:w-auto px-5 py-2.5 rounded-full text-xs font-bold text-[#464555] hover:bg-[#F6F1FF] text-center cursor-pointer"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-6 py-2.5 rounded-full bg-[#4D41DF] text-white text-xs font-bold clay-btn-primary hover:bg-[#3d32ce] transition-all cursor-pointer shadow-md"
+                  className="w-full sm:w-auto px-6 py-2.5 rounded-full bg-[#4D41DF] text-white text-xs font-bold clay-btn-primary hover:bg-[#3d32ce] transition-all text-center cursor-pointer shadow-md"
                 >
                   Submit Academic Request
                 </button>
@@ -1607,7 +1572,7 @@ export function MyRequestsPage() {
           onClick={() => setProfileModalOpen(false)}
         >
           <div
-            className="w-full max-w-md bg-white rounded-3xl p-6 sm:p-8 clay-card shadow-2xl border border-white"
+            className="w-full max-w-md bg-white rounded-3xl p-5 sm:p-8 clay-card shadow-2xl border border-white"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex items-center justify-between pb-4 border-b border-[#F0EBFF] mb-6">
@@ -1669,17 +1634,17 @@ export function MyRequestsPage() {
                 </div>
               </div>
 
-              <div className="flex items-center justify-end gap-3 pt-4 border-t border-[#F0EBFF]">
+              <div className="flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-end gap-2.5 sm:gap-3 pt-4 border-t border-[#F0EBFF]">
                 <button
                   type="button"
                   onClick={() => setProfileModalOpen(false)}
-                  className="px-5 py-2.5 rounded-full text-xs font-bold text-[#464555] hover:bg-[#F6F1FF] cursor-pointer"
+                  className="w-full sm:w-auto px-5 py-2.5 rounded-full text-xs font-bold text-[#464555] hover:bg-[#F6F1FF] text-center cursor-pointer"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-6 py-2.5 rounded-full bg-[#4D41DF] text-white text-xs font-bold clay-btn-primary hover:bg-[#3d32ce] transition-all cursor-pointer shadow-md"
+                  className="w-full sm:w-auto px-6 py-2.5 rounded-full bg-[#4D41DF] text-white text-xs font-bold clay-btn-primary hover:bg-[#3d32ce] transition-all text-center cursor-pointer shadow-md"
                 >
                   Save Changes
                 </button>
@@ -1692,7 +1657,7 @@ export function MyRequestsPage() {
       {/* ======================================================== */}
       {/* 6. MOBILE BOTTOM NAVIGATION                               */}
       {/* ======================================================== */}
-      <MobileBottomNav activeTab="requests" />
+      <MobileBottomNav activeTab="requests" onOpenProfile={() => setProfileModalOpen(true)} />
 
       {/* ======================================================== */}
       {/* 7. FOOTER                                                */}

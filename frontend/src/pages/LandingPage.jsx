@@ -181,7 +181,7 @@ export function LandingPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-[#FAF8FF] font-sans text-[#25233A]">
+    <div className="min-h-screen bg-[#FAF8FF] font-sans text-[#25233A] overflow-x-hidden">
       {/* ======================================================== */}
       {/* FLOATING CLAY NAVBAR */}
       {/* ======================================================== */}
