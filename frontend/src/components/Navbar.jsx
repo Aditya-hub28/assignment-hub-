@@ -71,8 +71,8 @@ export function Navbar({ activePage, onNewRequest, onOpenProfile, onSelectInquir
   };
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 bg-[#FAF8FF]/95 backdrop-blur-xl border-b border-[#E2DCFF]/50 shadow-[0_4px_20px_rgba(108,99,255,0.04)]">
-      <div className="h-20 max-w-7xl mx-auto px-4 md:px-6 lg:px-8 flex items-center justify-between gap-4">
+    <header className="fixed top-2.5 sm:top-3.5 left-0 right-0 z-50 px-3 sm:px-6 pointer-events-none">
+      <div className="h-16 sm:h-20 max-w-7xl mx-auto px-4 md:px-6 lg:px-8 flex items-center justify-between gap-4 rounded-full bg-[#FAF8FF]/95 backdrop-blur-2xl border border-white/80 shadow-[0_12px_36px_rgba(108,99,255,0.12),inset_1px_1px_2px_rgba(255,255,255,0.9)] pointer-events-auto transition-all">
         
         {/* Brand & Workspace Pill */}
         <div className="flex items-center gap-3 shrink-0">

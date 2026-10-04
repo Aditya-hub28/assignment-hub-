@@ -66,11 +66,11 @@ export function MobileBottomNav({ activeTab, onOpenProfile, badgeCounts }) {
 
   return (
     <>
-      {/* 5-Item Fixed Bottom Claymorphism Dock */}
+      {/* 5-Item Floating Pill Bottom Claymorphism Dock */}
       <nav
         aria-label="Mobile Bottom Navigation"
-        className="fixed bottom-0 left-0 right-0 z-40 bg-[#FAF8FF]/95 backdrop-blur-xl border-t border-[#E2DCFF]/80 py-1.5 sm:py-2 px-1.5 sm:px-4 flex lg:hidden items-center justify-around shadow-[0_-4px_24px_rgba(108,99,255,0.08)] select-none"
-        style={{ paddingBottom: 'max(0.375rem, env(safe-area-inset-bottom, 0.375rem))' }}
+        className="fixed bottom-3 sm:bottom-4 left-1/2 -translate-x-1/2 z-40 w-[calc(100%-1.5rem)] max-w-md bg-[#FAF8FF]/95 backdrop-blur-2xl border border-white/80 rounded-full py-1.5 sm:py-2 px-2 sm:px-4 flex lg:hidden items-center justify-around shadow-[0_12px_36px_rgba(108,99,255,0.18),inset_1px_1px_2px_rgba(255,255,255,0.9)] select-none"
+        style={{ marginBottom: 'env(safe-area-inset-bottom, 0px)' }}
       >
         {tabs.map((tab) => {
           const isActive = getIsActive(tab);
