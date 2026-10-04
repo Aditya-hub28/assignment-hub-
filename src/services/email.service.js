@@ -69,56 +69,38 @@ class EmailService {
    * @param {string} [name='Student'] - Recipient name
    */
   async sendOtpEmail(to, otp, name = 'Student') {
-    const subject = `Your Assignment Hub Verification Code: ${otp}`;
-    const html = `
-<!DOCTYPE html>
+    const subject = `${otp} is your Assignment Hub verification code`;
+    const cleanTo = (typeof to === 'string' ? to.trim().toLowerCase() : String(to || '')).replace(/[\u200B-\u200D\uFEFF]/g, '').trim();
+
+    const html = `<!DOCTYPE html>
 <html>
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>${subject}</title>
-  <style>
-    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #F3F0FF; margin: 0; padding: 20px; }
-    .card { max-width: 520px; margin: 20px auto; background: #ffffff; border-radius: 20px; padding: 36px 30px; box-shadow: 0 10px 30px rgba(108, 99, 255, 0.12); border: 2px solid #EBE6FF; }
-    .brand { display: flex; align-items: center; gap: 10px; margin-bottom: 24px; }
-    .brand-icon { width: 38px; height: 38px; background: linear-gradient(135deg, #6C63FF, #8B7CFF); border-radius: 12px; display: inline-block; vertical-align: middle; text-align: center; line-height: 38px; color: #fff; font-size: 20px; font-weight: bold; }
-    .brand-title { font-size: 22px; font-weight: 800; color: #25233A; display: inline-block; vertical-align: middle; margin-left: 8px; }
-    h2 { color: #25233A; font-size: 20px; margin-top: 0; margin-bottom: 12px; font-weight: 700; }
-    p { color: #6E688D; font-size: 15px; line-height: 1.6; margin: 8px 0; }
-    .otp-box { background: #FAF8FF; border: 2px dashed #6C63FF; border-radius: 16px; padding: 22px; text-align: center; margin: 28px 0; }
-    .otp-code { font-size: 38px; font-weight: 800; letter-spacing: 12px; color: #6C63FF; font-family: monospace; display: block; }
-    .otp-caption { font-size: 13px; color: #8A85A5; margin-top: 8px; }
-    .footer { text-align: center; margin-top: 30px; padding-top: 20px; border-top: 1px solid #F0EDFA; font-size: 12px; color: #9A95B5; }
-    .badge { display: inline-block; background: #E8F8F0; color: #2E9B66; font-size: 12px; font-weight: 700; padding: 4px 12px; border-radius: 20px; margin-bottom: 16px; }
-  </style>
 </head>
-<body>
-  <div class="card">
-    <div class="brand">
-      <span class="brand-icon">📚</span>
-      <span class="brand-title">Assignment Hub</span>
+<body style="margin: 0; padding: 24px; background-color: #f7f9fa; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; color: #1a1a1a;">
+  <div style="max-width: 480px; margin: 0 auto; background-color: #ffffff; border: 1px solid #e1e4e8; border-radius: 12px; padding: 32px 28px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);">
+    <div style="font-size: 20px; font-weight: 700; color: #4f46e5; margin-bottom: 20px;">
+      Assignment Hub
     </div>
-    
-    <div><span class="badge">SECURE EMAIL VERIFICATION</span></div>
-    
-    <h2>Hello, ${name}!</h2>
-    <p>Thank you for signing up with Assignment Hub. Please use the 6-digit verification code below to complete your registration:</p>
-    
-    <div class="otp-box">
-      <span class="otp-code">${otp}</span>
-      <div class="otp-caption">Valid for <strong>${env.OTP.EXPIRY_MINUTES} minutes</strong>. Please do not share this with anyone.</div>
+    <div style="font-size: 15px; color: #374151; line-height: 1.5; margin-bottom: 20px;">
+      Hello ${name},
     </div>
-    
-    <p>If you did not request this verification, you can safely ignore this email. No changes will be made to your account.</p>
-    
-    <div class="footer">
-      <p>© ${new Date().getFullYear()} Assignment Hub. All rights reserved.</p>
-      <p>Secure Student Portal Authentication</p>
+    <div style="font-size: 14px; color: #4b5563; line-height: 1.5; margin-bottom: 24px;">
+      Use the following verification code to complete your signup:
+    </div>
+    <div style="background-color: #f3f4f6; border-radius: 8px; padding: 18px; text-align: center; margin-bottom: 24px;">
+      <span style="font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; font-size: 32px; font-weight: 700; letter-spacing: 6px; color: #1f2937;">${otp}</span>
+    </div>
+    <div style="font-size: 13px; color: #6b7280; line-height: 1.5; margin-bottom: 24px;">
+      This code is valid for ${env.OTP.EXPIRY_MINUTES} minutes. If you did not request this, please ignore this email.
+    </div>
+    <div style="border-top: 1px solid #e5e7eb; padding-top: 16px; font-size: 12px; color: #9ca3af;">
+      Assignment Hub Student Portal
     </div>
   </div>
 </body>
-</html>
-    `;
+</html>`;
 
     console.log('\n================== [EMAIL SERVICE] ==================');
     console.log(`To: ${to} (${name})`);
@@ -133,8 +115,6 @@ class EmailService {
       await this.initTransporter();
     }
 
-    const cleanTo = (typeof to === 'string' ? to.trim().toLowerCase() : String(to || '')).replace(/[\u200B-\u200D\uFEFF]/g, '').trim();
-
     if (this.transporter) {
       try {
         const fromAddress = env.EMAIL.SMTP_USER
@@ -143,14 +123,13 @@ class EmailService {
 
         const info = await this.transporter.sendMail({
           from: fromAddress,
+          replyTo: env.EMAIL.SMTP_USER || fromAddress,
           to: cleanTo,
           subject,
-          text: `Your Assignment Hub verification OTP is ${otp}. Valid for ${env.OTP.EXPIRY_MINUTES} minutes.`,
+          text: `Your Assignment Hub verification code is: ${otp}. Valid for ${env.OTP.EXPIRY_MINUTES} minutes.`,
           html,
           headers: {
-            'X-Priority': '1 (Highest)',
-            'X-MSMail-Priority': 'High',
-            'Importance': 'High'
+            'X-Entity-Ref-ID': `otp-${cleanTo}-${Date.now()}`
           }
         });
 
