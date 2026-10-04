@@ -44,6 +44,7 @@ export function Navbar({ activePage, onNewRequest, onOpenProfile, onSelectInquir
     if (activePage) return activePage;
     const pathname = location.pathname;
     if (pathname === '/dashboard' || pathname === '/') return 'home';
+    if (pathname === '/profile') return 'profile';
     if (pathname.startsWith('/services')) return 'services';
     if (pathname.startsWith('/my-requests')) return 'my-requests';
     if (pathname.startsWith('/inquiries')) return 'inquiries';
@@ -173,19 +174,14 @@ export function Navbar({ activePage, onNewRequest, onOpenProfile, onSelectInquir
                   </p>
                 </div>
 
-                {onOpenProfile && (
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setUserDropdownOpen(false);
-                      onOpenProfile();
-                    }}
-                    className="w-full text-left flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-xs font-semibold text-[#6E6A8A] hover:bg-[#F3F0FF] hover:text-[#25233A] transition-all cursor-pointer"
-                  >
-                    <span className="material-symbols-outlined text-[18px] text-[#6C63FF]">person</span>
-                    <span>My Profile</span>
-                  </button>
-                )}
+                <Link
+                  to="/profile"
+                  onClick={() => setUserDropdownOpen(false)}
+                  className="w-full text-left flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-xs font-semibold text-[#6E6A8A] hover:bg-[#F3F0FF] hover:text-[#25233A] transition-all cursor-pointer"
+                >
+                  <span className="material-symbols-outlined text-[18px] text-[#6C63FF]">person</span>
+                  <span>My Profile</span>
+                </Link>
 
                 <Link
                   to="/dashboard"

@@ -107,13 +107,12 @@ export function MobileBottomNav({ activeTab, onOpenProfile, badgeCounts }) {
           );
         })}
 
-        {/* 5th Item: Profile Trigger */}
-        <button
-          type="button"
-          onClick={handleProfileClick}
+        {/* 5th Item: Profile Link */}
+        <Link
+          to="/profile"
           aria-label="Student Profile"
-          className={`relative flex flex-col items-center justify-center py-1 px-2.5 sm:px-3.5 rounded-full transition-all duration-200 min-w-[56px] cursor-pointer ${
-            activeTab === 'profile' || internalDrawerOpen
+          className={`relative flex flex-col items-center justify-center py-1 px-2.5 sm:px-3.5 rounded-full transition-all duration-200 min-w-[56px] ${
+            activeTab === 'profile' || currentPath === '/profile'
               ? 'bg-[#DCD6FF] text-[#4D41DF] font-bold shadow-sm scale-[1.02]'
               : 'text-[#6E6A8A] hover:text-[#25233A] hover:bg-[#F3EFFF]/60 font-semibold'
           }`}
@@ -121,9 +120,9 @@ export function MobileBottomNav({ activeTab, onOpenProfile, badgeCounts }) {
           <div className="relative flex items-center justify-center">
             <span
               className={`material-symbols-outlined text-[21px] sm:text-[22px] transition-transform ${
-                activeTab === 'profile' || internalDrawerOpen ? 'scale-105 font-bold' : ''
+                activeTab === 'profile' || currentPath === '/profile' ? 'scale-105 font-bold' : ''
               }`}
-              style={activeTab === 'profile' || internalDrawerOpen ? { fontVariationSettings: "'FILL' 1" } : {}}
+              style={activeTab === 'profile' || currentPath === '/profile' ? { fontVariationSettings: "'FILL' 1" } : {}}
             >
               account_circle
             </span>
@@ -131,7 +130,7 @@ export function MobileBottomNav({ activeTab, onOpenProfile, badgeCounts }) {
           <span className="text-[10px] sm:text-[11px] tracking-tight mt-0.5 whitespace-nowrap leading-none">
             Profile
           </span>
-        </button>
+        </Link>
       </nav>
 
       {/* Built-in Mobile Profile Drawer / Sheet (Fallback or Standalone) */}

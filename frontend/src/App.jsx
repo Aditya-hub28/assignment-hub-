@@ -17,6 +17,7 @@ import { ReviewRequestPage } from './pages/ReviewRequestPage';
 import { RequestSuccessPage } from './pages/RequestSuccessPage';
 import { MyRequestsPage } from './pages/MyRequestsPage';
 import { InquiriesPage } from './pages/InquiriesPage';
+import { ProfilePage } from './pages/ProfilePage';
 
 function App() {
   return (
@@ -114,6 +115,16 @@ function App() {
                 element={
                   <ProtectedRoute>
                     <InquiriesPage />
+                  </ProtectedRoute>
+                }
+              />
+
+              {/* Student Profile Page */}
+              <Route
+                path="/profile"
+                element={
+                  <ProtectedRoute>
+                    <ProfilePage />
                   </ProtectedRoute>
                 }
               />
