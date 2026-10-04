@@ -115,17 +115,20 @@ class OtpService {
       throw new Error(`Failed to initialize verification session: ${error.message}`);
     }
 
-    // Dispatch OTP via Email (Primary)
-    const emailResult = await emailService.sendOtpEmail(email, rawOtp, fullName);
-
-    // Optional SMS dispatch if mobile provided & provider enabled
-    if (mobile && env.SMS_PROVIDER !== 'none') {
+    // Asynchronously dispatch OTP via Email & SMS in background (non-blocking)
+    const dispatchOtp = async () => {
       try {
-        await smsService.sendOtp(mobile, rawOtp);
-      } catch (e) {
-        // SMS failure will not block email flow
+        await Promise.allSettled([
+          emailService.sendOtpEmail(email, rawOtp, fullName),
+          mobile && env.SMS_PROVIDER !== 'none'
+            ? smsService.sendOtp(mobile, rawOtp)
+            : Promise.resolve()
+        ]);
+      } catch (err) {
+        console.error('[OTP DISPATCH BACKGROUND ERROR]:', err.message);
       }
-    }
+    };
+    setImmediate(dispatchOtp);
 
     return {
       verificationId: data.id,
@@ -133,7 +136,7 @@ class OtpService {
       email,
       expiresAt: data.expires_at,
       resendCooldownSeconds: env.OTP.RESEND_COOLDOWN_SECONDS,
-      previewUrl: emailResult?.previewUrl || null,
+      previewUrl: null,
       rawOtp
     };
   }
@@ -304,16 +307,20 @@ class OtpService {
       throw new Error(`Failed to update verification session: ${updateError.message}`);
     }
 
-    // Dispatch new OTP via Email (Primary)
-    const emailResult = await emailService.sendOtpEmail(record.email, rawOtp, record.full_name);
-
-    if (record.mobile && env.SMS_PROVIDER !== 'none') {
+    // Asynchronously dispatch new OTP via Email & SMS in background (non-blocking)
+    const dispatchOtp = async () => {
       try {
-        await smsService.sendOtp(record.mobile, rawOtp);
-      } catch (e) {
-        // ignore
+        await Promise.allSettled([
+          emailService.sendOtpEmail(record.email, rawOtp, record.full_name),
+          record.mobile && env.SMS_PROVIDER !== 'none'
+            ? smsService.sendOtp(record.mobile, rawOtp)
+            : Promise.resolve()
+        ]);
+      } catch (err) {
+        console.error('[OTP RESEND BACKGROUND ERROR]:', err.message);
       }
-    }
+    };
+    setImmediate(dispatchOtp);
 
     return {
       verificationId: updated.id,
@@ -322,7 +329,7 @@ class OtpService {
       expiresAt: updated.expires_at,
       resendsRemaining: updated.max_resends - updated.resend_count,
       resendCooldownSeconds: env.OTP.RESEND_COOLDOWN_SECONDS,
-      previewUrl: emailResult?.previewUrl || null,
+      previewUrl: null,
       rawOtp
     };
   }

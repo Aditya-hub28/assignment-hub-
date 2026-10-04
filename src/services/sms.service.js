@@ -64,7 +64,8 @@ class SmsService {
           route: 'q',
           message: `Your Assignment Hub verification OTP is ${otp}. Valid for ${env.OTP.EXPIRY_MINUTES} minutes.`,
           numbers: cleanNumber
-        })
+        }),
+        signal: AbortSignal.timeout(3000)
       });
 
       const data = await response.json();

@@ -63,38 +63,40 @@ class AuthService {
     // 1. Verify OTP and decrypt temporary password
     const verifiedRecord = await otpService.verifyRegistrationOtp({ verificationId, otp });
 
-    // 2. Check if auth user already exists in Supabase Auth
-    const { data: existingAuthUsers } = await supabaseAdmin.auth.admin.listUsers();
-    const emailConflict = existingAuthUsers?.users?.find(
-      (u) => u.email?.toLowerCase() === verifiedRecord.email.toLowerCase()
-    );
-
     let authUserId;
 
-    if (emailConflict) {
-      authUserId = emailConflict.id;
-      // Update password to the newly verified password
-      await supabaseAdmin.auth.admin.updateUserById(authUserId, {
-        password: verifiedRecord.rawPassword,
-        email_confirm: true
-      });
-    } else {
-      // 3. Create user in Supabase Auth via Admin API
-      const { data: newAuthUser, error: authError } = await supabaseAdmin.auth.admin.createUser({
-        email: verifiedRecord.email,
-        password: verifiedRecord.rawPassword,
-        email_confirm: true,
-        user_metadata: {
-          full_name: verifiedRecord.full_name,
-          mobile: verifiedRecord.mobile,
-          role: ROLES.STUDENT
-        }
-      });
+    // 2. Fast-path: Create user in Supabase Auth via Admin API
+    const { data: newAuthUser, error: authError } = await supabaseAdmin.auth.admin.createUser({
+      email: verifiedRecord.email,
+      password: verifiedRecord.rawPassword,
+      email_confirm: true,
+      user_metadata: {
+        full_name: verifiedRecord.full_name,
+        mobile: verifiedRecord.mobile,
+        role: ROLES.STUDENT
+      }
+    });
 
-      if (authError) {
+    if (authError) {
+      // If user already exists, update their password
+      if (authError.message?.toLowerCase().includes('already') || authError.status === 422) {
+        const { data: existingAuthUsers } = await supabaseAdmin.auth.admin.listUsers();
+        const emailConflict = existingAuthUsers?.users?.find(
+          (u) => u.email?.toLowerCase() === verifiedRecord.email.toLowerCase()
+        );
+        if (emailConflict) {
+          authUserId = emailConflict.id;
+          await supabaseAdmin.auth.admin.updateUserById(authUserId, {
+            password: verifiedRecord.rawPassword,
+            email_confirm: true
+          });
+        } else {
+          throw new Error(`Failed to create authentication user: ${authError.message}`);
+        }
+      } else {
         throw new Error(`Failed to create authentication user: ${authError.message}`);
       }
-
+    } else {
       authUserId = newAuthUser.user.id;
     }
 
