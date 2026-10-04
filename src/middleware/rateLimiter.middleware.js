@@ -5,7 +5,7 @@ const rateLimit = require('express-rate-limit');
  */
 const globalLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 300, // Limit each IP to 300 requests per window
+  max: 1000, // Limit each IP to 1000 requests per window
   standardHeaders: true,
   legacyHeaders: false,
   message: {
@@ -18,28 +18,42 @@ const globalLimiter = rateLimit({
 });
 
 /**
- * Strict rate limiter for Authentication endpoints (Login, Registration, OTP, Password Reset)
+ * High-concurrency rate limiter for Authentication endpoints
  */
 const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 30, // Limit each IP to 30 auth attempts per 15 min
+  max: 150, // High throughput allowance for live launch
+  keyGenerator: (req) => {
+    if (req.body && typeof req.body.email === 'string' && req.body.email.trim()) {
+      return req.body.email.trim().toLowerCase();
+    }
+    return req.ip;
+  },
+  validate: { keyGeneratorIpFallback: false },
   standardHeaders: true,
   legacyHeaders: false,
   message: {
     success: false,
     error: {
       code: 'AUTH_RATE_LIMIT_EXCEEDED',
-      message: 'Too many authentication attempts. Please try again after 15 minutes.'
+      message: 'Too many authentication attempts for this account. Please try again after 15 minutes.'
     }
   }
 });
 
 /**
- * OTP Request rate limiter
+ * OTP Request rate limiter - Keyed per email so 50+ users don't block each other
  */
 const otpRequestLimiter = rateLimit({
   windowMs: 5 * 60 * 1000, // 5 minutes
-  max: 10, // Max 10 OTP requests per 5 minutes per IP
+  max: 50, // Allows multiple resends per user without blocking concurrent users
+  keyGenerator: (req) => {
+    if (req.body && typeof req.body.email === 'string' && req.body.email.trim()) {
+      return req.body.email.trim().toLowerCase();
+    }
+    return req.ip;
+  },
+  validate: { keyGeneratorIpFallback: false },
   standardHeaders: true,
   legacyHeaders: false,
   message: {

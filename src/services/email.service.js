@@ -21,7 +21,10 @@ class EmailService {
         this.transporter = nodemailer.createTransport({
           service: 'gmail',
           pool: true,
-          maxConnections: 3,
+          maxConnections: 10,
+          maxMessages: 200,
+          rateDelta: 1000,
+          rateLimit: 14,
           auth: {
             user: env.EMAIL.SMTP_USER,
             pass: cleanPass
@@ -33,7 +36,10 @@ class EmailService {
           port: env.EMAIL.SMTP_PORT,
           secure: env.EMAIL.SMTP_SECURE,
           pool: true,
-          maxConnections: 3,
+          maxConnections: 10,
+          maxMessages: 200,
+          rateDelta: 1000,
+          rateLimit: 14,
           auth: {
             user: env.EMAIL.SMTP_USER,
             pass: cleanPass

@@ -10,6 +10,9 @@ const { notFoundHandler, errorHandler } = require('./middleware/errorHandler.mid
 
 const app = express();
 
+// Trust reverse proxy (Render, Vercel, Cloudflare) for accurate client IP
+app.set('trust proxy', 1);
+
 // Security HTTP headers (allowing CDN scripts and images for frontend)
 app.use(
   helmet({
