@@ -113,14 +113,9 @@ const countdownPath = path.join(__dirname, '../countdown');
 const frontendDistPath = path.join(__dirname, '../frontend/dist');
 const publicPath = path.join(__dirname, '../public');
 
-// Sneak Peek route
-app.get(['/sneak-peek', '/sneak-peek.html'], (req, res, next) => {
-  if (isLaunchLive(req)) return next();
-  const sneakPeekFile = path.join(countdownPath, 'sneak-peek.html');
-  if (fs.existsSync(sneakPeekFile)) {
-    return res.sendFile(sneakPeekFile);
-  }
-  next();
+// Sneak peek or preview legacy route redirect
+app.get(['/sneak-peek', '/sneak-peek.html', '/preview'], (req, res) => {
+  return res.redirect('/');
 });
 
 // Countdown static assets (when countdown is active)

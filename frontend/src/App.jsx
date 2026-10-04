@@ -63,13 +63,15 @@ function App() {
       <AuthProvider>
         <ServiceRequestProvider>
           <BrowserRouter>
-            <Routes>
-              <Route path="/" element={<CountdownGate><LandingPage /></CountdownGate>} />
-              <Route path="/sneak-peek" element={<iframe src="/sneak-peek.html" className="fixed inset-0 w-full h-full border-none z-50 bg-white" title="Sneak Peek" />} />
-              <Route path="/sneak-peek.html" element={<iframe src="/sneak-peek.html" className="fixed inset-0 w-full h-full border-none z-50 bg-white" title="Sneak Peek" />} />
-              <Route path="/login" element={<LoginPage />} />
-              <Route path="/signup" element={<SignupPage />} />
-              <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+            <CountdownGate>
+              <Routes>
+                <Route path="/" element={<LandingPage />} />
+                <Route path="/sneak-peek" element={<Navigate to="/" replace />} />
+                <Route path="/sneak-peek.html" element={<Navigate to="/" replace />} />
+                <Route path="/preview" element={<Navigate to="/" replace />} />
+                <Route path="/login" element={<LoginPage />} />
+                <Route path="/signup" element={<SignupPage />} />
+                <Route path="/forgot-password" element={<ForgotPasswordPage />} />
               
               {/* Student Dashboard Route (Home view) */}
               <Route
@@ -176,7 +178,8 @@ function App() {
               {/* Catch-all 404 handler */}
               <Route path="*" element={<NotFoundPage />} />
             </Routes>
-          </BrowserRouter>
+          </CountdownGate>
+        </BrowserRouter>
         </ServiceRequestProvider>
       </AuthProvider>
     </ToastProvider>

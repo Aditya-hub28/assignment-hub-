@@ -3,18 +3,18 @@
 
 [[redirects]]
   from = "/sneak-peek"
-  to = "/sneak-peek.html"
-  status = 200
+  to = "/index.html"
+  status = 302
 
 [[redirects]]
   from = "/sneak-peek/"
-  to = "/sneak-peek.html"
-  status = 200
+  to = "/index.html"
+  status = 302
 
 [[redirects]]
   from = "/preview"
-  to = "/sneak-peek.html"
-  status = 200
+  to = "/index.html"
+  status = 302
 
 [[headers]]
   for = "/*"
