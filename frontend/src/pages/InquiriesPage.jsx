@@ -469,40 +469,35 @@ export function InquiriesPage() {
       {/* ========================================================= */}
       {/* MAIN DESKTOP & MOBILE LIST VIEW */}
       {/* ========================================================= */}
-      <main className="w-full flex-1 pt-24 px-4 sm:px-6 lg:px-12 max-w-7xl mx-auto pb-24 lg:pb-12">
+      <main className="w-full flex-1 pt-20 lg:pt-22 px-3 sm:px-6 lg:px-8 max-w-[1440px] mx-auto pb-20 lg:pb-8">
         {/* Page Header */}
-        <section className="flex flex-col gap-4 mb-6">
-          <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-4">
-            <div className="space-y-1.5">
-              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#E3DFFF] text-[#100069] text-xs font-bold uppercase tracking-wider shadow-[inset_1px_1px_2px_rgba(255,255,255,0.8),inset_-1px_-1px_2px_rgba(108,99,255,0.15)]">
-                <span className="material-symbols-outlined text-[14px]">forum</span>
-                Direct Academic Workspace
+        <section className="flex flex-col gap-3 mb-4">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div className="space-y-1">
+              <div className="flex items-center gap-3">
+                <h1 className="text-2xl sm:text-3xl font-extrabold text-[#1B192F] tracking-tight">
+                  Inquiries
+                </h1>
+                <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-white shadow-xs border border-[#F0EBFF]">
+                  <span className="w-2.5 h-2.5 rounded-full bg-[#4D41DF] animate-pulse"></span>
+                  <span className="text-xs font-semibold text-[#1B192F]">
+                    {inquiries.filter((i) => i.status !== 'resolved').length} Active
+                  </span>
+                </div>
               </div>
-              <h1 className="text-3xl sm:text-4xl font-extrabold text-[#1B192F] tracking-tight">
-                Inquiries
-              </h1>
-              <p className="text-[#464555] text-sm sm:text-base max-w-2xl">
-                Direct academic support and updates for your submitted requests. Every inquiry is linked to your active or past requests.
+              <p className="text-[#464555] text-xs sm:text-sm max-w-2xl">
+                Direct academic communications and real-time updates linked to your requests.
               </p>
             </div>
 
-            {/* Quick Stats & Security Badges */}
-            <div className="flex items-center gap-3">
-              <div className="flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white shadow-[6px_10px_20px_rgba(108,99,255,0.08),inset_2px_2px_4px_rgba(255,255,255,0.9)]">
-                <span className="w-2.5 h-2.5 rounded-full bg-[#4D41DF] animate-pulse"></span>
-                <span className="text-xs sm:text-sm font-semibold text-[#1B192F]">
-                  {inquiries.filter((i) => i.status !== 'resolved').length} Active Streams
-                </span>
-              </div>
-              <div className="hidden sm:flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white shadow-[6px_10px_20px_rgba(108,99,255,0.08),inset_2px_2px_4px_rgba(255,255,255,0.9)]">
-                <span className="material-symbols-outlined text-[#4D41DF] text-[18px]">verified</span>
-                <span className="text-xs sm:text-sm font-medium text-[#464555]">FERPA Verified</span>
-              </div>
+            <div className="hidden sm:flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white shadow-[4px_6px_16px_rgba(108,99,255,0.06),inset_1px_1px_2px_rgba(255,255,255,0.9)] border border-[#F0EBFF]">
+              <span className="material-symbols-outlined text-[#4D41DF] text-[18px]">verified</span>
+              <span className="text-xs font-semibold text-[#464555]">FERPA Verified Workspace</span>
             </div>
           </div>
 
           {/* Search & Filter Toolbar */}
-          <div className="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3 bg-[#F6F1FF] p-2 rounded-2xl shadow-[inset_2px_2px_5px_rgba(37,35,58,0.05),inset_-2px_-2px_5px_rgba(255,255,255,0.8)]">
+          <div className="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-2.5 bg-[#F6F1FF] p-1.5 rounded-2xl shadow-[inset_2px_2px_5px_rgba(37,35,58,0.05),inset_-2px_-2px_5px_rgba(255,255,255,0.8)]">
             {/* Clay Search Input */}
             <div className="relative flex-1 max-w-md">
               <span className="material-symbols-outlined absolute left-3.5 top-1/2 -translate-y-1/2 text-[#777587] text-[20px]">
@@ -616,10 +611,10 @@ export function InquiriesPage() {
 
         {/* Main 2-Column Claymorphic Workspace Interface */}
         {inquiries.length > 0 && (
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start lg:h-[calc(100vh-13.5rem)]">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start lg:h-[calc(100vh-9.5rem)] min-h-[660px]">
             {/* LEFT COLUMN: Inquiries List */}
             <aside
-              className={`lg:col-span-5 xl:col-span-4 flex flex-col gap-3 h-full overflow-hidden ${
+              className={`lg:col-span-4 xl:col-span-4 flex flex-col gap-2.5 h-full overflow-hidden ${
                 showMobileChat ? 'hidden lg:flex' : 'flex'
               }`}
             >
@@ -636,7 +631,7 @@ export function InquiriesPage() {
                   <p className="text-xs text-[#464555]">No inquiries match your search or filter.</p>
                 </div>
               ) : (
-                <div className="flex flex-col gap-3 overflow-y-auto pr-1 pb-4">
+                <div className="flex flex-col gap-2.5 overflow-y-auto pr-1 pb-4 flex-1">
                   {filteredInquiries.map((inq) => {
                     const isSelected = inq.id === selectedInquiryId;
                     const isResolved = inq.status === 'resolved';
@@ -648,10 +643,10 @@ export function InquiriesPage() {
                           setSelectedInquiryId(inq.id);
                           setShowMobileChat(true);
                         }}
-                        className={`group cursor-pointer p-4 rounded-2xl transition-all relative overflow-hidden shrink-0 ${
+                        className={`group cursor-pointer p-3.5 rounded-2xl transition-all relative overflow-hidden shrink-0 ${
                           isSelected
-                            ? 'bg-white shadow-[12px_16px_32px_rgba(108,99,255,0.14),-8px_-8px_24px_rgba(255,255,255,0.95)] ring-2 ring-[#4D41DF]/30'
-                            : 'bg-white/80 hover:bg-white shadow-[6px_10px_22px_rgba(108,99,255,0.06),-4px_-4px_16px_rgba(255,255,255,0.9)] hover:shadow-[12px_16px_32px_rgba(108,99,255,0.12)]'
+                            ? 'bg-white shadow-[12px_16px_32px_rgba(108,99,255,0.14),-8px_-8px_24px_rgba(255,255,255,0.95)] ring-2 ring-[#4D41DF]/40'
+                            : 'bg-white/80 hover:bg-white shadow-[4px_8px_20px_rgba(108,99,255,0.05),-4px_-4px_16px_rgba(255,255,255,0.9)] hover:shadow-[10px_14px_28px_rgba(108,99,255,0.1)]'
                         }`}
                       >
                         {/* Active Accent Bar */}
@@ -659,7 +654,7 @@ export function InquiriesPage() {
                           <div className="absolute left-0 top-0 bottom-0 w-1.5 bg-[#4D41DF] rounded-r-full shadow-[2px_0_8px_rgba(108,99,255,0.5)]" />
                         )}
 
-                        <div className="flex flex-col gap-2 pl-1">
+                        <div className="flex flex-col gap-1.5 pl-1">
                           {/* Header row: Request ID & Status pill */}
                           <div className="flex items-center justify-between gap-2">
                             <span
@@ -694,8 +689,8 @@ export function InquiriesPage() {
                             <h2 className="text-sm font-bold text-[#1B192F] line-clamp-1 group-hover:text-[#4D41DF] transition-colors">
                               {inq.title}
                             </h2>
-                            <div className="flex items-center gap-1.5 mt-1 text-[#464555] text-xs">
-                              <span className="material-symbols-outlined text-[15px] text-[#7F5300]">
+                            <div className="flex items-center gap-1.5 mt-0.5 text-[#464555] text-[11px]">
+                              <span className="material-symbols-outlined text-[14px] text-[#7F5300]">
                                 schedule
                               </span>
                               <span>Target Due: {formatDate(inq.deadline) || 'Flexible'}</span>
@@ -703,8 +698,8 @@ export function InquiriesPage() {
                           </div>
 
                           {/* Inset Message Preview Box */}
-                          <div className="p-2.5 rounded-xl bg-[#F6F1FF] shadow-[inset_1px_1px_3px_rgba(37,35,58,0.06),inset_-1px_-1px_3px_rgba(255,255,255,0.8)]">
-                            <p className="text-xs text-[#464555] line-clamp-2">
+                          <div className="p-2 rounded-xl bg-[#F6F1FF] shadow-[inset_1px_1px_3px_rgba(37,35,58,0.06),inset_-1px_-1px_3px_rgba(255,255,255,0.8)]">
+                            <p className="text-[11.5px] text-[#464555] line-clamp-1">
                               <span className="font-semibold text-[#4D41DF]">Latest: </span>
                               {inq.latestMessage || 'Inquiry channel active.'}
                             </p>
@@ -712,10 +707,10 @@ export function InquiriesPage() {
 
                           {/* Footer row */}
                           <div className="flex items-center justify-between pt-0.5">
-                            <span className="text-[11px] text-[#777587] font-medium">
+                            <span className="text-[10.5px] text-[#777587] font-medium truncate max-w-[150px]">
                               Course: {inq.subject || 'Academic'}
                             </span>
-                            <span className="text-[11px] font-semibold text-[#4D41DF]">
+                            <span className="text-[10.5px] font-semibold text-[#4D41DF]">
                               {formatTime(inq.latestMessageTime || inq.updatedAt) || 'Active'}
                             </span>
                           </div>
@@ -727,94 +722,69 @@ export function InquiriesPage() {
               )}
             </aside>
 
-            {/* RIGHT COLUMN: Active Request Chat Workspace (Desktop) */}
+            {/* RIGHT COLUMN: Active Request Chat Workspace (Desktop - EXPANDED & PROMINENT) */}
             <main
-              className="hidden lg:flex lg:col-span-7 xl:col-span-8 flex-col rounded-3xl bg-white shadow-[12px_16px_36px_rgba(108,99,255,0.12),-8px_-8px_24px_rgba(255,255,255,0.95)] overflow-hidden h-full"
+              className="hidden lg:flex lg:col-span-8 xl:col-span-8 flex-col rounded-3xl bg-white border border-[#E2DBF5] shadow-[0_16px_48px_rgba(108,99,255,0.12),-4px_-4px_20px_rgba(255,255,255,0.9)] overflow-hidden h-full"
             >
               {activeInquiry ? (
                 <>
-                  {/* Sticky Request Context Bar Header */}
-                  <div className="px-5 py-4 bg-white/95 backdrop-blur-md shadow-[0_4px_16px_rgba(108,99,255,0.05)] border-b border-[#F0EBFF] shrink-0">
-                    <div className="flex flex-row items-center justify-between gap-3">
-                      <div className="space-y-1">
+                  {/* Clean Request Context Bar Header */}
+                  <div className="px-6 py-4 bg-white border-b border-[#F0EBFF] shadow-[0_2px_10px_rgba(108,99,255,0.04)] shrink-0">
+                    <div className="flex flex-row items-center justify-between gap-4">
+                      <div className="space-y-1 min-w-0">
                         <div className="flex items-center flex-wrap gap-2">
                           <button
                             type="button"
                             onClick={() => handleCopyReqId(activeInquiry.requestId || activeInquiry.id)}
-                            className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-[#E3DFFF] text-[#100069] hover:bg-[#C4C0FF] text-xs font-bold shadow-[inset_1px_1px_2px_rgba(255,255,255,0.8)] transition-colors"
+                            className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#E3DFFF] text-[#100069] hover:bg-[#C4C0FF] text-xs font-bold shadow-[inset_1px_1px_2px_rgba(255,255,255,0.8)] transition-colors"
                             title="Click to copy Request ID"
                           >
                             <span>{activeInquiry.requestId || activeInquiry.id}</span>
-                            <span className="material-symbols-outlined text-[13px]">
+                            <span className="material-symbols-outlined text-[14px]">
                               {copiedId === (activeInquiry.requestId || activeInquiry.id) ? 'check' : 'content_copy'}
                             </span>
                           </button>
-                          <span className="px-2.5 py-0.5 rounded-full bg-[#EAE5FF] text-[#464555] text-xs font-semibold">
+                          <span className="px-3 py-1 rounded-full bg-[#EAE5FF] text-[#464555] text-xs font-semibold">
                             {activeInquiry.subject || 'Coursework'}
                           </span>
-                          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-[#E4DFFE] text-[#422DB2] text-xs font-bold">
+                          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#E4DFFE] text-[#422DB2] text-xs font-bold">
                             <span className="w-1.5 h-1.5 rounded-full bg-[#5846C8] animate-pulse" />
-                            {activeInquiry.statusLabel || (activeInquiry.status === 'resolved' ? 'Resolved' : 'In Progress')}
+                            {activeInquiry.statusLabel || (activeInquiry.status === 'resolved' ? 'Resolved' : 'Active')}
                           </span>
                         </div>
-                        <h2 className="text-lg font-bold text-[#1B192F] tracking-tight mt-1 line-clamp-1">
+                        <h2 className="text-xl font-extrabold text-[#1B192F] tracking-tight mt-1 line-clamp-1">
                           {activeInquiry.title}
                         </h2>
                       </div>
 
                       {/* Deadline Info & Quick Link to Full Request View */}
                       <div className="flex flex-col items-end gap-1.5 shrink-0">
-                        <div className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-[#FFDDB3] text-[#291800] text-xs font-semibold shadow-[inset_1px_1px_2px_rgba(255,255,255,0.8)]">
+                        <div className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-[#FFDDB3] text-[#291800] text-xs font-semibold shadow-[inset_1px_1px_2px_rgba(255,255,255,0.8)]">
                           <span className="material-symbols-outlined text-[15px] text-[#7F5300]">timer</span>
                           <span>Due: {formatDueTime(activeInquiry.deadline)}</span>
                         </div>
                         <Link
                           to={`/my-requests?highlight=${activeInquiry.requestId}`}
-                          className="inline-flex items-center gap-1 text-[#4D41DF] hover:text-[#5846C8] text-xs font-bold transition-colors"
+                          className="inline-flex items-center gap-1 text-[#4D41DF] hover:text-[#3E33C6] text-xs font-bold transition-colors"
                         >
                           <span>View Request Details</span>
-                          <span className="material-symbols-outlined text-[15px]">open_in_new</span>
+                          <span className="material-symbols-outlined text-[16px]">open_in_new</span>
                         </Link>
-                      </div>
-                    </div>
-
-                    {/* Academic Specialist Metadata Strip */}
-                    <div className="flex items-center justify-between gap-2 mt-3 pt-2 bg-[#F6F1FF] px-3.5 py-2 rounded-xl shadow-[inset_1px_1px_2px_rgba(37,35,58,0.04),inset_-1px_-1px_2px_rgba(255,255,255,0.8)]">
-                      <div className="flex items-center gap-2">
-                        <div className="w-6 h-6 rounded-full bg-[#675DF9] text-white flex items-center justify-center font-bold text-[10px] shadow-[inset_1px_1px_2px_rgba(255,255,255,0.6)]">
-                          AH
-                        </div>
-                        <p className="text-xs text-[#1B192F] font-medium">
-                          Assigned Specialist:{' '}
-                          <span className="text-[#4D41DF] font-bold">
-                            {activeInquiry.assignedSpecialist || 'Dr. Marcus Vance (Specialist)'}
-                          </span>
-                        </p>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-white text-[#464555] text-[11px] font-medium shadow-[1px_1px_3px_rgba(108,99,255,0.06)]">
-                          <span className="material-symbols-outlined text-[13px] text-[#4D41DF]">description</span>
-                          Rubric Verified
-                        </span>
-                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-white text-[#464555] text-[11px] font-medium shadow-[1px_1px_3px_rgba(108,99,255,0.06)]">
-                          <span className="material-symbols-outlined text-[13px] text-[#4D41DF]">lock</span>
-                          Encrypted Channel
-                        </span>
                       </div>
                     </div>
                   </div>
 
-                  {/* Scrollable Message Conversation Stream (Desktop) */}
+                  {/* Scrollable Message Conversation Stream (Desktop - HIGH VISIBILITY) */}
                   <div
                     ref={chatContainerRef}
-                    className="flex-1 p-5 space-y-4 overflow-y-auto bg-gradient-to-b from-[#FCF8FF] to-white overscroll-contain"
+                    className="flex-1 p-6 space-y-4 overflow-y-auto bg-[#FAF8FF] overscroll-contain"
                   >
                     {/* System Event Pill */}
                     <div className="flex justify-center">
-                      <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#F0EBFF] text-[#464555] text-[11px] font-medium shadow-[inset_1px_1px_2px_rgba(255,255,255,0.8)]">
-                        <span className="material-symbols-outlined text-[14px] text-[#4D41DF]">lock_reset</span>
+                      <div className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-[#EFEAFF] text-[#422DB2] text-xs font-semibold shadow-xs border border-[#E4DCFF]">
+                        <span className="material-symbols-outlined text-[15px] text-[#4D41DF]">lock_reset</span>
                         <span>
-                          Inquiry stream connected for {activeInquiry.requestId || activeInquiry.id} • {formatDate(activeInquiry.createdAt)}
+                          Encrypted channel for {activeInquiry.requestId || activeInquiry.id} • {formatDate(activeInquiry.createdAt)}
                         </span>
                       </div>
                     </div>
@@ -827,44 +797,44 @@ export function InquiriesPage() {
                         return (
                           <div
                             key={msg.id || index}
-                            className={`flex gap-2.5 ${isStudent ? 'justify-end' : 'justify-start'}`}
+                            className={`flex gap-3 ${isStudent ? 'justify-end' : 'justify-start'}`}
                           >
                             {!isStudent && (
-                              <div className="w-8 h-8 rounded-full bg-[#E4DFFE] text-[#170065] flex items-center justify-center shrink-0 font-bold text-xs shadow-[inset_1px_1px_2px_rgba(255,255,255,0.8)]">
-                                <span className="material-symbols-outlined text-[17px] text-[#4D41DF]">school</span>
+                              <div className="w-9 h-9 rounded-full bg-gradient-to-tr from-[#E4DFFE] to-[#C7BCFC] text-[#170065] flex items-center justify-center shrink-0 font-bold text-xs shadow-sm mt-1">
+                                <span className="material-symbols-outlined text-[19px] text-[#4D41DF]">school</span>
                               </div>
                             )}
 
                             <div className={`max-w-lg sm:max-w-xl flex flex-col ${isStudent ? 'items-end' : 'items-start'}`}>
-                              <div className="flex items-center gap-1.5 mb-1 px-1">
-                                <span className="text-[11px] font-semibold text-[#1B192F]">
-                                  {isStudent ? 'You' : msg.senderName || 'Academic Team'}
+                              <div className="flex items-center gap-2 mb-1 px-1">
+                                <span className="text-xs font-bold text-[#1B192F]">
+                                  {isStudent ? 'You' : msg.senderName || 'Academic Coordinator'}
                                 </span>
-                                <span className="text-[10px] text-[#777587]">
+                                <span className="text-[11px] text-[#777587]">
                                   {formatTime(msg.createdAt)}
                                 </span>
                               </div>
 
                               <div
-                                className={`p-3.5 rounded-2xl text-sm leading-relaxed ${
+                                className={`p-4 rounded-2xl text-[14.5px] leading-relaxed shadow-sm ${
                                   isStudent
-                                    ? 'rounded-tr-xs bg-[#4D41DF] text-white shadow-[6px_10px_20px_rgba(108,99,255,0.28),inset_2px_2px_4px_rgba(255,255,255,0.35),inset_-2px_-2px_4px_rgba(0,0,0,0.1)]'
-                                    : 'rounded-tl-xs bg-[#F6F1FF] text-[#1B192F] shadow-[6px_10px_20px_rgba(108,99,255,0.08),inset_2px_2px_4px_rgba(255,255,255,0.9),inset_-2px_-2px_4px_rgba(108,99,255,0.08)]'
+                                    ? 'rounded-tr-xs bg-gradient-to-r from-[#4D41DF] to-[#5C4EFF] text-white shadow-[0_4px_16px_rgba(77,65,223,0.22)]'
+                                    : 'rounded-tl-xs bg-white text-[#1B192F] border border-[#ECE7FA] shadow-[0_4px_16px_rgba(108,99,255,0.06)]'
                                 }`}
                               >
                                 <p className="whitespace-pre-wrap">{msg.content || msg.text}</p>
                               </div>
 
                               {isStudent && (
-                                <div className="flex items-center gap-1 mt-0.5 text-[#777587] text-[10px]">
-                                  <span className="material-symbols-outlined text-[13px] text-[#4D41DF]">done_all</span>
+                                <div className="flex items-center gap-1 mt-1 text-[#777587] text-[11px]">
+                                  <span className="material-symbols-outlined text-[14px] text-[#4D41DF]">done_all</span>
                                   <span>Delivered</span>
                                 </div>
                               )}
                             </div>
 
                             {isStudent && (
-                              <div className="w-8 h-8 rounded-full bg-[#675DF9] text-white flex items-center justify-center shrink-0 font-bold text-xs shadow-[inset_1px_1px_2px_rgba(255,255,255,0.8)]">
+                              <div className="w-9 h-9 rounded-full bg-gradient-to-tr from-[#4D41DF] to-[#7B70FF] text-white flex items-center justify-center shrink-0 font-bold text-xs shadow-sm mt-1">
                                 {user?.fullName ? user.fullName.charAt(0).toUpperCase() : 'ME'}
                               </div>
                             )}
@@ -872,43 +842,42 @@ export function InquiriesPage() {
                         );
                       })
                     ) : (
-                      <div className="text-center py-10 text-gray-400 text-xs">
-                        No messages yet. Send your first message below!
+                      <div className="text-center py-16 text-gray-400 text-sm">
+                        No messages yet. Send your message below!
                       </div>
                     )}
                   </div>
 
                   {/* Chat Input Area (Desktop) */}
-                  <div className="p-4 sm:p-5 bg-[#F6F1FF] border-t border-[#EAE5FF] flex flex-col gap-2.5 shrink-0">
-
-                    {/* Clay Input Form */}
+                  <div className="p-4 sm:p-5 bg-white border-t border-[#EDE8F8] flex flex-col gap-2.5 shrink-0 shadow-[0_-4px_16px_rgba(108,99,255,0.03)]">
+                    {/* Input Form */}
                     <form
                       onSubmit={handleSendMessage}
-                      className="flex items-center gap-2 p-1.5 bg-white rounded-full shadow-[inset_2px_2px_5px_rgba(37,35,58,0.08),inset_-2px_-2px_5px_rgba(255,255,255,0.9),0_6px_16px_rgba(108,99,255,0.06)]"
+                      className="flex items-center gap-2 p-1.5 pl-4 pr-1.5 bg-[#F6F2FF] border border-[#E4DEF7] rounded-full focus-within:bg-white focus-within:border-[#4D41DF] focus-within:ring-2 focus-within:ring-[#4D41DF]/20 transition-all shadow-[inset_1px_1px_3px_rgba(37,35,58,0.04)]"
                     >
                       <input
                         type="text"
                         value={messageInput}
                         onChange={(e) => setMessageInput(e.target.value)}
                         placeholder={`Type your message regarding ${activeInquiry.requestId || activeInquiry.id}...`}
-                        className="flex-1 bg-transparent px-3 py-2 text-xs sm:text-sm text-[#1B192F] placeholder:text-[#777587] focus:outline-none"
+                        className="flex-1 bg-transparent py-2 text-sm sm:text-[14.5px] text-[#1B192F] placeholder:text-[#8E8C9D] focus:outline-none"
                         disabled={isSending}
                       />
                       <button
                         type="submit"
                         disabled={!messageInput.trim() || isSending}
-                        className="flex items-center gap-1.5 px-5 py-2 rounded-full bg-[#4D41DF] text-white text-xs sm:text-sm font-bold shadow-[4px_8px_16px_rgba(108,99,255,0.35),inset_2px_2px_4px_rgba(255,255,255,0.45)] hover:-translate-y-0.5 active:translate-y-0 transition-transform disabled:opacity-50 disabled:pointer-events-none shrink-0"
+                        className="flex items-center gap-2 px-6 py-2.5 rounded-full bg-[#4D41DF] hover:bg-[#3E33C6] text-white text-sm font-bold shadow-[0_4px_14px_rgba(77,65,223,0.35)] active:translate-y-0 hover:-translate-y-0.5 transition-all disabled:opacity-50 disabled:pointer-events-none shrink-0"
                       >
                         <span>{isSending ? 'Sending...' : 'Send'}</span>
-                        <span className="material-symbols-outlined text-[16px]">send</span>
+                        <span className="material-symbols-outlined text-[17px]">send</span>
                       </button>
                     </form>
 
                     {/* FERPA / Security Microcopy */}
-                    <div className="flex items-center justify-center gap-1 text-center mt-0.5">
-                      <span className="material-symbols-outlined text-[13px] text-[#4D41DF]">verified_user</span>
-                      <p className="text-[11px] text-[#464555]">
-                        Messages are securely transmitted to the assigned academic coordinators for{' '}
+                    <div className="flex items-center justify-center gap-1.5 text-center">
+                      <span className="material-symbols-outlined text-[14px] text-[#4D41DF]">verified_user</span>
+                      <p className="text-xs text-[#5E5C6E]">
+                        Directly connected to assigned coordinator for{' '}
                         <strong className="text-[#1B192F]">{activeInquiry.requestId || activeInquiry.id}</strong>.
                       </p>
                     </div>
