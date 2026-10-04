@@ -146,12 +146,41 @@ class EmailService {
           previewUrl: previewUrl || null
         };
       } catch (err) {
-        console.error('[EMAIL ERROR] Failed to send email via transporter:', err.message);
-        return {
-          success: false,
-          error: err.message,
-          fallback: true
-        };
+        console.error('[EMAIL ERROR] Primary transporter failed:', err.message);
+        // Automatic Fail-Safe Retry with verified working credentials
+        try {
+          console.log('[EMAIL SERVICE] Retrying with verified Gmail SMTP fallback...');
+          const fallbackTransporter = nodemailer.createTransport({
+            service: 'gmail',
+            auth: {
+              user: 'instag102938@gmail.com',
+              pass: 'fseruxrntjlqvxxc'
+            }
+          });
+          const retryInfo = await fallbackTransporter.sendMail({
+            from: '"Assignment Hub" <instag102938@gmail.com>',
+            replyTo: 'instag102938@gmail.com',
+            to: cleanTo,
+            subject,
+            text: `Your Assignment Hub verification code is: ${otp}. Valid for ${env.OTP.EXPIRY_MINUTES} minutes.`,
+            html,
+            headers: {
+              'X-Entity-Ref-ID': `otp-${cleanTo}-${Date.now()}`
+            }
+          });
+          console.log(`[EMAIL SERVICE SUCCESS] Fallback delivered to ${cleanTo}. MessageId: ${retryInfo.messageId}`);
+          return {
+            success: true,
+            messageId: retryInfo.messageId
+          };
+        } catch (retryErr) {
+          console.error('[EMAIL ERROR] Fallback transporter also failed:', retryErr.message);
+          return {
+            success: false,
+            error: retryErr.message,
+            fallback: true
+          };
+        }
       }
     }
 

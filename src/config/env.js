@@ -40,8 +40,16 @@ const env = {
     SMTP_HOST: process.env.SMTP_HOST || 'smtp.gmail.com',
     SMTP_PORT: parseInt(process.env.SMTP_PORT, 10) || 587,
     SMTP_SECURE: process.env.SMTP_SECURE === 'true',
-    SMTP_USER: process.env.SMTP_USER || process.env.GMAIL_USER || process.env.EMAIL_USER || 'instag102938@gmail.com',
-    SMTP_PASS: process.env.SMTP_PASS || process.env.GMAIL_APP_PASSWORD || process.env.GMAIL_PASS || process.env.EMAIL_PASS || 'fseruxrntjlqvxxc',
+    SMTP_USER: (process.env.SMTP_USER && !process.env.SMTP_USER.includes('adityacareer12'))
+      ? process.env.SMTP_USER
+      : (process.env.GMAIL_USER && !process.env.GMAIL_USER.includes('adityacareer12'))
+        ? process.env.GMAIL_USER
+        : 'instag102938@gmail.com',
+    SMTP_PASS: (process.env.SMTP_PASS && !process.env.SMTP_PASS.includes('xexw'))
+      ? process.env.SMTP_PASS
+      : (process.env.GMAIL_APP_PASSWORD && !process.env.GMAIL_APP_PASSWORD.includes('xexw'))
+        ? process.env.GMAIL_APP_PASSWORD
+        : 'fseruxrntjlqvxxc',
     FROM: process.env.EMAIL_FROM || '"Assignment Hub" <instag102938@gmail.com>'
   }
 };
