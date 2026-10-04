@@ -1,9 +1,9 @@
 class ApiConstants {
   // Configurable at compile time via --dart-define=API_BASE_URL=https://...
-  // Default to localhost:5000/api/v1 for development
+  // Default to live production API on Render
   static const String baseUrl = String.fromEnvironment(
     'API_BASE_URL',
-    defaultValue: 'http://localhost:5000/api/v1',
+    defaultValue: 'https://assignment-hub-api-h0ny.onrender.com/api/v1',
   );
 
   // Auth endpoints
