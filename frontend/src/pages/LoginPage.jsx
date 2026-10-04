@@ -47,8 +47,8 @@ export function LoginPage() {
       <header className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5">
         <div className="flex items-center justify-between">
           <Link to="/" className="flex items-center gap-3 transition-transform hover:scale-105">
-            <div className="w-10 h-10 rounded-2xl bg-[#6C63FF] text-white flex items-center justify-center clay-btn-primary shadow-sm shrink-0">
-              <span className="material-symbols-outlined text-[24px]">school</span>
+            <div className="w-10 h-10 rounded-2xl bg-white p-1 flex items-center justify-center clay-card shadow-sm shrink-0 border border-[#6C63FF]/20">
+              <img src="/logo.png" alt="Assignment Hub" className="w-full h-full object-contain" />
             </div>
             <div className="flex flex-col">
               <span className="text-xl font-extrabold tracking-tight text-[#25233A] leading-none">
@@ -103,9 +103,8 @@ export function LoginPage() {
 
               {/* 3D Clay Cartoon Student at Study Desk */}
               <img
-                src="https://lh3.googleusercontent.com/aida/AEtjO1XhgMa1PzO9gK8xCGhHfIARCvX1nH_ZPCmFInL6QqasJxHBEYTLzVg7O1Jx3qE1ifwuDIXbHNn6jkSab1FRsJRaSz5fK8hPUkzGfkB1mFHDS5DtQb2XTtzSCuzaL8tBT0ifuQMQPInRP06AE9sDuPuLNc2CWmumiYs2yfZSQl8HNykfc54jDxXVFAW-wJHstOZulpJD1ykLyYuWAuc3bMkAagr9fPKmmVrXgWM0OgtRvelPbINQk4_ZbDkJ"
+                src="/images/student-desk.png"
                 alt="Student study desk 3D clay illustration"
-                onError={(e) => { e.currentTarget.style.display = 'none'; }}
                 className="w-full h-auto object-cover rounded-2xl transform hover:scale-[1.02] transition-transform duration-500"
               />
 
@@ -122,8 +121,8 @@ export function LoginPage() {
             <div className="clay-surface rounded-3xl p-7 sm:p-9">
               <div className="flex items-center justify-between mb-6">
                 <div className="flex items-center gap-3">
-                  <div className="w-11 h-11 rounded-2xl bg-[#6C63FF] text-white flex items-center justify-center clay-btn-primary shadow-sm shrink-0">
-                    <span className="material-symbols-outlined text-[24px]">school</span>
+                  <div className="w-11 h-11 rounded-2xl bg-white p-1 flex items-center justify-center clay-card shadow-sm shrink-0 border border-[#6C63FF]/20">
+                    <img src="/logo.png" alt="Assignment Hub" className="w-full h-full object-contain" />
                   </div>
                   <div>
                     <span className="text-xs font-bold text-[#6C63FF] uppercase tracking-wider block">Student Login</span>

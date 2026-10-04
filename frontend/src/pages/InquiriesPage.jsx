@@ -413,8 +413,8 @@ export function InquiriesPage() {
         <div className="h-16 sm:h-20 w-full px-4 sm:px-8 lg:px-12 flex items-center justify-between gap-3 sm:gap-6">
           {/* Logo & Workspace Pill */}
           <Link to="/dashboard" className="flex items-center gap-2 sm:gap-3.5 group shrink-0">
-            <div className="w-9 h-9 sm:w-11 sm:h-11 rounded-xl sm:rounded-2xl bg-primary text-white flex items-center justify-center shadow-[6px_10px_20px_rgba(108,99,255,0.25)] group-hover:scale-105 transition-transform">
-              <span className="material-symbols-outlined text-[20px] sm:text-[24px]">school</span>
+            <div className="w-9 h-9 sm:w-11 sm:h-11 rounded-xl sm:rounded-2xl bg-white p-1 flex items-center justify-center shadow-sm group-hover:scale-105 transition-transform border border-primary/20 clay-card shrink-0">
+              <img src="/logo.png" alt="Assignment Hub" className="w-full h-full object-contain" />
             </div>
             <div className="flex items-center gap-2">
               <span className="font-extrabold text-lg sm:text-[22px] text-on-surface tracking-tight">

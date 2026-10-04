@@ -633,8 +633,8 @@ export function MyRequestsPage() {
               to="/dashboard"
               className="flex items-center gap-3 transition-transform hover:scale-[1.02] active:scale-95"
             >
-              <div className="w-10 h-10 rounded-2xl bg-[#4D41DF] text-white flex items-center justify-center clay-btn-primary shadow-sm">
-                <span className="material-symbols-outlined text-[24px]">school</span>
+              <div className="w-10 h-10 rounded-2xl bg-white p-1 flex items-center justify-center clay-card shadow-sm shrink-0 border border-[#4D41DF]/20">
+                <img src="/logo.png" alt="Assignment Hub" className="w-full h-full object-contain" />
               </div>
               <span className="font-bold text-xl text-[#1B192F] tracking-tight">Assignment Hub</span>
             </Link>
