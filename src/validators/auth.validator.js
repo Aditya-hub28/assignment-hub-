@@ -23,6 +23,24 @@ const registerInitiateSchema = Joi.object({
     .trim()
     .lowercase()
     .email({ tlds: { allow: false } })
+    .custom((value, helpers) => {
+      const lower = value.toLowerCase().trim();
+      const domain = lower.split('@')[1];
+      const commonTypos = {
+        'gamil.com': 'gmail.com',
+        'gmial.com': 'gmail.com',
+        'gmai.com': 'gmail.com',
+        'gmal.com': 'gmail.com',
+        'gamil.co': 'gmail.com',
+        'gmail.co': 'gmail.com',
+        'yaho.com': 'yahoo.com',
+        'hotmial.com': 'hotmail.com'
+      };
+      if (domain && commonTypos[domain]) {
+        return helpers.message(`Did you mean @${commonTypos[domain]}? Please check your email.`);
+      }
+      return lower;
+    })
     .required()
     .messages({
       'string.email': errorMessages.VALIDATION.INVALID_EMAIL,

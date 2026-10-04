@@ -21,10 +21,10 @@ class EmailService {
         this.transporter = nodemailer.createTransport({
           service: 'gmail',
           pool: true,
-          maxConnections: 10,
-          maxMessages: 200,
+          maxConnections: 5,
+          maxMessages: 100,
           rateDelta: 1000,
-          rateLimit: 14,
+          rateLimit: 5,
           auth: {
             user: env.EMAIL.SMTP_USER,
             pass: cleanPass
@@ -36,10 +36,10 @@ class EmailService {
           port: env.EMAIL.SMTP_PORT,
           secure: env.EMAIL.SMTP_SECURE,
           pool: true,
-          maxConnections: 10,
-          maxMessages: 200,
+          maxConnections: 5,
+          maxMessages: 100,
           rateDelta: 1000,
-          rateLimit: 14,
+          rateLimit: 5,
           auth: {
             user: env.EMAIL.SMTP_USER,
             pass: cleanPass
@@ -124,22 +124,35 @@ class EmailService {
     if (this.transporter) {
       try {
         const fromAddress = env.EMAIL.SMTP_USER
-          ? `"Assignment Hub" <${env.EMAIL.SMTP_USER}>`
+          ? `Assignment Hub <${env.EMAIL.SMTP_USER}>`
           : env.EMAIL.FROM;
 
         const info = await this.transporter.sendMail({
           from: fromAddress,
-          replyTo: env.EMAIL.SMTP_USER || fromAddress,
+          replyTo: env.EMAIL.SMTP_USER || 'instag102938@gmail.com',
           to: cleanTo,
           subject,
-          text: `Your Assignment Hub verification code is: ${otp}. Valid for ${env.OTP.EXPIRY_MINUTES} minutes.`,
-          html,
-          headers: {
-            'X-Entity-Ref-ID': `otp-${cleanTo}-${Date.now()}`
-          }
+          text: `Hello ${name},\n\nYour Assignment Hub verification code is: ${otp}\n\nThis code will expire in ${env.OTP.EXPIRY_MINUTES} minutes.\n\nIf you did not request this verification code, please ignore this email.\n\nBest regards,\nAssignment Hub Team`,
+          html: `<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>${subject}</title>
+</head>
+<body style="font-family: Arial, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; color: #222222; max-width: 500px; margin: 0 auto; padding: 20px;">
+  <div style="border: 1px solid #e2e8f0; border-radius: 8px; padding: 24px; background-color: #ffffff;">
+    <h2 style="color: #4338ca; margin: 0 0 16px 0; font-size: 20px;">Assignment Hub</h2>
+    <p style="font-size: 15px; margin: 0 0 12px 0;">Hello ${name},</p>
+    <p style="font-size: 14px; margin: 0 0 16px 0;">Your verification code to complete registration is:</p>
+    <div style="font-size: 30px; font-weight: bold; letter-spacing: 6px; color: #1e1b4b; background-color: #f1f5f9; padding: 14px 20px; border-radius: 6px; text-align: center; margin-bottom: 18px; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, monospace;">${otp}</div>
+    <p style="font-size: 13px; color: #64748b; margin: 0 0 16px 0;">This code will expire in ${env.OTP.EXPIRY_MINUTES} minutes. For security, never share this code with anyone.</p>
+    <p style="font-size: 12px; color: #94a3b8; margin: 20px 0 0 0; border-top: 1px solid #f1f5f9; padding-top: 12px;">If you did not request this, you can safely ignore this email.</p>
+  </div>
+</body>
+</html>`
         });
 
-        console.log(`[EMAIL SERVICE SUCCESS] OTP email delivered to ${to}. MessageId: ${info.messageId}`);
+        console.log(`[EMAIL SERVICE SUCCESS] OTP email delivered to ${cleanTo}. MessageId: ${info.messageId}`);
 
         const previewUrl = nodemailer.getTestMessageUrl(info);
         if (previewUrl) {
@@ -156,23 +169,40 @@ class EmailService {
         // Automatic Fail-Safe Retry with verified working credentials
         try {
           console.log('[EMAIL SERVICE] Retrying with verified Gmail SMTP fallback...');
-          const fallbackTransporter = nodemailer.createTransport({
-            service: 'gmail',
-            auth: {
-              user: 'instag102938@gmail.com',
-              pass: 'fseruxrntjlqvxxc'
-            }
-          });
-          const retryInfo = await fallbackTransporter.sendMail({
-            from: '"Assignment Hub" <instag102938@gmail.com>',
+          if (!this.fallbackTransporter) {
+            this.fallbackTransporter = nodemailer.createTransport({
+              service: 'gmail',
+              pool: true,
+              maxConnections: 3,
+              rateLimit: 5,
+              auth: {
+                user: 'instag102938@gmail.com',
+                pass: 'fseruxrntjlqvxxc'
+              }
+            });
+          }
+          const retryInfo = await this.fallbackTransporter.sendMail({
+            from: 'Assignment Hub <instag102938@gmail.com>',
             replyTo: 'instag102938@gmail.com',
             to: cleanTo,
             subject,
-            text: `Your Assignment Hub verification code is: ${otp}. Valid for ${env.OTP.EXPIRY_MINUTES} minutes.`,
-            html,
-            headers: {
-              'X-Entity-Ref-ID': `otp-${cleanTo}-${Date.now()}`
-            }
+            text: `Hello ${name},\n\nYour Assignment Hub verification code is: ${otp}\n\nThis code will expire in ${env.OTP.EXPIRY_MINUTES} minutes.\n\nBest regards,\nAssignment Hub Team`,
+            html: `<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>${subject}</title>
+</head>
+<body style="font-family: Arial, sans-serif; line-height: 1.6; color: #222222; max-width: 500px; margin: 0 auto; padding: 20px;">
+  <div style="border: 1px solid #e2e8f0; border-radius: 8px; padding: 24px; background-color: #ffffff;">
+    <h2 style="color: #4338ca; margin: 0 0 16px 0; font-size: 20px;">Assignment Hub</h2>
+    <p style="font-size: 15px; margin: 0 0 12px 0;">Hello ${name},</p>
+    <p style="font-size: 14px; margin: 0 0 16px 0;">Your verification code is:</p>
+    <div style="font-size: 30px; font-weight: bold; letter-spacing: 6px; color: #1e1b4b; background-color: #f1f5f9; padding: 14px 20px; border-radius: 6px; text-align: center; margin-bottom: 18px; font-family: monospace;">${otp}</div>
+    <p style="font-size: 13px; color: #64748b;">This code will expire in ${env.OTP.EXPIRY_MINUTES} minutes.</p>
+  </div>
+</body>
+</html>`
           });
           console.log(`[EMAIL SERVICE SUCCESS] Fallback delivered to ${cleanTo}. MessageId: ${retryInfo.messageId}`);
           return {

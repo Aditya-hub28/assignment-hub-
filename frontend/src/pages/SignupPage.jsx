@@ -53,11 +53,26 @@ export function SignupPage() {
       return;
     }
 
+    const cleanEmail = email.trim().toLowerCase().replace(/[\u200B-\u200D\uFEFF]/g, '');
+    const emailDomain = cleanEmail.split('@')[1];
+    const typoDomains = {
+      'gamil.com': 'gmail.com',
+      'gmial.com': 'gmail.com',
+      'gmai.com': 'gmail.com',
+      'gmal.com': 'gmail.com',
+      'yaho.com': 'yahoo.com',
+      'hotmial.com': 'hotmail.com'
+    };
+    if (emailDomain && typoDomains[emailDomain]) {
+      setErrorMsg(`Did you mean @${typoDomains[emailDomain]}? Please check your email.`);
+      return;
+    }
+
     setLoading(true);
     try {
       const res = await api.auth.initiateRegister({
         full_name: fullName.trim(),
-        email: email.trim(),
+        email: cleanEmail,
         mobile: mobile.trim(),
         password
       });
