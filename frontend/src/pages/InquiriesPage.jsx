@@ -434,30 +434,6 @@ export function InquiriesPage() {
             )}
           </div>
 
-          {/* Quick Prompts Strip */}
-          <div className="bg-[#FAF8FF] px-3 py-1.5 border-t border-[#F0EBFF] overflow-x-auto flex items-center gap-1.5 shrink-0 no-scrollbar">
-            <button
-              type="button"
-              onClick={() => handleSendMessage(null, 'Can I review the draft citations and structure?')}
-              className="px-3 py-1 rounded-full bg-white border border-[#EAE5FF] text-[#1B192F] text-[11px] font-medium whitespace-nowrap active:scale-95 transition-all shadow-xs"
-            >
-              Draft citations?
-            </button>
-            <button
-              type="button"
-              onClick={() => handleSendMessage(null, 'Could you confirm the expected delivery timeline?')}
-              className="px-3 py-1 rounded-full bg-white border border-[#EAE5FF] text-[#1B192F] text-[11px] font-medium whitespace-nowrap active:scale-95 transition-all shadow-xs"
-            >
-              Timeline status
-            </button>
-            <button
-              type="button"
-              onClick={() => handleSendMessage(null, 'I have additional rubric guidelines to share.')}
-              className="px-3 py-1 rounded-full bg-white border border-[#EAE5FF] text-[#1B192F] text-[11px] font-medium whitespace-nowrap active:scale-95 transition-all shadow-xs"
-            >
-              Rubric update
-            </button>
-          </div>
 
           {/* Instagram Bottom Input Bar */}
           <div className="p-2.5 bg-white/95 backdrop-blur-md border-t border-[#F0EBFF] shrink-0 pb-[max(0.6rem,env(safe-area-inset-bottom))]">
@@ -904,31 +880,6 @@ export function InquiriesPage() {
 
                   {/* Chat Input Area (Desktop) */}
                   <div className="p-4 sm:p-5 bg-[#F6F1FF] border-t border-[#EAE5FF] flex flex-col gap-2.5 shrink-0">
-                    {/* Suggested Prompt Chips */}
-                    <div className="flex items-center gap-1.5 overflow-x-auto pb-1 text-xs">
-                      <span className="text-[11px] text-[#464555] font-semibold whitespace-nowrap">Suggested:</span>
-                      <button
-                        type="button"
-                        onClick={() => handleSendMessage(null, 'Can I review the draft citations and structure?')}
-                        className="px-2.5 py-1 rounded-full bg-white hover:bg-[#E3DFFF] text-[#1B192F] text-[11px] font-medium whitespace-nowrap shadow-[inset_1px_1px_2px_rgba(255,255,255,0.9),1px_2px_4px_rgba(108,99,255,0.05)] transition-all"
-                      >
-                        Can I review the draft citations?
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => handleSendMessage(null, 'Could you confirm the expected delivery timeline?')}
-                        className="px-2.5 py-1 rounded-full bg-white hover:bg-[#E3DFFF] text-[#1B192F] text-[11px] font-medium whitespace-nowrap shadow-[inset_1px_1px_2px_rgba(255,255,255,0.9),1px_2px_4px_rgba(108,99,255,0.05)] transition-all"
-                      >
-                        Confirming delivery timeline
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => handleSendMessage(null, 'I have additional rubric guidelines to share.')}
-                        className="px-2.5 py-1 rounded-full bg-white hover:bg-[#E3DFFF] text-[#1B192F] text-[11px] font-medium whitespace-nowrap shadow-[inset_1px_1px_2px_rgba(255,255,255,0.9),1px_2px_4px_rgba(108,99,255,0.05)] transition-all"
-                      >
-                        Additional rubric guidelines
-                      </button>
-                    </div>
 
                     {/* Clay Input Form */}
                     <form
