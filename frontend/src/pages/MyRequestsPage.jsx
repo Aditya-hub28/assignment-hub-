@@ -94,6 +94,30 @@ export function MyRequestsPage() {
       });
   }, [requests, activeTab, searchQuery, sortBy]);
 
+  const formatDateOnly = (dateStr) => {
+    if (!dateStr) return 'Pending';
+    try {
+      const isoMatch = String(dateStr).match(/^(\d{4})-(\d{2})-(\d{2})/);
+      if (isoMatch) {
+        const [, year, month, day] = isoMatch;
+        const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+        const monthName = months[parseInt(month, 10) - 1] || month;
+        return `${day} ${monthName} ${year}`;
+      }
+      const d = new Date(dateStr);
+      if (isNaN(d.getTime())) {
+        return String(dateStr).split('T')[0].split(' ')[0] || dateStr;
+      }
+      return d.toLocaleDateString('en-GB', {
+        day: '2-digit',
+        month: 'short',
+        year: 'numeric'
+      });
+    } catch {
+      return String(dateStr).split('T')[0];
+    }
+  };
+
   const handleCopyId = (e, id) => {
     e.stopPropagation();
     navigator.clipboard.writeText(id);
@@ -401,7 +425,7 @@ export function MyRequestsPage() {
                       <div className="flex flex-col text-left md:text-right">
                         <span className="text-[10px] text-[#464555] uppercase font-bold">Target Due</span>
                         <span className="text-xs sm:text-sm font-bold text-[#1B192F]">
-                          {req.deadline || 'Pending'}
+                          {formatDateOnly(req.deadline)}
                         </span>
                       </div>
 
@@ -544,13 +568,13 @@ export function MyRequestsPage() {
                 <div className="flex flex-col">
                   <span className="text-[10px] uppercase font-bold text-[#464555]">Submitted Date</span>
                   <span className="text-xs sm:text-sm font-bold text-[#1B192F]">
-                    {selectedRequest.createdAt ? new Date(selectedRequest.createdAt).toLocaleDateString() : 'Today'}
+                    {formatDateOnly(selectedRequest.createdAt)}
                   </span>
                 </div>
                 <div className="flex flex-col sm:col-span-2">
                   <span className="text-[10px] uppercase font-bold text-[#464555]">Target Deadline</span>
                   <span className="text-xs sm:text-sm font-bold text-[#4D41DF]">
-                    {selectedRequest.deadline || 'Pending'}
+                    {formatDateOnly(selectedRequest.deadline)}
                   </span>
                 </div>
               </div>
