@@ -57,11 +57,13 @@ describe('Security & Production Verification Test Suite', () => {
         .set('Authorization', userAToken);
 
       expect(reqRes.status).toBe(200);
-      const fileUrl = reqRes.body.data.files[0].url;
+      const fileObj = reqRes.body.data.files[0];
+      const safeDiskName = path.basename(fileObj.storagePath || fileObj.name);
+      const apiFileUrl = `/api/v1/services/requests/${userARequestId}/files/${safeDiskName}`;
 
       // 1. Request as JSON URL action
       const jsonRes = await request(app)
-        .get(`${fileUrl}?action=url`)
+        .get(`${apiFileUrl}?action=url`)
         .set('Authorization', userAToken);
 
       expect(jsonRes.status).toBe(200);
@@ -71,7 +73,8 @@ describe('Security & Production Verification Test Suite', () => {
 
       // 2. Direct GET redirects with 302 to Supabase signed URL
       const directRes = await request(app)
-        .get(fileUrl)
+        .get(apiFileUrl)
+        .redirects(0)
         .set('Authorization', userAToken);
 
       expect(directRes.status).toBe(302);
@@ -83,9 +86,12 @@ describe('Security & Production Verification Test Suite', () => {
         .get(`/api/v1/services/requests/${userARequestId}`)
         .set('Authorization', userAToken);
 
-      const fileUrl = reqRes.body.data.files[0].url;
+      const fileObj = reqRes.body.data.files[0];
+      const safeDiskName = path.basename(fileObj.storagePath || fileObj.name);
+      const apiFileUrl = `/api/v1/services/requests/${userARequestId}/files/${safeDiskName}`;
+
       const fileRes = await request(app)
-        .get(`${fileUrl}?token=test-token-user-alpha&action=url`);
+        .get(`${apiFileUrl}?token=test-token-user-alpha&action=url`);
 
       expect(fileRes.status).toBe(200);
       expect(fileRes.body.downloadUrl).toBeDefined();
@@ -96,10 +102,13 @@ describe('Security & Production Verification Test Suite', () => {
         .get(`/api/v1/services/requests/${userARequestId}`)
         .set('Authorization', userAToken);
 
-      const fileUrl = reqRes.body.data.files[0].url;
+      const fileObj = reqRes.body.data.files[0];
+      const safeDiskName = path.basename(fileObj.storagePath || fileObj.name);
+      const apiFileUrl = `/api/v1/services/requests/${userARequestId}/files/${safeDiskName}`;
 
       const fileRes = await request(app)
-        .get(fileUrl)
+        .get(apiFileUrl)
+        .redirects(0)
         .set('Authorization', userBToken);
 
       expect(fileRes.status).toBe(403);
@@ -111,9 +120,11 @@ describe('Security & Production Verification Test Suite', () => {
         .get(`/api/v1/services/requests/${userARequestId}`)
         .set('Authorization', userAToken);
 
-      const fileUrl = reqRes.body.data.files[0].url;
+      const fileObj = reqRes.body.data.files[0];
+      const safeDiskName = path.basename(fileObj.storagePath || fileObj.name);
+      const apiFileUrl = `/api/v1/services/requests/${userARequestId}/files/${safeDiskName}`;
 
-      const fileRes = await request(app).get(fileUrl);
+      const fileRes = await request(app).get(apiFileUrl).redirects(0);
       expect(fileRes.status).toBe(401);
       expect(fileRes.body.success).toBe(false);
     });
@@ -141,15 +152,16 @@ describe('Security & Production Verification Test Suite', () => {
       expect(nonExistentRes.body.success).toBe(false);
     });
 
-    it('should confirm existing migrated files in Supabase Storage remain accessible', async () => {
+    it('should confirm existing uploaded files in Supabase Storage remain accessible', async () => {
       const reqRes = await request(app)
-        .get('/api/v1/services/requests/REQ-20261004-100')
+        .get(`/api/v1/services/requests/${userARequestId}`)
         .set('Authorization', userAToken);
 
       expect(reqRes.status).toBe(200);
-      const fileUrl = reqRes.body.data.files[0].url;
+      const safeDiskName = path.basename(reqRes.body.data.files[0].storagePath || reqRes.body.data.files[0].name);
+      const apiFileUrl = `/api/v1/services/requests/${userARequestId}/files/${safeDiskName}`;
       const fileRes = await request(app)
-        .get(`${fileUrl}?action=url`)
+        .get(`${apiFileUrl}?action=url`)
         .set('Authorization', userAToken);
 
       expect(fileRes.status).toBe(200);
@@ -172,6 +184,14 @@ describe('Security & Production Verification Test Suite', () => {
       const res = await request(app)
         .get(`/api/v1/services/requests/${userARequestId}`)
         .set('Authorization', userBToken);
+
+      expect(res.status).toBe(403);
+      expect(res.body.success).toBe(false);
+    });
+
+    it('should DENY Anonymous callers from accessing User Alpha\'s request (403 Forbidden)', async () => {
+      const res = await request(app)
+        .get(`/api/v1/services/requests/${userARequestId}`);
 
       expect(res.status).toBe(403);
       expect(res.body.success).toBe(false);

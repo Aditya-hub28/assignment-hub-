@@ -113,12 +113,15 @@ class AuthController {
    */
   async resetPassword(req, res, next) {
     try {
-      const { password } = req.body;
+      const { password, new_password, otp, email } = req.body;
+      const targetPassword = password || new_password;
       const accessToken = req.accessToken || req.headers.authorization?.split(' ')[1];
 
       const result = await authService.resetPassword({
-        password,
-        accessToken
+        password: targetPassword,
+        accessToken,
+        otp,
+        email
       });
 
       return res.status(200).json({

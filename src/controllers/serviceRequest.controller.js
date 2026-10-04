@@ -51,9 +51,10 @@ class ServiceRequestController {
   async getRequestById(req, res, next) {
     try {
       const user = req.user || null;
+      const isAdmin = Boolean(user?.role === 'admin' || user?.user_metadata?.role === 'admin' || req.profile?.role === 'admin');
       const { id } = req.params;
 
-      const request = await serviceRequestService.getRequestById(id, user?.id, user?.email);
+      const request = await serviceRequestService.getRequestById(id, user?.id, user?.email, isAdmin);
 
       if (!request) {
         return res.status(404).json({

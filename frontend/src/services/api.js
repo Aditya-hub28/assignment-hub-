@@ -106,8 +106,8 @@ export const api = {
     resendOtp: (body) => request('/auth/register/resend-otp', { method: 'POST', body }),
     login: (body) => request('/auth/login', { method: 'POST', body }),
     logout: () => request('/auth/logout', { method: 'POST' }),
-    forgotPassword: (body) => request('/auth/password/forgot', { method: 'POST', body }),
-    resetPassword: (body) => request('/auth/password/reset', { method: 'POST', body })
+    forgotPassword: (body) => request('/auth/forgot-password', { method: 'POST', body }),
+    resetPassword: (body) => request('/auth/reset-password', { method: 'POST', body })
   },
   user: {
     getProfile: () => request('/user/profile', { method: 'GET' }),

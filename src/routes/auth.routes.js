@@ -47,16 +47,16 @@ router.post(
 
 // Forgot Password (Email reset link)
 router.post(
-  '/forgot-password',
+  ['/forgot-password', '/password/forgot'],
   authLimiter,
   validate(forgotPasswordSchema),
   authController.forgotPassword
 );
 
-// Reset Password (Authenticated recovery link)
+// Reset Password (OTP code or Authenticated recovery link)
 router.post(
-  '/reset-password',
-  requireAuth,
+  ['/reset-password', '/password/reset'],
+  authLimiter,
   validate(resetPasswordSchema),
   authController.resetPassword
 );

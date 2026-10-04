@@ -143,13 +143,31 @@ const resetPasswordSchema = Joi.object({
   password: Joi.string()
     .min(6)
     .pattern(passwordRegex)
-    .required()
+    .optional()
     .messages({
       'string.pattern.base': errorMessages.VALIDATION.INVALID_PASSWORD,
-      'string.min': errorMessages.VALIDATION.INVALID_PASSWORD,
-      'any.required': 'New password is required.'
-    })
-});
+      'string.min': errorMessages.VALIDATION.INVALID_PASSWORD
+    }),
+
+  new_password: Joi.string()
+    .min(6)
+    .pattern(passwordRegex)
+    .optional()
+    .messages({
+      'string.pattern.base': errorMessages.VALIDATION.INVALID_PASSWORD,
+      'string.min': errorMessages.VALIDATION.INVALID_PASSWORD
+    }),
+
+  email: Joi.string()
+    .trim()
+    .lowercase()
+    .email({ tlds: { allow: false } })
+    .optional(),
+
+  otp: Joi.string()
+    .trim()
+    .optional()
+}).or('password', 'new_password');
 
 // Update Profile Schema
 const updateProfileSchema = Joi.object({

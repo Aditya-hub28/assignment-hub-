@@ -249,7 +249,7 @@ class ServiceRequestService {
   /**
    * Get request by ID with strict ownership validation
    */
-  async getRequestById(id, userId = null, email = null) {
+  async getRequestById(id, userId = null, email = null, isAdmin = false) {
     const { data: row, error } = await supabaseAdmin
       .from('service_requests')
       .select('*')
@@ -260,12 +260,14 @@ class ServiceRequestService {
 
     const req = mapDbToRequest(row);
 
-    if (userId || email) {
-      const matchUser = userId && req.userId === userId;
-      const matchEmail = email && req.userEmail === email;
-      if ((req.userId || req.userEmail) && !matchUser && !matchEmail) {
+    // Strict Authorization check: If request has an owner, caller must match ownership or be admin
+    if (!isAdmin && (req.userId || req.userEmail)) {
+      const matchUser = Boolean(userId && req.userId === userId);
+      const matchEmail = Boolean(email && req.userEmail && req.userEmail.toLowerCase() === email.toLowerCase());
+      if (!matchUser && !matchEmail) {
         const err = new Error('Access denied. You do not own this request.');
         err.status = 403;
+        err.statusCode = 403;
         throw err;
       }
     }
@@ -303,7 +305,8 @@ class ServiceRequestService {
       throw err;
     }
 
-    const request = await this.getRequestById(requestId);
+    const isAdmin = Boolean(user.role === 'admin' || user.user_metadata?.role === 'admin');
+    const request = await this.getRequestById(requestId, user.id, user.email, isAdmin);
     if (!request) {
       const err = new Error(`Service request "${requestId}" was not found.`);
       err.status = 404;

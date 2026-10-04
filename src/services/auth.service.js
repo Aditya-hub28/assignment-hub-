@@ -218,10 +218,31 @@ class AuthService {
   }
 
   /**
-   * Set New Password (authenticated reset link session)
+   * Set New Password (authenticated reset link session or recovery OTP)
    */
-  async resetPassword({ password, accessToken }) {
-    const client = accessToken ? createScopedClient(accessToken) : supabase;
+  async resetPassword({ password, accessToken, otp, email }) {
+    let client;
+    if (otp && email) {
+      const { data: sessionData, error: verifyErr } = await supabase.auth.verifyOtp({
+        email: email.trim().toLowerCase(),
+        token: otp.trim(),
+        type: 'recovery'
+      });
+      if (verifyErr || !sessionData?.session?.access_token) {
+        const customError = new Error(verifyErr?.message || 'Invalid or expired recovery code.');
+        customError.statusCode = 400;
+        customError.code = 'INVALID_OTP';
+        throw customError;
+      }
+      client = createScopedClient(sessionData.session.access_token);
+    } else if (accessToken) {
+      client = createScopedClient(accessToken);
+    } else {
+      const customError = new Error('Authentication or verification code is required to reset password.');
+      customError.statusCode = 401;
+      customError.code = 'UNAUTHORIZED';
+      throw customError;
+    }
 
     const { data, error } = await client.auth.updateUser({
       password

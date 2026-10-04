@@ -76,7 +76,7 @@ class InquiryService {
       inquiryId,
       requestId: requestData.id,
       senderRole: 'team',
-      senderName: 'ADMIN',
+      senderName: 'Admin',
       senderBadge: 'Coordinator',
       content: `Hello ${requestData.userName || 'Student'}! An inquiry channel has been initiated for your request ${requestData.id} ("${requestData.title}"). Our academic desk coordinators and specialists are reviewing your submitted requirements. Feel free to send questions, revised guidelines, or supplementary files here!`,
       createdAt: nowIso
