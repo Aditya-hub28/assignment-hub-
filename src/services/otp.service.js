@@ -109,16 +109,19 @@ class OtpService {
       throw new Error(`Failed to initialize verification session: ${error.message}`);
     }
 
-    // Trigger OTP Email immediately in background without blocking response
-    emailService.sendOtpEmail(email, rawOtp, fullName)
-      .then((res) => {
-        if (res?.messageId) {
-          console.log(`[EMAIL DISPATCH SUCCESS] OTP delivered to ${email} (MessageId: ${res.messageId})`);
-        }
-      })
-      .catch((err) => {
-        console.error(`[EMAIL DISPATCH ERROR] Failed to send OTP to ${email}:`, err.message);
-      });
+    // Await OTP Email dispatch to guarantee it is accepted by Google SMTP before returning success
+    try {
+      const emailRes = await emailService.sendOtpEmail(email, rawOtp, fullName);
+      if (emailRes?.success === false) {
+        throw new Error(emailRes.error || 'Failed to dispatch email');
+      }
+      if (emailRes?.messageId) {
+        console.log(`[EMAIL DISPATCH SUCCESS] OTP delivered to ${email} (MessageId: ${emailRes.messageId})`);
+      }
+    } catch (emailErr) {
+      console.error(`[EMAIL DISPATCH ERROR] Failed to send OTP to ${email}:`, emailErr.message);
+      throw new Error(`Unable to send OTP to ${email}: ${emailErr.message}`);
+    }
 
     // Optional SMS dispatch in background (never blocks or delays user response)
     if (mobile && env.SMS_PROVIDER !== 'none') {
@@ -304,16 +307,19 @@ class OtpService {
       throw new Error(`Failed to update verification session: ${updateError.message}`);
     }
 
-    // Trigger new OTP via Email immediately in background
-    emailService.sendOtpEmail(record.email, rawOtp, record.full_name)
-      .then((res) => {
-        if (res?.messageId) {
-          console.log(`[EMAIL RESEND SUCCESS] OTP delivered to ${record.email} (MessageId: ${res.messageId})`);
-        }
-      })
-      .catch((err) => {
-        console.error(`[EMAIL RESEND ERROR] Failed to resend OTP to ${record.email}:`, err.message);
-      });
+    // Await new OTP via Email to guarantee delivery
+    try {
+      const emailRes = await emailService.sendOtpEmail(record.email, rawOtp, record.full_name);
+      if (emailRes?.success === false) {
+        throw new Error(emailRes.error || 'Failed to dispatch email');
+      }
+      if (emailRes?.messageId) {
+        console.log(`[EMAIL RESEND SUCCESS] OTP delivered to ${record.email} (MessageId: ${emailRes.messageId})`);
+      }
+    } catch (emailErr) {
+      console.error(`[EMAIL RESEND ERROR] Failed to resend OTP to ${record.email}:`, emailErr.message);
+      throw new Error(`Unable to resend OTP to ${record.email}: ${emailErr.message}`);
+    }
 
     if (record.mobile && env.SMS_PROVIDER !== 'none') {
       smsService.sendOtp(record.mobile, rawOtp).catch((err) => {

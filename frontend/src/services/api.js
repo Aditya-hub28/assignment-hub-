@@ -1,5 +1,9 @@
 // Centralized API Service for Assignment Hub Frontend
-let rawBase = (import.meta.env.VITE_API_URL || '/api/v1').trim();
+const defaultApiUrl = typeof window !== 'undefined' && window.location.hostname === 'localhost'
+  ? '/api/v1'
+  : 'https://assignment-hub-api-h0ny.onrender.com/api/v1';
+
+let rawBase = (import.meta.env.VITE_API_URL || defaultApiUrl).trim();
 rawBase = rawBase.replace(/\/+$/, '');
 if (rawBase.startsWith('http') && !rawBase.includes('/api')) {
   rawBase = `${rawBase}/api/v1`;
