@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+
+<html lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="web_standard" name="shell-type"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config={darkMode:"class",theme:{extend:{colors:{"tertiary-container":"#a06900","on-surface":"#1b192f","on-error-container":"#93000a","surface-dim":"#dbd6f5","on-background":"#1b192f","secondary-fixed":"#e4dfff","on-tertiary-fixed-variant":"#633f00","inverse-surface":"#302e45","on-error":"#ffffff","surface-container":"#f0ebff","outline":"#777587","surface-tint":"#4f44e2","on-tertiary":"#ffffff","surface-variant":"#e4dffe","secondary":"#5846c8","on-primary-container":"#fffbff","secondary-fixed-dim":"#c7bfff","outline-variant":"#c7c4d8","on-primary-fixed-variant":"#3622ca","surface-container-high":"#eae5ff","tertiary-fixed-dim":"#ffb951","on-secondary-fixed":"#170065","on-secondary":"#ffffff","on-tertiary-fixed":"#291800","inverse-on-surface":"#f3eeff","surface":"#fcf8ff","inverse-primary":"#c4c0ff","surface-container-highest":"#e4dffe","error-container":"#ffdad6","on-surface-variant":"#464555","surface-bright":"#fcf8ff","tertiary":"#7f5300","on-secondary-fixed-variant":"#422db2","error":"#ba1a1a","on-secondary-container":"#fffbff","on-tertiary-container":"#fffbff","surface-container-low":"#f6f1ff","primary-fixed-dim":"#c4c0ff","surface-container-lowest":"#ffffff","primary-container":"#675df9","primary-fixed":"#e3dfff","secondary-container":"#7161e3","tertiary-fixed":"#ffddb3","on-primary-fixed":"#100069","background":"#fcf8ff","on-primary":"#ffffff","primary":"#4d41df"},borderRadius:{DEFAULT:"1rem",lg:"2rem",xl:"3rem",full:"9999px"},spacing:{"margin-mobile":"1.25rem","space-xl":"2.5rem","space-lg":"1.5rem","space-sm":"0.5rem","space-xs":"0.25rem","gutter-mobile":"1rem",margin:"3rem",gutter:"1.5rem","space-md":"1rem"},fontFamily:{"label-sm":["Plus Jakarta Sans"],"body-sm":["Plus Jakarta Sans"],"headline-md":["Plus Jakarta Sans"],"headline-sm":["Plus Jakarta Sans"],"label-md":["Plus Jakarta Sans"],"headline-lg-mobile":["Plus Jakarta Sans"],"display-mobile":["Plus Jakarta Sans"],"headline-lg":["Plus Jakarta Sans"],"title-md":["Plus Jakarta Sans"],"label-lg":["Plus Jakarta Sans"],"body-lg":["Plus Jakarta Sans"],"body-md":["Plus Jakarta Sans"],display:["Plus Jakarta Sans"]},fontSize:{"label-sm":["10px",{lineHeight:"14px",letterSpacing:"0.06em",fontWeight:"700"}],"body-sm":["14px",{lineHeight:"20px",letterSpacing:"0em",fontWeight:"400"}],"headline-md":["28px",{lineHeight:"36px",letterSpacing:"-0.01em",fontWeight:"700"}],"headline-sm":["22px",{lineHeight:"30px",letterSpacing:"0em",fontWeight:"600"}],"label-md":["12px",{lineHeight:"16px",letterSpacing:"0.04em",fontWeight:"600"}],"headline-lg-mobile":["28px",{lineHeight:"36px",letterSpacing:"-0.01em",fontWeight:"700"}],"display-mobile":["36px",{lineHeight:"44px",letterSpacing:"-0.02em",fontWeight:"800"}],"headline-lg":["40px",{lineHeight:"48px",letterSpacing:"-0.02em",fontWeight:"700"}],"title-md":["18px",{lineHeight:"26px",letterSpacing:"0em",fontWeight:"600"}],"label-lg":["14px",{lineHeight:"20px",letterSpacing:"0.02em",fontWeight:"700"}],"body-lg":["18px",{lineHeight:"28px",letterSpacing:"0em",fontWeight:"400"}],"body-md":["16px",{lineHeight:"24px",letterSpacing:"0em",fontWeight:"400"}],display:["56px",{lineHeight:"64px",letterSpacing:"-0.03em",fontWeight:"800"}]}}}};</script></head><body class="bg-background font-body-md text-on-surface antialiased selection:bg-primary-fixed selection:text-on-primary-fixed"><header class="fixed top-0 left-0 right-0 z-50 bg-surface/85 backdrop-blur-xl shadow-[0_12px_32px_rgba(108,99,255,0.06)]"><div class="h-20 w-full px-gutter md:px-margin flex items-center justify-between gap-gutter"><div class="flex items-center gap-space-lg"><a class="flex items-center gap-space-sm group focus:outline-none" data-path="home" href="#"><div class="w-10 h-10 rounded-full bg-primary flex items-center justify-center text-on-primary shadow-[inset_2px_2px_4px_rgba(255,255,255,0.45),inset_-2px_-2px_4px_rgba(0,0,0,0.1),6px_10px_20px_rgba(108,99,255,0.25)] transition-transform duration-200 group-hover:-translate-y-0.5"><span class="material-symbols-outlined text-[20px]">school</span></div><div class="flex items-center gap-space-sm"><span class="font-title-md text-title-md text-on-surface tracking-tight">AssignmentHub</span><span class="px-space-sm py-space-xs rounded-full bg-secondary-fixed text-on-secondary-fixed-variant font-label-sm text-label-sm uppercase tracking-wider shadow-[inset_1px_1px_2px_rgba(255,255,255,0.8)]">ACADEMIC DESK</span></div></a><nav class="hidden lg:flex items-center gap-space-xs p-space-xs rounded-full bg-surface-container-low shadow-[inset_2px_2px_4px_rgba(37,35,58,0.04),inset_-2px_-2px_4px_rgba(255,255,255,0.9)]" data-active-classes="bg-primary-container text-on-primary-container shadow-[inset_2px_2px_4px_rgba(255,255,255,0.4)]"><a class="px-space-md py-space-xs rounded-full font-label-lg text-label-lg text-on-surface-variant hover:text-on-surface hover:bg-surface-container transition-all duration-200" data-path="home" href="#">Home</a><a aria-current="page" class="px-space-md py-space-xs rounded-full font-label-lg transition-all duration-200 bg-primary-container text-on-primary-container shadow-[inset_2px_2px_4px_rgba(255,255,255,0.4)]" data-path="services" href="#">Services</a><a class="px-space-md py-space-xs rounded-full font-label-lg text-label-lg text-on-surface-variant hover:text-on-surface hover:bg-surface-container transition-all duration-200" data-path="my-requests" href="#">My Requests</a><a class="px-space-md py-space-xs rounded-full font-label-lg text-label-lg text-on-surface-variant hover:text-on-surface hover:bg-surface-container transition-all duration-200" data-path="inquiries" href="#">Inquiries</a></nav></div><div class="flex items-center gap-space-md"><a class="hidden sm:inline-flex items-center justify-center px-space-lg py-space-sm rounded-full bg-primary text-on-primary font-label-lg text-label-lg shadow-[6px_10px_20px_rgba(108,99,255,0.35),inset_2px_2px_4px_rgba(255,255,255,0.45),inset_-2px_-2px_4px_rgba(0,0,0,0.1)] transition-all duration-200 hover:-translate-y-0.5 active:translate-y-0 active:shadow-[4px_6px_12px_rgba(108,99,255,0.25)]" data-path="new-request" href="#">+ New Request</a><div class="relative flex items-center justify-center"><button class="w-10 h-10 rounded-full bg-surface-container-lowest text-on-surface-variant flex items-center justify-center shadow-[inset_2px_2px_4px_rgba(255,255,255,0.8),inset_-2px_-2px_4px_rgba(108,99,255,0.12),4px_6px_12px_rgba(108,99,255,0.08)] hover:text-on-surface transition-colors" type="button"><span class="material-symbols-outlined text-[20px]">notifications</span></button><span class="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-error text-on-error font-label-sm text-label-sm flex items-center justify-center shadow-[inset_1px_1px_2px_rgba(255,255,255,0.5),0_2px_6px_rgba(186,26,26,0.35)]">2</span></div><div class="flex items-center gap-space-sm pl-space-xs"><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center shadow-[inset_2px_2px_4px_rgba(255,255,255,0.4),0_4px_10px_rgba(108,99,255,0.2)]"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div><div class="hidden md:flex flex-col"><span class="font-label-lg text-label-lg text-on-surface leading-tight">Aditya K.</span><span class="font-label-sm text-label-sm text-on-surface-variant leading-tight">Student</span></div></div></div></div></header><main class="w-full pt-20 bg-background min-h-screen"><div class="flex flex-col w-full">
+<div class="w-full px-gutter-mobile md:px-margin max-w-7xl mx-auto py-space-lg flex flex-col gap-space-xl">
+<!-- Navigation & Stepper Header -->
+<div class="flex flex-col gap-space-md">
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-space-md">
+<!-- Back Breadcrumb -->
+<a class="inline-flex items-center gap-space-xs text-on-surface-variant hover:text-primary transition-all font-label-lg text-label-lg group w-fit" href="#">
+<span class="material-symbols-outlined text-[20px] transition-transform group-hover:-translate-x-1">arrow_back</span>
+<span>Back to Services</span>
+<span class="text-outline-variant">/</span>
+<span class="text-on-surface font-title-md">New Request</span>
+</a>
+<!-- Stepper Indicator -->
+<div class="flex items-center gap-space-xs p-space-xs rounded-full bg-surface-container-low shadow-[inset_2px_2px_4px_rgba(37,35,58,0.04),inset_-2px_-2px_4px_rgba(255,255,255,0.9)] w-fit self-start sm:self-auto">
+<!-- Step 1 (Active) -->
+<div class="flex items-center gap-space-xs px-space-md py-space-xs rounded-full bg-primary text-on-primary shadow-[inset_2px_2px_4px_rgba(255,255,255,0.4),0_4px_10px_rgba(108,99,255,0.25)]">
+<span class="w-5 h-5 rounded-full bg-surface-container-lowest text-primary font-label-sm text-label-sm flex items-center justify-center font-bold">1</span>
+<span class="font-label-lg text-label-lg">Fill Requirements</span>
+</div>
+<div class="w-3 h-[2px] bg-outline-variant rounded-full hidden md:block"></div>
+<!-- Step 2 -->
+<div class="flex items-center gap-space-xs px-space-md py-space-xs rounded-full text-on-surface-variant opacity-70">
+<span class="w-5 h-5 rounded-full bg-surface-container text-on-surface-variant font-label-sm text-label-sm flex items-center justify-center font-bold">2</span>
+<span class="font-label-lg text-label-lg hidden sm:inline">Review Request</span>
+</div>
+<div class="w-3 h-[2px] bg-outline-variant rounded-full hidden md:block"></div>
+<!-- Step 3 -->
+<div class="flex items-center gap-space-xs px-space-md py-space-xs rounded-full text-on-surface-variant opacity-70">
+<span class="w-5 h-5 rounded-full bg-surface-container text-on-surface-variant font-label-sm text-label-sm flex items-center justify-center font-bold">3</span>
+<span class="font-label-lg text-label-lg hidden sm:inline">Confirmation</span>
+</div>
+</div>
+</div>
+<!-- Page Headline Section -->
+<div class="flex flex-col gap-space-xs pt-space-xs">
+<div class="inline-flex items-center gap-space-xs w-fit px-space-md py-space-xs rounded-full bg-secondary-fixed text-on-secondary-fixed font-label-sm text-label-sm tracking-widest uppercase shadow-[inset_1px_1px_2px_rgba(255,255,255,0.8)]">
+<span class="material-symbols-outlined text-[14px]">tune</span>
+          Academic Service Specifier
+        </div>
+<h1 class="font-headline-lg text-headline-lg text-on-surface tracking-tight">Submit Your Academic Request</h1>
+<p class="font-body-lg text-body-lg text-on-surface-variant max-w-3xl">Provide your assignment specifications, rubric criteria, and reference files. Our coordinators ensure strict alignment with your university standards.</p>
+</div>
+</div>
+<!-- Two-Column Main Content Layout -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-space-xl items-start">
+<!-- Left/Primary Form Column (7 Cols on LG, 8 on XL) -->
+<div class="lg:col-span-8 flex flex-col gap-space-xl">
+<!-- SECTION 1: Core Details -->
+<section class="rounded-3xl bg-surface-container-lowest p-space-lg md:p-space-xl shadow-[12px_16px_32px_rgba(108,99,255,0.08),-8px_-8px_24px_rgba(255,255,255,0.9),inset_3px_3px_6px_rgba(255,255,255,0.9),inset_-3px_-3px_6px_rgba(108,99,255,0.06)] flex flex-col gap-space-lg">
+<div class="flex items-center justify-between pb-space-xs">
+<div class="flex items-center gap-space-sm">
+<div class="w-8 h-8 rounded-full bg-secondary-fixed flex items-center justify-center text-on-secondary-fixed shadow-[inset_1px_1px_2px_rgba(255,255,255,0.8)]">
+<span class="material-symbols-outlined text-[18px]">assignment</span>
+</div>
+<h2 class="font-headline-sm text-headline-sm text-on-surface">1. Core Assignment Scope</h2>
+</div>
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider bg-surface-container px-space-md py-space-xs rounded-full">Mandatory Specifications</span>
+</div>
+<!-- Service Selection Pills -->
+<div class="flex flex-col gap-space-sm">
+<label class="font-label-lg text-label-lg text-on-surface flex items-center justify-between">
+<span>Selected Academic Service <span class="text-error">*</span></span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">Switch dynamically adjusts requirements</span>
+</label>
+<div class="flex flex-wrap gap-space-xs p-space-xs rounded-2xl bg-surface-container-low shadow-[inset_3px_3px_6px_rgba(37,35,58,0.06),inset_-3px_-3px_6px_rgba(255,255,255,0.9)]" id="service-selector">
+<button class="service-pill-btn active-service px-space-md py-space-sm rounded-xl font-label-lg text-label-lg transition-all flex items-center gap-space-xs bg-primary text-on-primary shadow-[inset_2px_2px_4px_rgba(255,255,255,0.4),0_4px_12px_rgba(108,99,255,0.25)]" data-service="writing" type="button">
+<span class="material-symbols-outlined text-[18px]">edit_document</span>
+                Assignment Writing
+              </button>
+<button class="service-pill-btn px-space-md py-space-sm rounded-xl font-label-lg text-label-lg transition-all flex items-center gap-space-xs text-on-surface-variant hover:text-on-surface hover:bg-surface-container" data-service="coding" type="button">
+<span class="material-symbols-outlined text-[18px]">terminal</span>
+                Coding Projects
+              </button>
+<button class="service-pill-btn px-space-md py-space-sm rounded-xl font-label-lg text-label-lg transition-all flex items-center gap-space-xs text-on-surface-variant hover:text-on-surface hover:bg-surface-container" data-service="presentation" type="button">
+<span class="material-symbols-outlined text-[18px]">slideshow</span>
+                PPT / Presentation
+              </button>
+<button class="service-pill-btn px-space-md py-space-sm rounded-xl font-label-lg text-label-lg transition-all flex items-center gap-space-xs text-on-surface-variant hover:text-on-surface hover:bg-surface-container" data-service="engineering" type="button">
+<span class="material-symbols-outlined text-[18px]">draw</span>
+                Engineering Graphics
+              </button>
+<button class="service-pill-btn px-space-md py-space-sm rounded-xl font-label-lg text-label-lg transition-all flex items-center gap-space-xs text-on-surface-variant hover:text-on-surface hover:bg-surface-container" data-service="physics" type="button">
+<span class="material-symbols-outlined text-[18px]">science</span>
+                Physics / Lab Projects
+              </button>
+<button class="service-pill-btn px-space-md py-space-sm rounded-xl font-label-lg text-label-lg transition-all flex items-center gap-space-xs text-on-surface-variant hover:text-on-surface hover:bg-surface-container" data-service="report" type="button">
+<span class="material-symbols-outlined text-[18px]">menu_book</span>
+                Research / Tech Reports
+              </button>
+</div>
+</div>
+<!-- Two Column Common Inputs -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-space-lg">
+<!-- Assignment Name -->
+<div class="flex flex-col gap-space-xs md:col-span-2">
+<label class="font-label-lg text-label-lg text-on-surface" for="assignment-topic">Assignment / Project Name or Topic <span class="text-error">*</span></label>
+<div class="relative flex items-center">
+<span class="material-symbols-outlined absolute left-space-md text-on-surface-variant text-[20px] pointer-events-none">menu_book</span>
+<input class="w-full pl-12 pr-space-md py-space-sm rounded-2xl bg-surface-container-low text-on-surface font-body-md text-body-md shadow-[inset_3px_3px_6px_rgba(37,35,58,0.06),inset_-3px_-3px_6px_rgba(255,255,255,0.9)] focus:outline-none focus:bg-surface-container-lowest focus:ring-2 focus:ring-primary/40 transition-all placeholder:text-on-surface-variant/50" id="assignment-topic" placeholder="e.g. Distributed Database Architectures &amp; Replication Schemes" type="text" value="Distributed Database Architectures &amp; Replication Schemes"/>
+</div>
+</div>
+<!-- Subject / Course Code -->
+<div class="flex flex-col gap-space-xs">
+<label class="font-label-lg text-label-lg text-on-surface" for="course-code">Subject / Course Code <span class="text-error">*</span></label>
+<div class="relative flex items-center">
+<span class="material-symbols-outlined absolute left-space-md text-on-surface-variant text-[20px] pointer-events-none">school</span>
+<input class="w-full pl-12 pr-space-md py-space-sm rounded-2xl bg-surface-container-low text-on-surface font-body-md text-body-md shadow-[inset_3px_3px_6px_rgba(37,35,58,0.06),inset_-3px_-3px_6px_rgba(255,255,255,0.9)] focus:outline-none focus:bg-surface-container-lowest focus:ring-2 focus:ring-primary/40 transition-all placeholder:text-on-surface-variant/50" id="course-code" placeholder="e.g. CS402 / Database Systems" type="text" value="Computer Science CS402 / Database Systems"/>
+</div>
+</div>
+<!-- Submission Deadline -->
+<div class="flex flex-col gap-space-xs">
+<label class="font-label-lg text-label-lg text-on-surface" for="submission-deadline">Submission Deadline <span class="text-error">*</span></label>
+<div class="relative flex items-center">
+<span class="material-symbols-outlined absolute left-space-md text-on-surface-variant text-[20px] pointer-events-none">alarm</span>
+<input class="w-full pl-12 pr-space-md py-space-sm rounded-2xl bg-surface-container-low text-on-surface font-body-md text-body-md shadow-[inset_3px_3px_6px_rgba(37,35,58,0.06),inset_-3px_-3px_6px_rgba(255,255,255,0.9)] focus:outline-none focus:bg-surface-container-lowest focus:ring-2 focus:ring-primary/40 transition-all placeholder:text-on-surface-variant/50" id="submission-deadline" placeholder="Select date and deadline time" type="text" value="30 Oct 2026, 11:59 PM (EST)"/>
+</div>
+</div>
+</div>
+</section>
+<!-- SECTION 2: Dynamic Service-Specific Requirements -->
+<section class="rounded-3xl bg-surface-container-lowest p-space-lg md:p-space-xl shadow-[12px_16px_32px_rgba(108,99,255,0.08),-8px_-8px_24px_rgba(255,255,255,0.9),inset_3px_3px_6px_rgba(255,255,255,0.9),inset_-3px_-3px_6px_rgba(108,99,255,0.06)] flex flex-col gap-space-lg">
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-space-sm">
+<div class="flex items-center gap-space-sm">
+<div class="w-8 h-8 rounded-full bg-primary-fixed flex items-center justify-center text-primary shadow-[inset_1px_1px_2px_rgba(255,255,255,0.9)]">
+<span class="material-symbols-outlined text-[18px]">dynamic_form</span>
+</div>
+<h2 class="font-headline-sm text-headline-sm text-on-surface">2. Service-Specific Requirements</h2>
+</div>
+<div class="flex items-center gap-space-xs bg-surface-container px-space-md py-space-xs rounded-full">
+<span class="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
+<span class="font-label-sm text-label-sm text-on-surface font-bold uppercase" id="active-service-badge">Writing Mode</span>
+</div>
+</div>
+<!-- Dynamic Panel: Assignment Writing (DEFAULT) -->
+<div class="flex flex-col gap-space-lg" id="panel-writing">
+<div class="grid grid-cols-1 md:grid-cols-2 gap-space-lg">
+<!-- Scope / Page count -->
+<div class="flex flex-col gap-space-xs">
+<label class="font-label-lg text-label-lg text-on-surface">Number of Pages / Estimated Words <span class="text-error">*</span></label>
+<div class="relative flex items-center">
+<span class="material-symbols-outlined absolute left-space-md text-on-surface-variant text-[20px]">description</span>
+<input class="w-full pl-12 pr-space-md py-space-sm rounded-2xl bg-surface-container-low text-on-surface font-body-md text-body-md shadow-[inset_3px_3px_6px_rgba(37,35,58,0.06),inset_-3px_-3px_6px_rgba(255,255,255,0.9)] focus:outline-none focus:bg-surface-container-lowest focus:ring-2 focus:ring-primary/40 transition-all" id="summary-scope-input" type="text" value="12 Pages (~3,000 words)"/>
+</div>
+</div>
+<!-- Writing Delivery Format -->
+<div class="flex flex-col gap-space-xs">
+<label class="font-label-lg text-label-lg text-on-surface">Writing Delivery Format <span class="text-error">*</span></label>
+<div class="grid grid-cols-2 gap-space-sm">
+<label class="relative flex items-center justify-center p-space-sm rounded-2xl bg-surface-container-low cursor-pointer transition-all hover:bg-surface-container shadow-[inset_2px_2px_4px_rgba(37,35,58,0.04),inset_-2px_-2px_4px_rgba(255,255,255,0.9)] has-[:checked]:bg-primary-fixed has-[:checked]:text-on-primary-fixed has-[:checked]:shadow-[inset_2px_2px_4px_rgba(255,255,255,0.6),0_4px_12px_rgba(108,99,255,0.15)]">
+<input checked="" class="sr-only" name="delivery_format" type="radio" value="Typed (Word/PDF)"/>
+<span class="font-label-lg text-label-lg flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-[18px]">keyboard</span>
+                      Typed (Doc/PDF)
+                    </span>
+</label>
+<label class="relative flex items-center justify-center p-space-sm rounded-2xl bg-surface-container-low cursor-pointer transition-all hover:bg-surface-container shadow-[inset_2px_2px_4px_rgba(37,35,58,0.04),inset_-2px_-2px_4px_rgba(255,255,255,0.9)] has-[:checked]:bg-primary-fixed has-[:checked]:text-on-primary-fixed has-[:checked]:shadow-[inset_2px_2px_4px_rgba(255,255,255,0.6),0_4px_12px_rgba(108,99,255,0.15)]">
+<input class="sr-only" name="delivery_format" type="radio" value="Handwritten"/>
+<span class="font-label-lg text-label-lg flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-[18px]">stylus</span>
+                      Handwritten Notes
+                    </span>
+</label>
+</div>
+</div>
+</div>
+<!-- College Standard / Citation System -->
+<div class="flex flex-col gap-space-xs">
+<label class="font-label-lg text-label-lg text-on-surface">College Format / Citation Standard <span class="text-error">*</span></label>
+<div class="grid grid-cols-1 sm:grid-cols-3 gap-space-sm">
+<label class="relative flex items-center p-space-sm px-space-md rounded-2xl bg-primary-fixed text-on-primary-fixed shadow-[inset_2px_2px_4px_rgba(255,255,255,0.7),0_4px_12px_rgba(108,99,255,0.12)] cursor-pointer">
+<input checked="" class="sr-only" name="citation_standard" type="radio" value="Syllabus Template"/>
+<div class="flex items-center gap-space-sm">
+<span class="material-symbols-outlined text-primary text-[20px]">check_circle</span>
+<span class="font-label-lg text-label-lg">Course Syllabus Template</span>
+</div>
+</label>
+<label class="relative flex items-center p-space-sm px-space-md rounded-2xl bg-surface-container-low text-on-surface-variant shadow-[inset_2px_2px_4px_rgba(37,35,58,0.04),inset_-2px_-2px_4px_rgba(255,255,255,0.9)] hover:bg-surface-container cursor-pointer">
+<input class="sr-only" name="citation_standard" type="radio" value="IEEE Style"/>
+<div class="flex items-center gap-space-sm">
+<span class="material-symbols-outlined text-[20px]">article</span>
+<span class="font-label-lg text-label-lg">IEEE Academic Style</span>
+</div>
+</label>
+<label class="relative flex items-center p-space-sm px-space-md rounded-2xl bg-surface-container-low text-on-surface-variant shadow-[inset_2px_2px_4px_rgba(37,35,58,0.04),inset_-2px_-2px_4px_rgba(255,255,255,0.9)] hover:bg-surface-container cursor-pointer">
+<input class="sr-only" name="citation_standard" type="radio" value="APA 7th Edition"/>
+<div class="flex items-center gap-space-sm">
+<span class="material-symbols-outlined text-[20px]">history_edu</span>
+<span class="font-label-lg text-label-lg">APA 7th Edition</span>
+</div>
+</label>
+</div>
+</div>
+<!-- Assignment Prompt & Textarea -->
+<div class="flex flex-col gap-space-xs">
+<div class="flex items-center justify-between">
+<label class="font-label-lg text-label-lg text-on-surface" for="assignment-prompt">Description / Assignment Questions / Prompt <span class="text-error">*</span></label>
+<span class="font-label-sm text-label-sm text-on-surface-variant">368 / 2000 chars</span>
+</div>
+<textarea class="w-full p-space-md rounded-2xl bg-surface-container-low text-on-surface font-body-md text-body-md shadow-[inset_3px_3px_6px_rgba(37,35,58,0.06),inset_-3px_-3px_6px_rgba(255,255,255,0.9)] focus:outline-none focus:bg-surface-container-lowest focus:ring-2 focus:ring-primary/40 transition-all leading-relaxed placeholder:text-on-surface-variant/50" id="assignment-prompt" rows="5">Evaluate multi-master active-active database replication versus single-leader consensus protocols (Raft and Paxos). Detail conflict resolution algorithms (CRDTs vs Last-Write-Wins), partition tolerance edge cases under network partitions, and demonstrate latency metrics using an architectural benchmark comparison table.</textarea>
+</div>
+</div>
+<!-- Dynamic Panel: Coding Projects (Hidden default, toggled via JS) -->
+<div class="hidden flex flex-col gap-space-lg" id="panel-coding">
+<div class="grid grid-cols-1 md:grid-cols-2 gap-space-lg">
+<div class="flex flex-col gap-space-xs">
+<label class="font-label-lg text-label-lg text-on-surface">Primary Tech Stack &amp; Libraries <span class="text-error">*</span></label>
+<input class="w-full px-space-md py-space-sm rounded-2xl bg-surface-container-low text-on-surface font-body-md text-body-md shadow-[inset_3px_3px_6px_rgba(37,35,58,0.06),inset_-3px_-3px_6px_rgba(255,255,255,0.9)] focus:outline-none" placeholder="e.g. Python, FastAPI, PostgreSQL, Docker" type="text"/>
+</div>
+<div class="flex flex-col gap-space-xs">
+<label class="font-label-lg text-label-lg text-on-surface">Starter Git Repository (Optional)</label>
+<input class="w-full px-space-md py-space-sm rounded-2xl bg-surface-container-low text-on-surface font-body-md text-body-md shadow-[inset_3px_3px_6px_rgba(37,35,58,0.06),inset_-3px_-3px_6px_rgba(255,255,255,0.9)] focus:outline-none" placeholder="https://github.com/organization/course-repo" type="text"/>
+</div>
+</div>
+<div class="flex flex-wrap gap-space-md p-space-md rounded-2xl bg-surface-container-low">
+<label class="flex items-center gap-space-xs cursor-pointer font-label-lg text-label-lg text-on-surface">
+<input checked="" class="w-5 h-5 accent-primary rounded-lg" type="checkbox"/>
+                Include Unit Test Suite (PyTest / Jest)
+              </label>
+<label class="flex items-center gap-space-xs cursor-pointer font-label-lg text-label-lg text-on-surface">
+<input checked="" class="w-5 h-5 accent-primary rounded-lg" type="checkbox"/>
+                Generate Architecture README &amp; Setup Docs
+              </label>
+</div>
+</div>
+<!-- Dynamic Panel: PPT / Presentation (Hidden default, toggled via JS) -->
+<div class="hidden flex flex-col gap-space-lg" id="panel-presentation">
+<div class="grid grid-cols-1 md:grid-cols-2 gap-space-lg">
+<div class="flex flex-col gap-space-xs">
+<label class="font-label-lg text-label-lg text-on-surface">Target Slide Count <span class="text-error">*</span></label>
+<input class="w-full px-space-md py-space-sm rounded-2xl bg-surface-container-low text-on-surface font-body-md text-body-md shadow-[inset_3px_3px_6px_rgba(37,35,58,0.06),inset_-3px_-3px_6px_rgba(255,255,255,0.9)] focus:outline-none" placeholder="e.g. 15 Slides + Speaker Notes" type="text"/>
+</div>
+<div class="flex flex-col gap-space-xs">
+<label class="font-label-lg text-label-lg text-on-surface">Slide Delivery Format <span class="text-error">*</span></label>
+<input class="w-full px-space-md py-space-sm rounded-2xl bg-surface-container-low text-on-surface font-body-md text-body-md shadow-[inset_3px_3px_6px_rgba(37,35,58,0.06),inset_-3px_-3px_6px_rgba(255,255,255,0.9)] focus:outline-none" placeholder="PowerPoint (.pptx) &amp; PDF Export" type="text"/>
+</div>
+</div>
+</div>
+</section>
+<!-- SECTION 3: Multi-File Upload Experience -->
+<section class="rounded-3xl bg-surface-container-lowest p-space-lg md:p-space-xl shadow-[12px_16px_32px_rgba(108,99,255,0.08),-8px_-8px_24px_rgba(255,255,255,0.9),inset_3px_3px_6px_rgba(255,255,255,0.9),inset_-3px_-3px_6px_rgba(108,99,255,0.06)] flex flex-col gap-space-lg">
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-space-xs">
+<div class="flex items-center gap-space-sm">
+<div class="w-8 h-8 rounded-full bg-secondary-fixed flex items-center justify-center text-on-secondary-fixed shadow-[inset_1px_1px_2px_rgba(255,255,255,0.8)]">
+<span class="material-symbols-outlined text-[18px]">upload_file</span>
+</div>
+<h2 class="font-headline-sm text-headline-sm text-on-surface">3. Reference &amp; Guidelines Files</h2>
+</div>
+<div class="flex items-center gap-space-xs">
+<span class="font-label-sm text-label-sm text-on-surface-variant">Storage Pool:</span>
+<span class="px-space-sm py-space-xs rounded-full bg-surface-container text-on-surface font-label-sm text-label-sm font-bold shadow-[inset_1px_1px_2px_rgba(255,255,255,0.8)]">Max 50 MB total</span>
+</div>
+</div>
+<!-- Drag and Drop Box with Clay Indent -->
+<div class="group relative flex flex-col items-center justify-center text-center p-space-xl rounded-2xl bg-surface-container-low transition-all cursor-pointer shadow-[inset_3px_3px_8px_rgba(37,35,58,0.08),inset_-3px_-3px_8px_rgba(255,255,255,0.9)] hover:bg-surface-container/70">
+<div class="w-16 h-16 rounded-full bg-surface-container-lowest flex items-center justify-center text-primary shadow-[6px_8px_16px_rgba(108,99,255,0.15),inset_2px_2px_4px_rgba(255,255,255,0.9)] mb-space-sm group-hover:scale-105 transition-transform">
+<span class="material-symbols-outlined text-[32px]">cloud_upload</span>
+</div>
+<p class="font-title-md text-title-md text-on-surface mb-space-xs">
+              Drag &amp; drop reference files here, or <span class="text-primary underline font-bold">Browse Files</span>
+</p>
+<p class="font-body-sm text-body-sm text-on-surface-variant max-w-md mb-space-md">Upload course syllabi, lecture slides, professor notes, grading rubrics, or boilerplate zip files.</p>
+<div class="flex flex-wrap items-center justify-center gap-space-xs max-w-lg">
+<span class="px-space-sm py-space-xs rounded-full bg-surface-container-lowest text-on-surface-variant font-label-sm text-label-sm shadow-[inset_1px_1px_2px_rgba(255,255,255,0.9)]">PDF</span>
+<span class="px-space-sm py-space-xs rounded-full bg-surface-container-lowest text-on-surface-variant font-label-sm text-label-sm shadow-[inset_1px_1px_2px_rgba(255,255,255,0.9)]">DOC / DOCX</span>
+<span class="px-space-sm py-space-xs rounded-full bg-surface-container-lowest text-on-surface-variant font-label-sm text-label-sm shadow-[inset_1px_1px_2px_rgba(255,255,255,0.9)]">PPT / PPTX</span>
+<span class="px-space-sm py-space-xs rounded-full bg-surface-container-lowest text-on-surface-variant font-label-sm text-label-sm shadow-[inset_1px_1px_2px_rgba(255,255,255,0.9)]">Images (PNG/JPG)</span>
+<span class="px-space-sm py-space-xs rounded-full bg-surface-container-lowest text-on-surface-variant font-label-sm text-label-sm shadow-[inset_1px_1px_2px_rgba(255,255,255,0.9)]">ZIP / TAR.GZ</span>
+</div>
+</div>
+<!-- Total Size Tracker -->
+<div class="flex flex-col gap-space-xs">
+<div class="flex items-center justify-between font-label-sm text-label-sm">
+<span class="text-on-surface font-semibold flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-primary text-[16px]">folder_zip</span>
+                Attached Assets: 3 files
+              </span>
+<span class="text-on-surface-variant">19.4 MB of 50 MB (38.8%)</span>
+</div>
+<div class="w-full h-3 rounded-full bg-surface-container-low shadow-[inset_2px_2px_4px_rgba(37,35,58,0.08),inset_-2px_-2px_4px_rgba(255,255,255,0.9)] overflow-hidden p-0.5">
+<div class="h-full rounded-full bg-gradient-to-r from-primary to-secondary-container transition-all duration-500 shadow-[0_1px_3px_rgba(108,99,255,0.3)]" style="width: 38.8%;"></div>
+</div>
+</div>
+<!-- Uploaded Files List -->
+<div class="flex flex-col gap-space-sm">
+<!-- File Item 1 -->
+<div class="flex items-center justify-between p-space-md rounded-2xl bg-surface-container-lowest shadow-[4px_6px_14px_rgba(108,99,255,0.06),-3px_-3px_8px_rgba(255,255,255,0.9),inset_2px_2px_4px_rgba(255,255,255,0.8)]">
+<div class="flex items-center gap-space-md min-w-0">
+<div class="w-10 h-10 rounded-xl bg-error-container text-on-error-container flex items-center justify-center flex-shrink-0 shadow-[inset_1px_1px_2px_rgba(255,255,255,0.8)]">
+<span class="material-symbols-outlined text-[22px]">picture_as_pdf</span>
+</div>
+<div class="flex flex-col min-w-0">
+<span class="font-label-lg text-label-lg text-on-surface truncate">Database_Assignment_Rubric_2026.pdf</span>
+<div class="flex items-center gap-space-xs font-label-sm text-label-sm text-on-surface-variant">
+<span>3.4 MB</span>
+<span>•</span>
+<span class="text-primary font-semibold flex items-center gap-0.5">
+<span class="material-symbols-outlined text-[14px]">check_circle</span> Verified Rubric
+                    </span>
+</div>
+</div>
+</div>
+<button aria-label="Remove rubric file" class="w-8 h-8 rounded-full bg-surface-container-low text-on-surface-variant hover:text-error hover:bg-error-container/40 flex items-center justify-center transition-colors" type="button">
+<span class="material-symbols-outlined text-[18px]">close</span>
+</button>
+</div>
+<!-- File Item 2 -->
+<div class="flex items-center justify-between p-space-md rounded-2xl bg-surface-container-lowest shadow-[4px_6px_14px_rgba(108,99,255,0.06),-3px_-3px_8px_rgba(255,255,255,0.9),inset_2px_2px_4px_rgba(255,255,255,0.8)]">
+<div class="flex items-center gap-space-md min-w-0">
+<div class="w-10 h-10 rounded-xl bg-tertiary-fixed text-on-tertiary-fixed flex items-center justify-center flex-shrink-0 shadow-[inset_1px_1px_2px_rgba(255,255,255,0.8)]">
+<span class="material-symbols-outlined text-[22px]">folder_zip</span>
+</div>
+<div class="flex flex-col min-w-0">
+<span class="font-label-lg text-label-lg text-on-surface truncate">Sample_Schema_Architecture_Seeds.zip</span>
+<div class="flex items-center gap-space-xs font-label-sm text-label-sm text-on-surface-variant">
+<span>14.2 MB</span>
+<span>•</span>
+<span class="text-primary font-semibold flex items-center gap-0.5">
+<span class="material-symbols-outlined text-[14px]">check_circle</span> Code Base / Fixtures
+                    </span>
+</div>
+</div>
+</div>
+<button aria-label="Remove zip file" class="w-8 h-8 rounded-full bg-surface-container-low text-on-surface-variant hover:text-error hover:bg-error-container/40 flex items-center justify-center transition-colors" type="button">
+<span class="material-symbols-outlined text-[18px]">close</span>
+</button>
+</div>
+<!-- File Item 3 -->
+<div class="flex items-center justify-between p-space-md rounded-2xl bg-surface-container-lowest shadow-[4px_6px_14px_rgba(108,99,255,0.06),-3px_-3px_8px_rgba(255,255,255,0.9),inset_2px_2px_4px_rgba(255,255,255,0.8)]">
+<div class="flex items-center gap-space-md min-w-0">
+<div class="w-10 h-10 rounded-xl bg-secondary-fixed text-on-secondary-fixed flex items-center justify-center flex-shrink-0 shadow-[inset_1px_1px_2px_rgba(255,255,255,0.8)]">
+<span class="material-symbols-outlined text-[22px]">image</span>
+</div>
+<div class="flex flex-col min-w-0">
+<span class="font-label-lg text-label-lg text-on-surface truncate">ER_Diagram_Draft_V2.png</span>
+<div class="flex items-center gap-space-xs font-label-sm text-label-sm text-on-surface-variant">
+<span>1.8 MB</span>
+<span>•</span>
+<span class="text-primary font-semibold flex items-center gap-0.5">
+<span class="material-symbols-outlined text-[14px]">check_circle</span> Diagram Artifact
+                    </span>
+</div>
+</div>
+</div>
+<button aria-label="Remove image file" class="w-8 h-8 rounded-full bg-surface-container-low text-on-surface-variant hover:text-error hover:bg-error-container/40 flex items-center justify-center transition-colors" type="button">
+<span class="material-symbols-outlined text-[18px]">close</span>
+</button>
+</div>
+</div>
+</section>
+<!-- SECTION 4: Additional Instructions & Mentor Notes -->
+<section class="rounded-3xl bg-surface-container-lowest p-space-lg md:p-space-xl shadow-[12px_16px_32px_rgba(108,99,255,0.08),-8px_-8px_24px_rgba(255,255,255,0.9),inset_3px_3px_6px_rgba(255,255,255,0.9),inset_-3px_-3px_6px_rgba(108,99,255,0.06)] flex flex-col gap-space-md">
+<div class="flex items-center gap-space-sm">
+<div class="w-8 h-8 rounded-full bg-secondary-fixed flex items-center justify-center text-on-secondary-fixed shadow-[inset_1px_1px_2px_rgba(255,255,255,0.8)]">
+<span class="material-symbols-outlined text-[18px]">notes</span>
+</div>
+<h2 class="font-headline-sm text-headline-sm text-on-surface">4. Academic Mentor &amp; Coordinator Notes</h2>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Share instructor preferences, lecture focus nuances, or past feedback points to factor into the final delivery.</p>
+<div class="flex flex-col gap-space-xs">
+<textarea class="w-full p-space-md rounded-2xl bg-surface-container-low text-on-surface font-body-md text-body-md shadow-[inset_3px_3px_6px_rgba(37,35,58,0.06),inset_-3px_-3px_6px_rgba(255,255,255,0.9)] focus:outline-none focus:bg-surface-container-lowest focus:ring-2 focus:ring-primary/40 transition-all placeholder:text-on-surface-variant/50" placeholder="e.g. Professor Smith strictly penalizes missing latency units in the comparison chart. Please emphasize CAP theorem trade-offs in Section 3..." rows="3"></textarea>
+</div>
+</section>
+<!-- SECTION 5: Actions & Submission Area -->
+<div class="flex flex-col gap-space-md pt-space-xs pb-space-xl">
+<div class="flex flex-col sm:flex-row items-center gap-space-md">
+<!-- Primary Submit CTA -->
+<button class="w-full sm:w-auto px-space-xl py-space-md rounded-full bg-primary text-on-primary font-headline-sm text-title-md shadow-[6px_10px_24px_rgba(108,99,255,0.35),inset_2px_2px_4px_rgba(255,255,255,0.45),inset_-2px_-2px_4px_rgba(0,0,0,0.1)] hover:-translate-y-0.5 active:translate-y-0 active:shadow-[4px_6px_12px_rgba(108,99,255,0.25)] transition-all flex items-center justify-center gap-space-sm group" type="button">
+<span>Continue to Review</span>
+<span class="material-symbols-outlined text-[22px] transition-transform group-hover:translate-x-1">arrow_forward</span>
+</button>
+<!-- Secondary Save Draft -->
+<button class="w-full sm:w-auto px-space-lg py-space-md rounded-full bg-surface-container-lowest text-on-surface font-label-lg text-label-lg shadow-[inset_2px_2px_4px_rgba(255,255,255,0.8),inset_-2px_-2px_4px_rgba(108,99,255,0.1),4px_8px_18px_rgba(108,99,255,0.08)] hover:-translate-y-0.5 active:translate-y-0 transition-all flex items-center justify-center gap-space-xs" type="button">
+<span class="material-symbols-outlined text-[18px]">bookmark_add</span>
+<span>Save Draft to Profile</span>
+</button>
+</div>
+<!-- Trust Badges Strip -->
+<div class="flex flex-wrap items-center gap-space-md pt-space-sm text-on-surface-variant font-label-sm text-label-sm">
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-primary text-[16px]">lock</span>
+<span>Strict FERPA Encryption</span>
+</div>
+<div class="w-1 h-1 rounded-full bg-outline-variant"></div>
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-primary text-[16px]">verified</span>
+<span>Zero Plagiarism Guarantee</span>
+</div>
+<div class="w-1 h-1 rounded-full bg-outline-variant"></div>
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-primary text-[16px]">psychology</span>
+<span>Subject Specialists Reviewed</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Right/Sidebar Sticky Column (4 Cols on LG, xl:col-span-4) -->
+<aside class="lg:col-span-4 flex flex-col gap-space-lg sticky top-28">
+<!-- Live Request Summary Clay Card -->
+<div class="rounded-3xl bg-surface-container-lowest p-space-lg shadow-[12px_16px_32px_rgba(108,99,255,0.10),-8px_-8px_24px_rgba(255,255,255,0.9),inset_3px_3px_6px_rgba(255,255,255,0.9),inset_-3px_-3px_6px_rgba(108,99,255,0.06)] flex flex-col gap-space-md">
+<div class="flex items-center justify-between pb-space-xs">
+<h3 class="font-headline-sm text-headline-sm text-on-surface">Configuration Digest</h3>
+<span class="w-2.5 h-2.5 rounded-full bg-primary animate-ping"></span>
+</div>
+<!-- Dynamic Overview Entries -->
+<div class="flex flex-col gap-space-sm">
+<div class="p-space-sm px-space-md rounded-2xl bg-surface-container-low flex items-center justify-between shadow-[inset_2px_2px_4px_rgba(37,35,58,0.04),inset_-2px_-2px_4px_rgba(255,255,255,0.9)]">
+<div class="flex items-center gap-space-xs text-on-surface-variant font-label-md text-label-md">
+<span class="material-symbols-outlined text-[18px]">category</span>
+<span>Selected Service</span>
+</div>
+<span class="font-label-lg text-label-lg text-primary font-bold" id="summary-service-label">Assignment Writing</span>
+</div>
+<div class="p-space-sm px-space-md rounded-2xl bg-surface-container-low flex items-center justify-between shadow-[inset_2px_2px_4px_rgba(37,35,58,0.04),inset_-2px_-2px_4px_rgba(255,255,255,0.9)]">
+<div class="flex items-center gap-space-xs text-on-surface-variant font-label-md text-label-md">
+<span class="material-symbols-outlined text-[18px]">schedule</span>
+<span>Deadline Target</span>
+</div>
+<span class="font-label-lg text-label-lg text-on-surface font-semibold text-right">30 Oct 2026</span>
+</div>
+<div class="p-space-sm px-space-md rounded-2xl bg-surface-container-low flex items-center justify-between shadow-[inset_2px_2px_4px_rgba(37,35,58,0.04),inset_-2px_-2px_4px_rgba(255,255,255,0.9)]">
+<div class="flex items-center gap-space-xs text-on-surface-variant font-label-md text-label-md">
+<span class="material-symbols-outlined text-[18px]">format_size</span>
+<span>Requested Scope</span>
+</div>
+<span class="font-label-lg text-label-lg text-on-surface font-semibold" id="summary-scope-label">12 Pages (Typed)</span>
+</div>
+<div class="p-space-sm px-space-md rounded-2xl bg-surface-container-low flex items-center justify-between shadow-[inset_2px_2px_4px_rgba(37,35,58,0.04),inset_-2px_-2px_4px_rgba(255,255,255,0.9)]">
+<div class="flex items-center gap-space-xs text-on-surface-variant font-label-md text-label-md">
+<span class="material-symbols-outlined text-[18px]">attach_file</span>
+<span>Attached Files</span>
+</div>
+<span class="font-label-lg text-label-lg text-on-surface font-semibold">3 files (19.4 MB)</span>
+</div>
+</div>
+<!-- Academic Assurance Notification -->
+<div class="p-space-md rounded-2xl bg-primary-fixed/40 text-on-primary-fixed-variant flex items-start gap-space-sm shadow-[inset_2px_2px_4px_rgba(255,255,255,0.6)]">
+<span class="material-symbols-outlined text-primary text-[20px] flex-shrink-0 mt-0.5">verified_user</span>
+<div class="flex flex-col gap-0.5">
+<span class="font-label-md text-label-md font-bold text-on-surface">No Upfront Commitment</span>
+<p class="font-body-sm text-body-sm text-on-surface-variant leading-snug">Your requirement package is thoroughly reviewed by academic desk coordinators before any schedule or confirmation is finalized.</p>
+</div>
+</div>
+</div>
+<!-- Visual Academic Mentor / Support Desk Card -->
+<div class="rounded-3xl bg-surface-container-lowest p-space-lg shadow-[12px_16px_32px_rgba(108,99,255,0.08),-8px_-8px_24px_rgba(255,255,255,0.9),inset_3px_3px_6px_rgba(255,255,255,0.9),inset_-3px_-3px_6px_rgba(108,99,255,0.06)] flex flex-col gap-space-md">
+<div class="relative w-full h-36 rounded-2xl overflow-hidden bg-cover bg-center shadow-[inset_2px_2px_4px_rgba(255,255,255,0.8),inset_-2px_-2px_4px_rgba(0,0,0,0.1)]" data-alt="A modern, warm, tactile academic study lounge with soft lavender ambient illumination, neatly stacked reference books, a clean clay desk organizer, and a student working collaboratively on a sleek laptop with a friendly subject coordinator nearby." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBIIM2jhl6DBEfW91wFO5hH9Ye6UuQeK3VBtHMPh_KvGKZVeT4YLvlNpeE0B3jlcaHKt3MpDvV-euhlr7yKWbG7HqtCKBhyshbhTSWbaU0RNUlRGSJeCJPjBbHFfhPXi_PybjkzM07YEKLtF-iGPKo1pXrz95oGspBnTRf2W2EF8X0VwqRQB3GqwdX14xbRLZrCDhRYwdPrxLrnAs5CuzqijzuNJYJVOuYpVQXoKO43bz2oogwiIYngeg')">
+<div class="absolute inset-0 bg-gradient-to-t from-inverse-surface/80 via-inverse-surface/30 to-transparent flex items-end p-space-md">
+<div class="flex items-center gap-space-xs text-on-error">
+<span class="w-2.5 h-2.5 rounded-full bg-secondary-fixed animate-pulse"></span>
+<span class="font-label-sm text-label-sm uppercase font-bold tracking-wider">Desk Coordinators Active</span>
+</div>
+</div>
+</div>
+<div class="flex flex-col gap-space-xs">
+<h4 class="font-title-md text-title-md text-on-surface">Need Custom Specification Advice?</h4>
+<p class="font-body-sm text-body-sm text-on-surface-variant leading-normal">Unsure about your assignment rubric formatting, word limit calculations, or technical stack compatibility? Speak with a coordinator.</p>
+</div>
+<button class="w-full py-space-sm px-space-md rounded-full bg-surface-container-low text-primary hover:bg-surface-container hover:text-on-primary-fixed-variant font-label-lg text-label-lg transition-all shadow-[inset_2px_2px_4px_rgba(255,255,255,0.8),inset_-2px_-2px_4px_rgba(108,99,255,0.1),4px_6px_12px_rgba(108,99,255,0.06)] flex items-center justify-center gap-space-xs" type="button">
+<span class="material-symbols-outlined text-[18px]">support_agent</span>
+<span>Open Inquiries Desk</span>
+</button>
+</div>
+<!-- Academic Integrity Note Card -->
+<div class="rounded-3xl bg-surface-container-low p-space-md shadow-[inset_2px_2px_4px_rgba(37,35,58,0.04),inset_-2px_-2px_4px_rgba(255,255,255,0.9)] flex items-start gap-space-sm">
+<span class="material-symbols-outlined text-primary text-[20px] flex-shrink-0 mt-0.5">policy</span>
+<div class="flex flex-col gap-0.5">
+<span class="font-label-md text-label-md font-bold text-on-surface">Academic Integrity Safeguard</span>
+<p class="font-body-sm text-body-sm text-on-surface-variant">All reference models adhere to institutional ethical research guidelines and citation provenance standards.</p>
+</div>
+</div>
+</aside>
+</div>
+</div>
+<!-- Inline Micro-Interactions Script for Dynamic Service Switching -->
+<script>
+    (function() {
+      const serviceButtons = document.querySelectorAll('.service-pill-btn');
+      const writingPanel = document.getElementById('panel-writing');
+      const codingPanel = document.getElementById('panel-coding');
+      const presentationPanel = document.getElementById('panel-presentation');
+      const activeBadge = document.getElementById('active-service-badge');
+      const summaryServiceLabel = document.getElementById('summary-service-label');
+      const summaryScopeLabel = document.getElementById('summary-scope-label');
+      const scopeInput = document.getElementById('summary-scope-input');
+
+      serviceButtons.forEach(btn => {
+        btn.addEventListener('click', () => {
+          // Reset button styles
+          serviceButtons.forEach(b => {
+            b.classList.remove('bg-primary', 'text-on-primary', 'shadow-[inset_2px_2px_4px_rgba(255,255,255,0.4),0_4px_12px_rgba(108,99,255,0.25)]');
+            b.classList.add('text-on-surface-variant', 'hover:text-on-surface', 'hover:bg-surface-container');
+          });
+
+          // Activate clicked button
+          btn.classList.add('bg-primary', 'text-on-primary', 'shadow-[inset_2px_2px_4px_rgba(255,255,255,0.4),0_4px_12px_rgba(108,99,255,0.25)]');
+          btn.classList.remove('text-on-surface-variant', 'hover:text-on-surface', 'hover:bg-surface-container');
+
+          const serviceType = btn.getAttribute('data-service');
+          
+          // Switch view panels
+          if (serviceType === 'coding') {
+            writingPanel.classList.add('hidden');
+            presentationPanel.classList.add('hidden');
+            codingPanel.classList.remove('hidden');
+            activeBadge.textContent = 'Coding Mode';
+            summaryServiceLabel.textContent = 'Coding Projects';
+            summaryScopeLabel.textContent = 'Full Stack Implementation';
+          } else if (serviceType === 'presentation') {
+            writingPanel.classList.add('hidden');
+            codingPanel.classList.add('hidden');
+            presentationPanel.classList.remove('hidden');
+            activeBadge.textContent = 'Presentation Mode';
+            summaryServiceLabel.textContent = 'PPT / Presentation';
+            summaryScopeLabel.textContent = '15 Slides Deck';
+          } else {
+            codingPanel.classList.add('hidden');
+            presentationPanel.classList.add('hidden');
+            writingPanel.classList.remove('hidden');
+            activeBadge.textContent = 'Writing Mode';
+            summaryServiceLabel.textContent = btn.innerText.trim();
+            summaryScopeLabel.textContent = scopeInput ? scopeInput.value : '12 Pages (Typed)';
+          }
+        });
+      });
+
+      if (scopeInput) {
+        scopeInput.addEventListener('input', (e) => {
+          if (!writingPanel.classList.contains('hidden')) {
+            summaryScopeLabel.textContent = e.target.value || '12 Pages (Typed)';
+          }
+        });
+      }
+    })();
+  </script>
+</div></main><footer class="w-full bg-surface-container-low shadow-[inset_0_2px_6px_rgba(255,255,255,0.9)] mt-space-xl py-space-xl"><div class="w-full px-gutter md:px-margin flex flex-col md:flex-row items-center justify-between gap-space-lg"><div class="flex flex-col sm:flex-row items-center gap-space-md"><div class="flex items-center gap-space-xs px-space-md py-space-xs rounded-full bg-surface-container-lowest text-on-surface-variant font-label-sm text-label-sm shadow-[inset_2px_2px_4px_rgba(255,255,255,0.8),inset_-2px_-2px_4px_rgba(108,99,255,0.1),4px_6px_14px_rgba(108,99,255,0.06)]"><span class="material-symbols-outlined text-primary text-[16px]">verified_user</span><span>FERPA Encrypted</span></div><p class="font-body-sm text-body-sm text-on-surface-variant text-center sm:text-left">© 2024 AssignmentHub Academic Services. All rights reserved.</p></div><nav class="flex flex-wrap items-center justify-center gap-space-md"><a class="font-label-sm text-label-sm text-on-surface-variant hover:text-primary transition-colors" data-path="about" href="#">About</a><a class="font-label-sm text-label-sm text-on-surface-variant hover:text-primary transition-colors" data-path="terms" href="#">Terms</a><a class="font-label-sm text-label-sm text-on-surface-variant hover:text-primary transition-colors" data-path="privacy-policy" href="#">Privacy Policy</a><a class="font-label-sm text-label-sm text-on-surface-variant hover:text-primary transition-colors" data-path="academic-integrity" href="#">Academic Integrity</a></nav></div></footer></body></html>

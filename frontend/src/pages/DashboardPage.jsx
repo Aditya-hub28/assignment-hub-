@@ -265,45 +265,6 @@ export function DashboardPage() {
         </div>
       </main>
 
-      {/* ======================================================== */}
-      {/* 3. MOBILE BOTTOM NAVIGATION                              */}
-      {/* ======================================================== */}
-      <nav className="fixed bottom-0 left-0 right-0 z-50 lg:hidden bg-white/95 backdrop-blur-xl border-t border-[#E2DCFF] shadow-lg px-2 py-2 flex items-center justify-around">
-        <span
-          className="flex flex-col items-center gap-1 py-1 px-3 rounded-xl text-xs text-[#6C63FF] font-bold transition-colors"
-        >
-          <span className="material-symbols-outlined text-[22px]">home</span>
-          <span>Home</span>
-        </span>
-        <Link
-          to="/services"
-          className="flex flex-col items-center gap-1 py-1 px-3 rounded-xl text-xs text-[#6E6A8A] font-medium transition-colors"
-        >
-          <span className="material-symbols-outlined text-[22px]">category</span>
-          <span>Services</span>
-        </Link>
-        <a
-          href="#my-requests-section"
-          className="flex flex-col items-center gap-1 py-1 px-3 rounded-xl text-xs text-[#6E6A8A] font-medium transition-colors"
-        >
-          <span className="material-symbols-outlined text-[22px]">task</span>
-          <span>Requests</span>
-        </a>
-        <a
-          href="#support-section"
-          className="flex flex-col items-center gap-1 py-1 px-3 rounded-xl text-xs text-[#6E6A8A] font-medium transition-colors"
-        >
-          <span className="material-symbols-outlined text-[22px]">chat</span>
-          <span>Inquiries</span>
-        </a>
-        <button
-          onClick={() => setProfileModalOpen(true)}
-          className="flex flex-col items-center gap-1 py-1 px-3 rounded-xl text-xs text-[#6E6A8A] font-medium transition-colors cursor-pointer"
-        >
-          <span className="material-symbols-outlined text-[22px]">person</span>
-          <span>Profile</span>
-        </button>
-      </nav>
 
       {/* ======================================================== */}
       {/* 4. NEW REQUEST MODAL                                     */}

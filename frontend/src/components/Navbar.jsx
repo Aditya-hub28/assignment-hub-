@@ -66,7 +66,7 @@ export function Navbar({ activePage, onNewRequest, onOpenProfile, onSelectInquir
     if (typeof onNewRequest === 'function') {
       onNewRequest();
     } else {
-      navigate('/services');
+      navigate('/services/new');
     }
   };
 
