@@ -1,6 +1,32 @@
+const fs = require('fs');
+const path = require('path');
 const { supabaseAdmin } = require('../config/supabase');
 const env = require('../config/env');
 const { ROLES } = require('../constants/roles');
+
+const DATA_DIR = path.resolve(process.cwd(), 'data');
+const ACADEMICS_FILE = path.join(DATA_DIR, 'academic_profiles.json');
+
+const loadAcademics = () => {
+  try {
+    if (!fs.existsSync(ACADEMICS_FILE)) return {};
+    const raw = fs.readFileSync(ACADEMICS_FILE, 'utf-8');
+    return JSON.parse(raw) || {};
+  } catch {
+    return {};
+  }
+};
+
+const saveAcademics = (data) => {
+  try {
+    if (!fs.existsSync(DATA_DIR)) {
+      fs.mkdirSync(DATA_DIR, { recursive: true });
+    }
+    fs.writeFileSync(ACADEMICS_FILE, JSON.stringify(data, null, 2), 'utf-8');
+  } catch (err) {
+    console.error('[PROFILE_SERVICE] Error saving academic profiles:', err.message);
+  }
+};
 
 class ProfileService {
   /**
@@ -101,6 +127,32 @@ class ProfileService {
     }
 
     return this.getProfile(userId, client);
+  }
+
+  /**
+   * Get student's academic details (branch, year, semester, etc.)
+   */
+  getAcademicDetails(userId) {
+    if (!userId) return null;
+    const all = loadAcademics();
+    return all[userId] || null;
+  }
+
+  /**
+   * Save student's academic details
+   */
+  saveAcademicDetails(userId, details = {}) {
+    if (!userId) {
+      throw new Error('User ID is required to save academic details.');
+    }
+    const all = loadAcademics();
+    all[userId] = {
+      ...(all[userId] || {}),
+      ...details,
+      updatedAt: new Date().toISOString()
+    };
+    saveAcademics(all);
+    return all[userId];
   }
 }
 

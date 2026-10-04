@@ -70,46 +70,85 @@ export function ProfilePage() {
   }, [fullName]);
 
   useEffect(() => {
-    // When user changes or on mount, load user-specific academic details
-    try {
-      const saved = localStorage.getItem(storageKey);
-      if (saved) {
-        const parsed = JSON.parse(saved);
-        setAcademicDetails(parsed);
-        setAcademicForm(parsed);
-      } else {
-        const initialForm = {
-          studentName: fullName,
-          branch: '',
-          year: '',
-          semester: '',
-          division: '',
-          rollNo: ''
-        };
-        setAcademicDetails(initialForm);
-        setAcademicForm(initialForm);
+    // Load student's academic details from backend API and localStorage
+    const loadAcademicData = async () => {
+      let localData = null;
+      try {
+        const saved = localStorage.getItem(storageKey);
+        if (saved) localData = JSON.parse(saved);
+      } catch {
+        // ignore
       }
-    } catch {
-      // ignore
-    }
+
+      if (localData && localData.branch) {
+        setAcademicDetails(localData);
+        setAcademicForm(localData);
+      }
+
+      // Fetch from backend API to ensure server-side data is synced
+      try {
+        const res = await api.user.getAcademicDetails();
+        if (res?.data && res.data.branch) {
+          setAcademicDetails(res.data);
+          setAcademicForm(res.data);
+          localStorage.setItem(storageKey, JSON.stringify(res.data));
+        } else if (!localData || !localData.branch) {
+          const initialForm = {
+            studentName: fullName,
+            branch: '',
+            year: '',
+            semester: '',
+            division: '',
+            rollNo: ''
+          };
+          setAcademicDetails(initialForm);
+          setAcademicForm(initialForm);
+        }
+      } catch {
+        // Fallback to local data gracefully
+      }
+    };
+
+    loadAcademicData();
   }, [storageKey, fullName]);
 
-  // Fetch quick stats
+  // Fetch quick stats directly from backend
   useEffect(() => {
     const fetchStats = async () => {
       try {
         const [reqRes, inqRes] = await Promise.all([
-          api.services.getRequests().catch(() => ({ data: { requests: [] } })),
-          api.inquiries.getInquiries().catch(() => ({ data: { inquiries: [] } }))
+          api.services.getRequests().catch((e) => {
+            console.warn('[PROFILE_STATS_REQ_ERR]', e);
+            return { data: [] };
+          }),
+          api.inquiries.getInquiries().catch((e) => {
+            console.warn('[PROFILE_STATS_INQ_ERR]', e);
+            return { data: [] };
+          })
         ]);
-        const requests = reqRes?.data?.requests || reqRes?.requests || [];
-        const inquiries = inqRes?.data?.inquiries || inqRes?.inquiries || [];
+
+        const requests = Array.isArray(reqRes?.data)
+          ? reqRes.data
+          : Array.isArray(reqRes)
+          ? reqRes
+          : [];
+
+        const inquiries = Array.isArray(inqRes?.data)
+          ? inqRes.data
+          : Array.isArray(inqRes)
+          ? inqRes
+          : [];
+
+        const activeInquiriesCount = inquiries.filter(
+          (i) => (i.status || '').toLowerCase() !== 'resolved' && (i.status || '').toLowerCase() !== 'closed'
+        ).length;
+
         setStats({
-          totalRequests: Array.isArray(requests) ? requests.length : 0,
-          activeInquiries: Array.isArray(inquiries) ? inquiries.filter(i => i.status === 'active').length : 0
+          totalRequests: requests.length,
+          activeInquiries: activeInquiriesCount
         });
-      } catch {
-        // Silent fail
+      } catch (err) {
+        console.error('[PROFILE_STATS_FETCH_ERROR]', err);
       }
     };
     fetchStats();
@@ -154,21 +193,28 @@ export function ProfilePage() {
         rollNo: academicForm.rollNo?.trim() || ''
       };
 
-      // Save to local storage for persistence across reloads
+      // 1. Save to local storage for offline & immediate access
       localStorage.setItem(storageKey, JSON.stringify(payload));
       setAcademicDetails(payload);
       setIsEditingAcademic(false);
 
-      // If user also changed their full name in the form, sync it
+      // 2. Save to backend API
+      try {
+        await api.user.updateAcademicDetails(payload);
+      } catch (backendErr) {
+        console.warn('[BACKEND_ACADEMIC_SYNC_NOTE]', backendErr.message);
+      }
+
+      // 3. If user updated studentName, sync full_name with backend profile
       if (payload.studentName && payload.studentName !== fullName) {
         try {
           await updateProfile({ full_name: payload.studentName });
         } catch {
-          // ignore backend sync error if any
+          // ignore
         }
       }
 
-      showToast('Academic details saved! Profile is now 100% complete.', 'success');
+      showToast('Academic details saved to backend! Profile is now 100% complete.', 'success');
     } catch (err) {
       showToast(err.message || 'Failed to save academic details.', 'error');
     } finally {

@@ -14,6 +14,10 @@ router.get('/profile', userController.getProfile);
 // Update allowed profile fields (full_name)
 router.put('/profile', validate(updateProfileSchema), userController.updateProfile);
 
+// Student academic details (branch, year, semester, roll no, etc.)
+router.get('/academic-details', userController.getAcademicDetails);
+router.put('/academic-details', userController.updateAcademicDetails);
+
 // Quick identity check
 router.get('/me', userController.getMe);
 

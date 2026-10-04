@@ -103,7 +103,9 @@ export const api = {
   },
   user: {
     getProfile: () => request('/user/profile', { method: 'GET' }),
-    updateProfile: (body) => request('/user/profile', { method: 'PUT', body })
+    updateProfile: (body) => request('/user/profile', { method: 'PUT', body }),
+    getAcademicDetails: () => request('/user/academic-details', { method: 'GET' }),
+    updateAcademicDetails: (body) => request('/user/academic-details', { method: 'PUT', body })
   },
   services: {
     createRequest: (body) => request('/services/requests', { method: 'POST', body }),
