@@ -65,6 +65,8 @@ function App() {
           <BrowserRouter>
             <Routes>
               <Route path="/" element={<CountdownGate><LandingPage /></CountdownGate>} />
+              <Route path="/sneak-peek" element={<iframe src="/sneak-peek.html" className="fixed inset-0 w-full h-full border-none z-50 bg-white" title="Sneak Peek" />} />
+              <Route path="/sneak-peek.html" element={<iframe src="/sneak-peek.html" className="fixed inset-0 w-full h-full border-none z-50 bg-white" title="Sneak Peek" />} />
               <Route path="/login" element={<LoginPage />} />
               <Route path="/signup" element={<SignupPage />} />
               <Route path="/forgot-password" element={<ForgotPasswordPage />} />
