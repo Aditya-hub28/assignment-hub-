@@ -1,6 +1,10 @@
 // Centralized API Service for Assignment Hub Frontend
-
-const API_BASE_URL = import.meta.env.VITE_API_URL || '/api/v1';
+let rawBase = (import.meta.env.VITE_API_URL || '/api/v1').trim();
+rawBase = rawBase.replace(/\/+$/, '');
+if (rawBase.startsWith('http') && !rawBase.includes('/api')) {
+  rawBase = `${rawBase}/api/v1`;
+}
+const API_BASE_URL = rawBase;
 
 export const authStorage = {
   getAccessToken: () => localStorage.getItem('ah_access_token'),

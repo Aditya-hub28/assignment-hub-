@@ -70,8 +70,10 @@ app.get('/api/v1/launch-status', (req, res) => {
   });
 });
 
-// Mount main API routes
+// Mount main API routes (support /api/v1, /api, and root resource paths like /auth, /services, /admin)
 app.use(env.API_PREFIX, routes);
+app.use('/api', routes);
+app.use(routes);
 
 // Countdown waitlist form submission (POST / or POST /waitlist)
 app.post(['/', '/waitlist', '/api/v1/waitlist'], (req, res, next) => {
