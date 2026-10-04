@@ -1,0 +1,4 @@
+# Netlify Redirect Rules
+/sneak-peek      /sneak-peek.html    200
+/sneak-peek/     /sneak-peek.html    200
+/preview         /sneak-peek.html    200

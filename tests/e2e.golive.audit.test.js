@@ -146,14 +146,10 @@ describe('E2E Go-Live Verification & Cross-User Security Audit', () => {
     });
 
     it('STRICT ISOLATION: User Bravo CANNOT download User Alpha private files (403 Forbidden)', async () => {
-      const userAReqRes = await request(app)
-        .get(`/api/v1/services/requests/${userARequestId}`)
-        .set('Authorization', userAlphaToken);
-
-      const fileUrl = userAReqRes.body.data.files[0].url;
+      const downloadEndpoint = `/api/v1/services/requests/${userARequestId}/files/0`;
 
       const fileRes = await request(app)
-        .get(fileUrl)
+        .get(downloadEndpoint)
         .set('Authorization', userBravoToken);
 
       expect(fileRes.status).toBe(403);

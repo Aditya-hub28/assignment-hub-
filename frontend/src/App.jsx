@@ -22,6 +22,41 @@ import { PrivacyPolicyPage } from './pages/PrivacyPolicyPage';
 import { TermsPage } from './pages/TermsPage';
 import { NotFoundPage } from './pages/NotFoundPage';
 
+// Target Launch Time: 5th October 2026, 7:00 PM IST (19:00:00)
+const LAUNCH_TIMESTAMP = new Date('2026-10-05T19:00:00+05:30').getTime();
+
+function CountdownGate({ children }) {
+  const [isLive, setIsLive] = React.useState(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('live') === '1' || params.get('live') === 'true' || params.get('preview') === 'live') {
+      return true;
+    }
+    return Date.now() >= LAUNCH_TIMESTAMP;
+  });
+
+  React.useEffect(() => {
+    if (isLive) return;
+    const interval = setInterval(() => {
+      if (Date.now() >= LAUNCH_TIMESTAMP) {
+        setIsLive(true);
+      }
+    }, 1000);
+    return () => clearInterval(interval);
+  }, [isLive]);
+
+  if (!isLive) {
+    return (
+      <iframe
+        src="/countdown/index.html"
+        title="TSEC Assignment Hub Launch Countdown"
+        className="fixed inset-0 w-full h-full border-none z-50 bg-white"
+      />
+    );
+  }
+
+  return children;
+}
+
 function App() {
   return (
     <ToastProvider>
@@ -29,7 +64,7 @@ function App() {
         <ServiceRequestProvider>
           <BrowserRouter>
             <Routes>
-              <Route path="/" element={<LandingPage />} />
+              <Route path="/" element={<CountdownGate><LandingPage /></CountdownGate>} />
               <Route path="/login" element={<LoginPage />} />
               <Route path="/signup" element={<SignupPage />} />
               <Route path="/forgot-password" element={<ForgotPasswordPage />} />
