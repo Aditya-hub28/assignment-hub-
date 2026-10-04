@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
@@ -6,1677 +6,677 @@ import { MobileBottomNav } from '../components/MobileBottomNav';
 import { Navbar } from '../components/Navbar';
 import { api } from '../services/api';
 
-// Comprehensive dataset matching Stitch Screen 37d3a96fee0f40fa9cb599ac62a83700 (12 Total, 3 Pending, 5 In Progress, 4 Completed, 1 Cancelled)
-const INITIAL_REQUESTS = [
-  // IN PROGRESS (5)
-  {
-    id: 'REQ-1024',
-    service: 'Assignment Writing',
-    icon: 'edit_note',
-    title: 'Engineering Mathematics Assignment',
-    status: 'in-progress',
-    statusLabel: '● In Progress',
-    statusBadgeClass: 'bg-[#E4DFFE] text-[#170065]',
-    description: 'Complete Engineering Mathematics assignment according to the provided requirements.',
-    requirements: 'Multi-variable calculus sets, Laplace transformations, and step-by-step verified proofs.',
-    submitted: '24 Sep 2026',
-    date: '2026-09-24',
-    deadline: '27 Sep 2026',
-    deadlineDate: '2026-09-27',
-    progress: 70,
-    expectedCompletion: '27 Sep 2026',
-    timeline: {
-      step1: '24 Sep 2026',
-      step2: '24 Sep 2026',
-      step3: 'In progress with mentor',
-      step4: 'Awaiting final solution deliverable'
-    },
-    submittedFiles: [
-      { name: 'assignment_questions.pdf', size: '2.4 MB' },
-      { name: 'reference_material.pdf', size: '1.8 MB' }
-    ],
-    btnText: 'View Submitted Files',
-    btnClass: 'bg-[#F0EBFF] text-[#4D41DF] hover:bg-[#E4DFFE] clay-card-sm'
-  },
-  {
-    id: 'REQ-1029',
-    service: 'Coding & Technical',
-    icon: 'code',
-    title: 'Machine Learning Neural Networks Lab',
-    status: 'in-progress',
-    statusLabel: '● In Progress',
-    statusBadgeClass: 'bg-[#E4DFFE] text-[#170065]',
-    description: 'PyTorch convolutional neural network training script with classification benchmark accuracy report.',
-    requirements: 'ResNet-18 fine-tuning on CIFAR-10, confusion matrix visualizer, and Jupyter notebook documentation.',
-    submitted: '25 Sep 2026',
-    date: '2026-09-25',
-    deadline: '28 Sep 2026',
-    deadlineDate: '2026-09-28',
-    progress: 55,
-    expectedCompletion: '28 Sep 2026',
-    timeline: {
-      step1: '25 Sep 2026',
-      step2: '25 Sep 2026',
-      step3: 'Model training and validation phase',
-      step4: 'Notebook formatting and rubric review'
-    },
-    submittedFiles: [
-      { name: 'ml_assignment_spec.pdf', size: '3.1 MB' }
-    ],
-    btnText: 'View Submitted Files',
-    btnClass: 'bg-[#F0EBFF] text-[#4D41DF] hover:bg-[#E4DFFE] clay-card-sm'
-  },
-  {
-    id: 'REQ-1031',
-    service: 'Practical Files & Viva',
-    icon: 'science',
-    title: 'Fluid Mechanics Lab Journal',
-    status: 'in-progress',
-    statusLabel: '● In Progress',
-    statusBadgeClass: 'bg-[#E4DFFE] text-[#170065]',
-    description: 'Venturi meter & orifice plate calibration calculations with manual observation tables and graphs.',
-    requirements: '10 practical experiments formatted according to VTU mechanical engineering lab handbook.',
-    submitted: '23 Sep 2026',
-    date: '2026-09-23',
-    deadline: '29 Sep 2026',
-    deadlineDate: '2026-09-29',
-    progress: 40,
-    expectedCompletion: '29 Sep 2026',
-    timeline: {
-      step1: '23 Sep 2026',
-      step2: '24 Sep 2026',
-      step3: 'Data tables and error calculations drafting',
-      step4: 'Final graph plotting and lab signature review'
-    },
-    submittedFiles: [
-      { name: 'lab_readings_raw.pdf', size: '1.9 MB' }
-    ],
-    btnText: 'View Submitted Files',
-    btnClass: 'bg-[#F0EBFF] text-[#4D41DF] hover:bg-[#E4DFFE] clay-card-sm'
-  },
-  {
-    id: 'REQ-1033',
-    service: 'PPT & Presentation',
-    icon: 'slideshow',
-    title: 'Autonomous EV Powertrain Seminar Deck',
-    status: 'in-progress',
-    statusLabel: '● In Progress',
-    statusBadgeClass: 'bg-[#E4DFFE] text-[#170065]',
-    description: '18-slide visual presentation deck covering permanent magnet synchronous motor efficiency curves.',
-    requirements: 'Include high-contrast diagrams, 16:9 widescreen layout, and speaker notes under every slide.',
-    submitted: '25 Sep 2026',
-    date: '2026-09-25',
-    deadline: '28 Sep 2026',
-    deadlineDate: '2026-09-28',
-    progress: 80,
-    expectedCompletion: '28 Sep 2026',
-    timeline: {
-      step1: '25 Sep 2026',
-      step2: '25 Sep 2026',
-      step3: 'Speaker notes & animation polish',
-      step4: 'Pre-flight slide check'
-    },
-    submittedFiles: [
-      { name: 'ev_powertrain_outline.docx', size: '1.2 MB' }
-    ],
-    btnText: 'View Submitted Files',
-    btnClass: 'bg-[#F0EBFF] text-[#4D41DF] hover:bg-[#E4DFFE] clay-card-sm'
-  },
-  {
-    id: 'REQ-1035',
-    service: 'Project Reports',
-    icon: 'menu_book',
-    title: 'Microservices Cloud Architecture Thesis',
-    status: 'in-progress',
-    statusLabel: '● In Progress',
-    statusBadgeClass: 'bg-[#E4DFFE] text-[#170065]',
-    description: 'Comprehensive 45-page capstone report with Docker Kubernetes deployment architecture and latency analysis.',
-    requirements: 'Follow IEEE standard structure with abstract, literature review, load test graphs, and citations.',
-    submitted: '22 Sep 2026',
-    date: '2026-09-22',
-    deadline: '02 Oct 2026',
-    deadlineDate: '2026-10-02',
-    progress: 60,
-    expectedCompletion: '02 Oct 2026',
-    timeline: {
-      step1: '22 Sep 2026',
-      step2: '23 Sep 2026',
-      step3: 'Methodology and benchmark metrics writing',
-      step4: 'Turnitin similarity test & bibliography bind'
-    },
-    submittedFiles: [
-      { name: 'capstone_guidelines.pdf', size: '4.5 MB' }
-    ],
-    btnText: 'View Submitted Files',
-    btnClass: 'bg-[#F0EBFF] text-[#4D41DF] hover:bg-[#E4DFFE] clay-card-sm'
-  },
-
-  // PENDING (3)
-  {
-    id: 'REQ-1028',
-    service: 'Practical Files & Viva',
-    icon: 'science',
-    title: 'Data Structures & Algorithms Lab File',
-    status: 'pending',
-    statusLabel: '● Pending',
-    statusBadgeClass: 'bg-[#FFB951] text-[#291800]',
-    description: '15 balanced binary search tree & graph traversal programs with manual dry-run traces.',
-    requirements: 'Full implementation in C++ with test cases, memory complexity analysis, and printable lab journal format.',
-    submitted: '26 Sep 2026',
-    date: '2026-09-26',
-    deadline: '30 Sep 2026',
-    deadlineDate: '2026-09-30',
-    progress: 0,
-    expectedCompletion: 'Under review',
-    pendingNotice: 'Academic team is reviewing your files and requirements.',
-    timeline: {
-      step1: '26 Sep 2026',
-      step2: 'Under review by coordinator',
-      step3: 'Pending assignment',
-      step4: 'Pending completion'
-    },
-    submittedFiles: [
-      { name: 'dsa_problem_list.pdf', size: '1.2 MB' }
-    ],
-    btnText: 'Cancel Request',
-    btnClass: 'bg-[#FFDAD6] text-[#BA1A1A] hover:bg-[#ffc8c2] clay-card-sm'
-  },
-  {
-    id: 'REQ-1030',
-    service: 'Coding & Technical',
-    icon: 'code',
-    title: 'Digital Signal Processing Matlab Scripts',
-    status: 'pending',
-    statusLabel: '● Pending',
-    statusBadgeClass: 'bg-[#FFB951] text-[#291800]',
-    description: 'FFT Butterworth and Chebyshev filter design algorithms with frequency response plots.',
-    requirements: 'Clean .m code with inline comments and exported MATLAB figures as high-res images.',
-    submitted: '26 Sep 2026',
-    date: '2026-09-26',
-    deadline: '01 Oct 2026',
-    deadlineDate: '2026-10-01',
-    progress: 0,
-    expectedCompletion: 'Under review',
-    pendingNotice: 'Reviewing MATLAB toolbox version compatibility and syllabus specs.',
-    timeline: {
-      step1: '26 Sep 2026',
-      step2: 'Technical scope review',
-      step3: 'Pending developer match',
-      step4: 'Pending solution'
-    },
-    submittedFiles: [
-      { name: 'dsp_questions_sheet.pdf', size: '1.6 MB' }
-    ],
-    btnText: 'Cancel Request',
-    btnClass: 'bg-[#FFDAD6] text-[#BA1A1A] hover:bg-[#ffc8c2] clay-card-sm'
-  },
-  {
-    id: 'REQ-1032',
-    service: 'Assignment Writing',
-    icon: 'edit_note',
-    title: 'Business Analytics Case Study',
-    status: 'pending',
-    statusLabel: '● Pending',
-    statusBadgeClass: 'bg-[#FFB951] text-[#291800]',
-    description: 'Executive summary and supply chain predictive analytics critique for retail logistics case study.',
-    requirements: 'APA 7th edition referencing, SWOT analysis matrix, and minimum 2,500 words.',
-    submitted: '26 Sep 2026',
-    date: '2026-09-26',
-    deadline: '03 Oct 2026',
-    deadlineDate: '2026-10-03',
-    progress: 0,
-    expectedCompletion: 'Under review',
-    pendingNotice: 'Evaluating business case study prompt and rubric guidelines.',
-    timeline: {
-      step1: '26 Sep 2026',
-      step2: 'Academic specialist vetting',
-      step3: 'Pending drafting',
-      step4: 'Pending proofing'
-    },
-    submittedFiles: [
-      { name: 'retail_case_study.pdf', size: '2.1 MB' }
-    ],
-    btnText: 'Cancel Request',
-    btnClass: 'bg-[#FFDAD6] text-[#BA1A1A] hover:bg-[#ffc8c2] clay-card-sm'
-  },
-
-  // COMPLETED (4)
-  {
-    id: 'REQ-1018',
-    service: 'Coding & Technical',
-    icon: 'code',
-    title: 'IoT Smart Weather Station Simulation',
-    status: 'completed',
-    statusLabel: '✓ Completed',
-    statusBadgeClass: 'bg-[#E4DFFE] text-[#4D41DF]',
-    description: 'ESP32 micro-controller code in C++ with MQTT telemetry dashboard configuration.',
-    requirements: 'Complete source repository, wiring schematics, and simulation demo instructions.',
-    submitted: '18 Sep 2026',
-    date: '2026-09-18',
-    deadline: '22 Sep 2026',
-    deadlineDate: '2026-09-22',
-    progress: 100,
-    expectedCompletion: 'Delivered 22 Sep 2026',
-    deliveredDate: '22 Sep 2026',
-    timeline: {
-      step1: '18 Sep 2026',
-      step2: '18 Sep 2026',
-      step3: 'Work In Progress — Completed',
-      step4: 'Completed'
-    },
-    submittedFiles: [
-      { name: 'weather_station_specs.pdf', size: '3.1 MB' }
-    ],
-    deliveredFiles: [
-      { name: 'IoT_Weather_Station_Firmware.zip', size: '4.8 MB', icon: 'folder_zip' },
-      { name: 'Simulation_Wiring_Guide.pdf', size: '2.4 MB', icon: 'description' }
-    ],
-    btnText: 'Download Files',
-    btnClass: 'bg-[#4D41DF] text-white clay-btn-primary hover:bg-[#3d32ce]'
-  },
-  {
-    id: 'REQ-1020',
-    service: 'Assignment Writing',
-    icon: 'edit_note',
-    title: 'Reinforced Concrete Column Analysis',
-    status: 'completed',
-    statusLabel: '✓ Completed',
-    statusBadgeClass: 'bg-[#E4DFFE] text-[#4D41DF]',
-    description: 'Axial load and uniaxial bending calculations per IS 456:2000 specifications.',
-    requirements: 'Complete step-by-step derivations with interaction charts and clear structural diagrams.',
-    submitted: '15 Sep 2026',
-    date: '2026-09-15',
-    deadline: '20 Sep 2026',
-    deadlineDate: '2026-09-20',
-    progress: 100,
-    expectedCompletion: 'Delivered 20 Sep 2026',
-    deliveredDate: '20 Sep 2026',
-    timeline: {
-      step1: '15 Sep 2026',
-      step2: '16 Sep 2026',
-      step3: 'Work In Progress — Completed',
-      step4: 'Completed'
-    },
-    submittedFiles: [
-      { name: 'civil_problem_sheet.pdf', size: '1.4 MB' }
-    ],
-    deliveredFiles: [
-      { name: 'Concrete_Column_Analysis.pdf', size: '2.4 MB', icon: 'description' },
-      { name: 'Concrete_Column_Analysis.docx', size: '1.8 MB', icon: 'article' }
-    ],
-    btnText: 'Download Files',
-    btnClass: 'bg-[#4D41DF] text-white clay-btn-primary hover:bg-[#3d32ce]'
-  },
-  {
-    id: 'REQ-1022',
-    service: 'Practical Files & Viva',
-    icon: 'science',
-    title: 'Cloud DevOps CI/CD Pipeline Lab',
-    status: 'completed',
-    statusLabel: '✓ Completed',
-    statusBadgeClass: 'bg-[#E4DFFE] text-[#4D41DF]',
-    description: 'GitHub Actions workflow yaml scripts, automated Docker containerization, and AWS ECS task setups.',
-    requirements: '12 lab experiments with execution logs, screenshots of passing test suites, and viva questions.',
-    submitted: '14 Sep 2026',
-    date: '2026-09-14',
-    deadline: '19 Sep 2026',
-    deadlineDate: '2026-09-19',
-    progress: 100,
-    expectedCompletion: 'Delivered 19 Sep 2026',
-    deliveredDate: '19 Sep 2026',
-    timeline: {
-      step1: '14 Sep 2026',
-      step2: '14 Sep 2026',
-      step3: 'Work In Progress — Completed',
-      step4: 'Completed'
-    },
-    submittedFiles: [
-      { name: 'devops_lab_syllabus.pdf', size: '2.0 MB' }
-    ],
-    deliveredFiles: [
-      { name: 'DevOps_CI_CD_Lab_Report.pdf', size: '3.6 MB', icon: 'description' },
-      { name: 'Workflows_Config_Bundle.zip', size: '1.2 MB', icon: 'folder_zip' }
-    ],
-    btnText: 'Download Files',
-    btnClass: 'bg-[#4D41DF] text-white clay-btn-primary hover:bg-[#3d32ce]'
-  },
-  {
-    id: 'REQ-1025',
-    service: 'PPT & Presentation',
-    icon: 'slideshow',
-    title: 'Computer Vision Object Detection PPT',
-    status: 'completed',
-    statusLabel: '✓ Completed',
-    statusBadgeClass: 'bg-[#E4DFFE] text-[#4D41DF]',
-    description: 'YOLOv8 vs Faster R-CNN comparison presentation deck with mAP accuracy benchmarks and diagrams.',
-    requirements: '15 slides formatted with custom icons, clean infographics, and comprehensive presenter cards.',
-    submitted: '19 Sep 2026',
-    date: '2026-09-19',
-    deadline: '23 Sep 2026',
-    deadlineDate: '2026-09-23',
-    progress: 100,
-    expectedCompletion: 'Delivered 23 Sep 2026',
-    deliveredDate: '23 Sep 2026',
-    timeline: {
-      step1: '19 Sep 2026',
-      step2: '19 Sep 2026',
-      step3: 'Work In Progress — Completed',
-      step4: 'Completed'
-    },
-    submittedFiles: [
-      { name: 'presentation_brief.docx', size: '900 KB' }
-    ],
-    deliveredFiles: [
-      { name: 'Computer_Vision_Slides.pptx', size: '8.4 MB', icon: 'slideshow' },
-      { name: 'Presenter_Notes_Handout.pdf', size: '1.5 MB', icon: 'description' }
-    ],
-    btnText: 'Download Files',
-    btnClass: 'bg-[#4D41DF] text-white clay-btn-primary hover:bg-[#3d32ce]'
-  },
-
-  // CANCELLED (1)
-  {
-    id: 'REQ-1012',
-    service: 'PPT & Presentation',
-    icon: 'slideshow',
-    title: 'Renewable Energy Seminar Slides',
-    status: 'cancelled',
-    statusLabel: 'Cancelled',
-    statusBadgeClass: 'bg-[#F0EBFF] text-[#464555]',
-    description: '20-slide keynote deck on offshore wind turbine aerodynamics with speaker notes.',
-    requirements: 'Cancelled by student on 13 Sep 2026. Full token credit refunded.',
-    submitted: '12 Sep 2026',
-    date: '2026-09-12',
-    deadline: '16 Sep 2026',
-    deadlineDate: '2026-09-16',
-    progress: 0,
-    expectedCompletion: 'Cancelled on 13 Sep 2026',
-    cancelledDate: '13 Sep 2026',
-    timeline: {
-      step1: '12 Sep 2026',
-      step2: 'Order Cancelled by student on 13 Sep 2026',
-      step3: 'Closed',
-      step4: 'Closed'
-    },
-    submittedFiles: [
-      { name: 'wind_energy_outline.pdf', size: '850 KB' }
-    ],
-    btnText: 'Closed Request',
-    btnClass: 'bg-[#F0EBFF] text-[#777587] cursor-not-allowed opacity-70'
-  }
-];
-
 export function MyRequestsPage() {
-  const { user, logout, updateProfile } = useAuth();
-  const { showToast } = useToast();
   const navigate = useNavigate();
+  const { user, profile } = useAuth();
+  const { showToast } = useToast();
 
-  // Requests state
-  const [requestsList, setRequestsList] = useState(INITIAL_REQUESTS);
+  const [requests, setRequests] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  // Sync submitted requests from backend API and local cache
-  useEffect(() => {
-    const fetchRequests = async () => {
-      try {
-        let backendItems = [];
-        try {
-          const res = await api.services.getRequests();
-          if (res && res.data && Array.isArray(res.data)) {
-            backendItems = res.data;
-          }
-        } catch {
-          // graceful fallback
-        }
-
-        const localItems = JSON.parse(localStorage.getItem('ah_user_requests') || '[]');
-        const combined = [...backendItems, ...localItems];
-
-        if (combined.length > 0) {
-          const formatted = combined.map((r) => {
-            const dateStr = r.createdAt
-              ? new Date(r.createdAt).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })
-              : new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
-            const deadlineStr = r.deadline
-              ? new Date(r.deadline).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })
-              : '';
-            return {
-              id: r.id,
-              service: r.isCustom ? (r.customServiceName || r.service) : r.service,
-              icon: r.service?.toLowerCase().includes('coding')
-                ? 'code'
-                : r.service?.toLowerCase().includes('ppt')
-                ? 'slideshow'
-                : r.service?.toLowerCase().includes('drawing')
-                ? 'draw'
-                : r.service?.toLowerCase().includes('physics')
-                ? 'science'
-                : 'edit_note',
-              title: r.title,
-              status: r.status || 'pending',
-              statusLabel: '● Pending',
-              statusBadgeClass: 'bg-[#FFB951] text-[#291800]',
-              description: r.description,
-              requirements: r.additionalInstructions || r.description,
-              submitted: dateStr,
-              date: r.createdAt ? r.createdAt.split('T')[0] : new Date().toISOString().split('T')[0],
-              deadline: deadlineStr,
-              deadlineDate: r.deadline ? (typeof r.deadline === 'string' ? r.deadline.split('T')[0] : '') : '',
-              progress: r.progress || 0,
-              expectedCompletion: 'Under review',
-              pendingNotice: 'Academic team is reviewing your files and requirements.',
-              timeline: {
-                step1: dateStr,
-                step2: 'Under review by coordinator',
-                step3: 'Pending assignment',
-                step4: 'Pending completion'
-              },
-              submittedFiles: (r.files || []).map((f) => ({
-                name: f.name,
-                size:
-                  f.size > 1024 * 1024
-                    ? `${(f.size / (1024 * 1024)).toFixed(1)} MB`
-                    : `${Math.round(f.size / 1024)} KB`
-              })),
-              btnText: 'Cancel Request',
-              btnClass: 'bg-[#FFDAD6] text-[#BA1A1A] hover:bg-[#ffc8c2] clay-card-sm'
-            };
-          });
-
-          setRequestsList((prev) => {
-            const seen = new Set();
-            const deduped = [];
-            for (const item of [...formatted, ...prev]) {
-              if (item.id && !seen.has(item.id)) {
-                seen.add(item.id);
-                deduped.push(item);
-              }
-            }
-            return deduped;
-          });
-        }
-      } catch (err) {
-        console.warn('Error loading dynamic requests in MyRequestsPage:', err);
-      }
-    };
-
-    fetchRequests();
-  }, []);
-  const [activeFilter, setActiveFilter] = useState('all');
+  // Active status filter tab: 'all' | 'active' | 'in_review' | 'completed'
+  const [activeTab, setActiveTab] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
-  const [sortBy, setSortBy] = useState('latest');
+  const [sortBy, setSortBy] = useState('newest');
 
-  // Detail Drawer state
-  const [drawerOpen, setDrawerOpen] = useState(false);
-  const [selectedReqId, setSelectedReqId] = useState('REQ-1024');
+  // Selected request for full details drawer/modal
+  const [selectedRequest, setSelectedRequest] = useState(null);
+  const [copiedId, setCopiedId] = useState(null);
 
-  // Modals state
-  const [requestModalOpen, setRequestModalOpen] = useState(false);
-  const [profileModalOpen, setProfileModalOpen] = useState(false);
+  const fetchUserRequests = async () => {
+    setIsLoading(true);
+    setError(null);
+    try {
+      const res = await api.services.getRequests();
+      const list = Array.isArray(res?.data) ? res.data : [];
+      setRequests(list);
+    } catch (err) {
+      console.error('[MY_REQUESTS_FETCH_ERROR]', err);
+      setError(err.message || 'Unable to retrieve requests. Please check your connection.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
-  // New Request Form state
-  const [reqTitle, setReqTitle] = useState('');
-  const [reqType, setReqType] = useState('Assignment Writing');
-  const [reqDeadline, setReqDeadline] = useState('');
-  const [reqFormat, setReqFormat] = useState('Digital PDF / Docs');
-  const [reqNotes, setReqNotes] = useState('');
+  useEffect(() => {
+    fetchUserRequests();
+  }, []);
 
-  // Profile Edit form state
-  const [editName, setEditName] = useState(user?.name || '');
-  const [editCollege, setEditCollege] = useState(user?.college || '');
-  const [editCourse, setEditCourse] = useState(user?.course || '');
+  // Compute live dashboard metrics directly from real backend data
+  const metrics = useMemo(() => {
+    const total = requests.length;
+    const active = requests.filter(
+      (r) => !['completed', 'delivered', 'cancelled'].includes((r.status || '').toLowerCase())
+    ).length;
+    const completed = requests.filter((r) =>
+      ['completed', 'delivered'].includes((r.status || '').toLowerCase())
+    ).length;
 
-  // Derived user values
-  const firstName = user?.name ? user.name.split(' ')[0] : 'Student';
-  const initial = user?.name ? user.name.charAt(0).toUpperCase() : 'S';
-  const email = user?.email || 'student@university.edu';
+    return { total, active, completed };
+  }, [requests]);
 
-  // Find currently selected request for the drawer
-  const activeRequest = useMemo(() => {
-    return requestsList.find((r) => r.id === selectedReqId) || requestsList[0];
-  }, [requestsList, selectedReqId]);
-
-  // Dynamic counts exactly matching Stitch (Total: 12 active, Pending: 3, In Progress: 5, Completed: 4, Cancelled: 1)
-  const stats = useMemo(() => {
-    const inProgress = requestsList.filter((r) => r.status === 'in-progress').length;
-    const pending = requestsList.filter((r) => r.status === 'pending').length;
-    const completed = requestsList.filter((r) => r.status === 'completed').length;
-    const cancelled = requestsList.filter((r) => r.status === 'cancelled').length;
-    const total = inProgress + pending + completed; // Total active/tracked requests is 12 in the Stitch Work Tracking Center
-    return { total, inProgress, pending, completed, cancelled, allTotal: requestsList.length };
-  }, [requestsList]);
-
-  // Filtered & Sorted Requests
+  // Filter & Search
   const filteredRequests = useMemo(() => {
-    let result = requestsList.filter((r) => {
-      const matchesFilter = activeFilter === 'all' || r.status === activeFilter;
-      const q = searchQuery.toLowerCase().trim();
-      const matchesSearch =
-        !q ||
-        r.title.toLowerCase().includes(q) ||
-        r.id.toLowerCase().includes(q) ||
-        r.service.toLowerCase().includes(q) ||
-        r.description.toLowerCase().includes(q);
-      return matchesFilter && matchesSearch;
-    });
+    return requests
+      .filter((req) => {
+        // Tab filter
+        const status = (req.status || '').toLowerCase();
+        if (activeTab === 'active') {
+          if (['completed', 'delivered', 'cancelled'].includes(status)) return false;
+        } else if (activeTab === 'in_review') {
+          if (!status.includes('review') && status !== 'pending') return false;
+        } else if (activeTab === 'completed') {
+          if (!['completed', 'delivered'].includes(status)) return false;
+        }
 
-    result.sort((a, b) => {
-      const dateA = new Date(a.date).getTime();
-      const dateB = new Date(b.date).getTime();
-      const deadA = new Date(a.deadlineDate).getTime();
-      const deadB = new Date(b.deadlineDate).getTime();
+        // Search query
+        if (searchQuery.trim()) {
+          const q = searchQuery.toLowerCase();
+          const matchId = (req.id || '').toLowerCase().includes(q);
+          const matchTitle = (req.title || '').toLowerCase().includes(q);
+          const matchSubject = (req.subject || '').toLowerCase().includes(q);
+          const matchService = (req.service || '').toLowerCase().includes(q);
+          return matchId || matchTitle || matchSubject || matchService;
+        }
 
-      if (sortBy === 'latest') return dateB - dateA;
-      if (sortBy === 'oldest') return dateA - dateB;
-      if (sortBy === 'nearest') return deadA - deadB;
-      if (sortBy === 'farthest') return deadB - deadA;
-      return 0;
-    });
+        return true;
+      })
+      .sort((a, b) => {
+        if (sortBy === 'urgent') {
+          return new Date(a.deadline || 0) - new Date(b.deadline || 0);
+        }
+        if (sortBy === 'course') {
+          return (a.subject || '').localeCompare(b.subject || '');
+        }
+        // Default: newest submission
+        return new Date(b.createdAt || 0) - new Date(a.createdAt || 0);
+      });
+  }, [requests, activeTab, searchQuery, sortBy]);
 
-    return result;
-  }, [requestsList, activeFilter, searchQuery, sortBy]);
-
-  // Drawer handlers
-  const handleOpenDrawer = (reqId) => {
-    setSelectedReqId(reqId);
-    setDrawerOpen(true);
+  const handleCopyId = (e, id) => {
+    e.stopPropagation();
+    navigator.clipboard.writeText(id);
+    setCopiedId(id);
+    showToast(`Copied ${id} to clipboard!`, 'success');
+    setTimeout(() => setCopiedId(null), 2000);
   };
 
-  const handleCloseDrawer = () => {
-    setDrawerOpen(false);
-  };
-
-  // Cancel Request Action
-  const handleCancelRequest = (reqId) => {
-    const todayStr = new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
-    setRequestsList((prev) =>
-      prev.map((r) =>
-        r.id === reqId
-          ? {
-              ...r,
-              status: 'cancelled',
-              statusLabel: 'Cancelled',
-              statusBadgeClass: 'bg-[#F0EBFF] text-[#464555]',
-              progress: 0,
-              cancelledDate: todayStr,
-              expectedCompletion: `Cancelled on ${todayStr}`,
-              requirements: `Cancelled by student on ${todayStr}. Full token credit refunded.`,
-              timeline: {
-                ...r.timeline,
-                step2: `Order Cancelled by student on ${todayStr}`,
-                step3: 'Closed',
-                step4: 'Closed'
-              },
-              btnText: 'Closed Request',
-              btnClass: 'bg-[#F0EBFF] text-[#777587] cursor-not-allowed opacity-70'
-            }
-          : r
-      )
-    );
-    showToast(`Request #${reqId} has been cancelled and refunded to your wallet.`, 'info');
-  };
-
-  // Handle Dynamic Button Click in Drawer
-  const handleDrawerDynamicAction = () => {
-    if (activeRequest.status === 'pending') {
-      handleCancelRequest(activeRequest.id);
-    } else if (activeRequest.status === 'completed') {
-      showToast(`Downloading deliverable files for #${activeRequest.id}...`, 'success');
-    } else if (activeRequest.status === 'in-progress') {
-      showToast(`Submitted files are verified for #${activeRequest.id}. Mentor is drafting.`, 'info');
+  const getStatusBadge = (status) => {
+    const s = (status || 'pending').toLowerCase();
+    if (s === 'completed' || s === 'delivered') {
+      return {
+        label: 'Delivered',
+        dotClass: 'bg-emerald-500',
+        badgeClass: 'bg-emerald-50 text-emerald-700 border-emerald-200'
+      };
     }
-  };
-
-  // New Request Submission
-  const handleCreateRequest = (e) => {
-    e.preventDefault();
-    if (!reqTitle || !reqDeadline) {
-      showToast('Please provide a title and deadline.', 'error');
-      return;
+    if (s.includes('review')) {
+      return {
+        label: 'In Review',
+        dotClass: 'bg-amber-500 animate-pulse',
+        badgeClass: 'bg-[#FFDDB3] text-[#7F5300] border-amber-300'
+      };
     }
-
-    const newId = `REQ-${Math.floor(1000 + Math.random() * 9000)}`;
-    const formattedDate = new Date().toLocaleDateString('en-GB', {
-      day: '2-digit',
-      month: 'short',
-      year: 'numeric'
-    });
-    const formattedDeadline = new Date(reqDeadline).toLocaleDateString('en-GB', {
-      day: '2-digit',
-      month: 'short',
-      year: 'numeric'
-    });
-
-    const newReq = {
-      id: newId,
-      service: reqType,
-      icon: 'edit_note',
-      title: reqTitle,
-      status: 'pending',
-      statusLabel: '● Pending',
-      statusBadgeClass: 'bg-[#FFB951] text-[#291800]',
-      description: reqNotes || `${reqType} deliverable prepared according to student guidelines.`,
-      requirements: reqNotes || `Specific requirement instructions provided for ${reqTitle}.`,
-      submitted: formattedDate,
-      date: new Date().toISOString().split('T')[0],
-      deadline: formattedDeadline,
-      deadlineDate: reqDeadline,
-      progress: 0,
-      expectedCompletion: 'Under review',
-      pendingNotice: 'Academic team is reviewing your files and requirements.',
-      timeline: {
-        step1: formattedDate,
-        step2: 'Under review by coordinator',
-        step3: 'Pending assignment',
-        step4: 'Pending completion'
-      },
-      submittedFiles: [
-        { name: 'brief_instructions.pdf', size: '1.5 MB' }
-      ],
-      btnText: 'Cancel Request',
-      btnClass: 'bg-[#FFDAD6] text-[#BA1A1A] hover:bg-[#ffc8c2] clay-card-sm'
+    return {
+      label: 'In Progress',
+      dotClass: 'bg-[#4D41DF] animate-ping',
+      badgeClass: 'bg-[#E4DFFE] text-[#4D41DF] border-purple-200'
     };
-
-    setRequestsList([newReq, ...requestsList]);
-    setRequestModalOpen(false);
-    setReqTitle('');
-    setReqDeadline('');
-    setReqNotes('');
-    showToast(`Request #${newId} created successfully! Added to Work Tracking Center.`, 'success');
-    setSelectedReqId(newId);
-    setDrawerOpen(true);
   };
 
-  // Save profile
-  const handleSaveProfile = async (e) => {
-    e.preventDefault();
-    const result = await updateProfile({
-      name: editName,
-      college: editCollege,
-      course: editCourse
-    });
-    if (result.success) {
-      showToast('Profile updated successfully!', 'success');
-      setProfileModalOpen(false);
-    } else {
-      showToast(result.error || 'Failed to update profile', 'error');
-    }
-  };
-
-  const handleLogoutClick = () => {
-    logout();
-    navigate('/');
-    showToast('Logged out successfully.', 'info');
+  const getFileIcon = (fileName) => {
+    const ext = (fileName || '').split('.').pop().toLowerCase();
+    if (ext === 'pdf') return 'picture_as_pdf';
+    if (['zip', 'rar', 'tar', 'gz'].includes(ext)) return 'folder_zip';
+    if (['png', 'jpg', 'jpeg'].includes(ext)) return 'image';
+    return 'description';
   };
 
   return (
-    <div className="min-h-screen bg-[#FCF8FF] font-['Plus_Jakarta_Sans',sans-serif] text-[#1B192F] flex flex-col selection:bg-[#4D41DF]/20 selection:text-[#4D41DF]">
-      {/* ======================================================== */}
-      {/* 1. TOP NAVBAR (Unified Reusable Component)               */}
-      {/* ======================================================== */}
-      <Navbar
-        onNewRequest={() => setRequestModalOpen(true)}
-        onOpenProfile={() => setProfileModalOpen(true)}
-      />
+    <div className="min-h-screen bg-[#FCF8FF] font-['Plus_Jakarta_Sans',sans-serif] text-[#1B192F] antialiased flex flex-col justify-between">
+      {/* Agent 1 Standard Navbar */}
+      <Navbar />
 
-      {/* ======================================================== */}
-      {/* 2. MAIN WORK TRACKING CENTER VIEW                         */}
-      {/* ======================================================== */}
-      <main className="w-full pt-24 sm:pt-28 pb-28 sm:pb-32 lg:pb-20 bg-[#FCF8FF] min-h-[calc(100vh-140px)] flex-grow">
-        <div className="max-w-7xl mx-auto px-3.5 sm:px-6 lg:px-8 space-y-6 sm:space-y-8">
+      <main className="w-full pt-24 sm:pt-28 pb-28 sm:pb-32 lg:pb-16 flex-grow">
+        <div className="w-full px-4 sm:px-6 lg:px-8 py-4 sm:py-6 flex flex-col gap-6 sm:gap-8 max-w-7xl mx-auto">
           
-          {/* Page Heading & Refined Subtitle */}
-          <div className="space-y-1">
-            <h1 className="text-3xl md:text-4xl font-extrabold text-[#1B192F] tracking-tight">
-              My Requests
-            </h1>
-            <p className="text-sm md:text-base text-[#464555] max-w-2xl font-medium">
-              Track the progress and delivery of all your academic requests.
-            </p>
-          </div>
-
-          {/* EXACT 4 COMPACT SUMMARY STATS CARDS */}
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-            {/* Total Requests: 12 */}
-            <div className="p-4 rounded-2xl bg-white clay-card flex items-center justify-between border border-white/80">
-              <div className="space-y-1">
-                <p className="text-xs font-semibold text-[#464555] tracking-wide">Total Requests</p>
-                <p className="text-2xl md:text-3xl font-extrabold text-[#1B192F]">{stats.total}</p>
+          {/* Top Header & Subtitle */}
+          <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
+            <div className="flex flex-col gap-1.5 text-left">
+              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#E4DFFF] text-[#5846C8] font-bold text-[10px] sm:text-xs w-fit clay-pill">
+                <span className="material-symbols-outlined text-[16px]">folder_managed</span>
+                <span>STUDENT WORKSPACE</span>
               </div>
-              <div className="w-11 h-11 rounded-2xl bg-[#F0EBFF] text-[#4D41DF] flex items-center justify-center clay-pill-inset">
-                <span className="material-symbols-outlined text-[22px]">assignment</span>
-              </div>
+              <h1 className="text-3xl sm:text-4xl font-extrabold text-[#1B192F] tracking-tight">
+                My Requests
+              </h1>
+              <p className="text-sm sm:text-base text-[#464555] max-w-2xl leading-relaxed">
+                Track, review, and inspect your academic submissions and active coordinator deliverables with real-time status updates.
+              </p>
             </div>
 
-            {/* Pending: 3 */}
-            <div className="p-4 rounded-2xl bg-white clay-card flex items-center justify-between border border-white/80">
-              <div className="space-y-1">
-                <p className="text-xs font-semibold text-[#464555] tracking-wide">Pending</p>
-                <p className="text-2xl md:text-3xl font-extrabold text-[#7F5300]">{stats.pending}</p>
-              </div>
-              <div className="w-11 h-11 rounded-2xl bg-[#FFDDB3] text-[#7F5300] flex items-center justify-center clay-pill-inset">
-                <span className="material-symbols-outlined text-[22px]">hourglass_top</span>
-              </div>
-            </div>
+            <div className="flex items-center gap-3">
+              <button
+                type="button"
+                onClick={fetchUserRequests}
+                className="inline-flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-full bg-white text-[#1B192F] text-xs sm:text-sm font-bold clay-card hover:bg-[#FAF8FF] transition-transform active:scale-95 cursor-pointer shadow-sm"
+              >
+                <span className="material-symbols-outlined text-[18px]">refresh</span>
+                <span>Refresh</span>
+              </button>
 
-            {/* In Progress: 5 */}
-            <div className="p-4 rounded-2xl bg-white clay-card flex items-center justify-between border border-white/80">
-              <div className="space-y-1">
-                <p className="text-xs font-semibold text-[#464555] tracking-wide">In Progress</p>
-                <p className="text-2xl md:text-3xl font-extrabold text-[#5846C8]">{stats.inProgress}</p>
-              </div>
-              <div className="w-11 h-11 rounded-2xl bg-[#E4DFFE] text-[#5846C8] flex items-center justify-center clay-pill-inset">
-                <span className="material-symbols-outlined text-[22px]">pending_actions</span>
-              </div>
-            </div>
-
-            {/* Completed: 4 */}
-            <div className="p-4 rounded-2xl bg-white clay-card flex items-center justify-between border border-white/80">
-              <div className="space-y-1">
-                <p className="text-xs font-semibold text-[#464555] tracking-wide">Completed</p>
-                <p className="text-2xl md:text-3xl font-extrabold text-[#4D41DF]">{stats.completed}</p>
-              </div>
-              <div className="w-11 h-11 rounded-2xl bg-[#E4DFFE] text-[#4D41DF] flex items-center justify-center clay-pill-inset">
-                <span className="material-symbols-outlined text-[22px]">verified</span>
-              </div>
+              <Link
+                to="/services/new"
+                className="inline-flex items-center justify-center gap-1.5 px-6 py-2.5 rounded-full bg-[#4D41DF] hover:bg-[#675DF9] text-white text-xs sm:text-sm font-bold shadow-lg transition-transform active:scale-95"
+              >
+                <span className="material-symbols-outlined text-[18px]">add_circle</span>
+                <span>New Request</span>
+              </Link>
             </div>
           </div>
 
-          {/* STATUS FILTERS BAR */}
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-            <nav aria-label="Status Filters" className="flex items-center gap-1.5 p-1.5 bg-[#F6F1FF] rounded-2xl clay-pill-inset overflow-x-auto no-scrollbar max-w-full">
-              <button
-                type="button"
-                onClick={() => setActiveFilter('all')}
-                className={`shrink-0 whitespace-nowrap px-4 py-2 rounded-xl text-xs md:text-sm transition-all cursor-pointer ${
-                  activeFilter === 'all'
-                    ? 'bg-white text-[#4D41DF] shadow-sm font-bold'
-                    : 'text-[#464555] hover:text-[#1B192F] font-medium'
-                }`}
-              >
-                All <span className="ml-1 opacity-80">({stats.total})</span>
-              </button>
-
-              <button
-                type="button"
-                onClick={() => setActiveFilter('pending')}
-                className={`shrink-0 whitespace-nowrap px-4 py-2 rounded-xl text-xs md:text-sm transition-all cursor-pointer ${
-                  activeFilter === 'pending'
-                    ? 'bg-white text-[#4D41DF] shadow-sm font-bold'
-                    : 'text-[#464555] hover:text-[#1B192F] font-medium'
-                }`}
-              >
-                Pending <span className="ml-1 opacity-80">({stats.pending})</span>
-              </button>
-
-              <button
-                type="button"
-                onClick={() => setActiveFilter('in-progress')}
-                className={`shrink-0 whitespace-nowrap px-4 py-2 rounded-xl text-xs md:text-sm transition-all cursor-pointer ${
-                  activeFilter === 'in-progress'
-                    ? 'bg-white text-[#4D41DF] shadow-sm font-bold'
-                    : 'text-[#464555] hover:text-[#1B192F] font-medium'
-                }`}
-              >
-                In Progress <span className="ml-1 opacity-80">({stats.inProgress})</span>
-              </button>
-
-              <button
-                type="button"
-                onClick={() => setActiveFilter('completed')}
-                className={`shrink-0 whitespace-nowrap px-4 py-2 rounded-xl text-xs md:text-sm transition-all cursor-pointer ${
-                  activeFilter === 'completed'
-                    ? 'bg-white text-[#4D41DF] shadow-sm font-bold'
-                    : 'text-[#464555] hover:text-[#1B192F] font-medium'
-                }`}
-              >
-                Completed <span className="ml-1 opacity-80">({stats.completed})</span>
-              </button>
-
-              <button
-                type="button"
-                onClick={() => setActiveFilter('cancelled')}
-                className={`shrink-0 whitespace-nowrap px-4 py-2 rounded-xl text-xs md:text-sm transition-all cursor-pointer ${
-                  activeFilter === 'cancelled'
-                    ? 'bg-white text-[#4D41DF] shadow-sm font-bold'
-                    : 'text-[#464555] hover:text-[#1B192F] font-medium'
-                }`}
-              >
-                Cancelled <span className="ml-1 opacity-80">({stats.cancelled})</span>
-              </button>
-            </nav>
-
-            <span className="text-xs font-semibold text-[#464555] self-start sm:self-center">
-              Showing {filteredRequests.length} of {stats.total} requests
-            </span>
-          </div>
-
-          {/* SEARCH & SORT BAR */}
-          <div className="grid grid-cols-1 md:grid-cols-12 gap-3">
-            <div className="md:col-span-8 relative">
-              <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-[#464555] text-[20px]">
-                search
-              </span>
-              <input
-                type="text"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Search by request title or request ID..."
-                className="w-full pl-11 pr-4 py-3 rounded-2xl bg-[#F6F1FF] text-[#1B192F] placeholder:text-[#464555] text-sm clay-pill-inset focus:bg-white focus:outline-none transition-all"
-              />
-              {searchQuery && (
-                <button
-                  onClick={() => setSearchQuery('')}
-                  className="absolute right-4 top-1/2 -translate-y-1/2 text-xs font-bold text-[#464555] hover:text-[#1B192F]"
-                >
-                  ✕
-                </button>
-              )}
-            </div>
-
-            <div className="md:col-span-4 relative">
-              <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-[#464555] text-[20px]">
-                sort
-              </span>
-              <select
-                value={sortBy}
-                onChange={(e) => setSortBy(e.target.value)}
-                className="w-full appearance-none pl-11 pr-10 py-3 rounded-2xl bg-[#F6F1FF] text-[#1B192F] text-sm font-semibold clay-pill-inset focus:bg-white focus:outline-none transition-all cursor-pointer"
-              >
-                <option value="latest">Sort: Latest</option>
-                <option value="oldest">Sort: Oldest</option>
-                <option value="nearest">Deadline: Nearest</option>
-                <option value="farthest">Deadline: Farthest</option>
-              </select>
-              <span className="material-symbols-outlined absolute right-4 top-1/2 -translate-y-1/2 text-[#464555] text-[20px] pointer-events-none">
-                expand_more
-              </span>
-            </div>
-          </div>
-
-          {/* REQUEST CARDS GRID */}
-          {filteredRequests.length > 0 ? (
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              {filteredRequests.map((req) => (
-                <article
-                  key={req.id}
-                  className={`p-6 rounded-3xl bg-white clay-card flex flex-col justify-between space-y-5 hover:-translate-y-0.5 transition-all border border-white/80 ${
-                    req.status === 'cancelled' ? 'opacity-85 hover:opacity-100' : ''
-                  }`}
-                >
-                  <div className="space-y-4">
-                    {/* Top Header: Service Icon + Service Name | Status Badge */}
-                    <div className="flex items-center justify-between gap-3">
-                      <div className="flex items-center gap-2.5">
-                        <div
-                          className={`w-9 h-9 rounded-xl flex items-center justify-center clay-pill-inset ${
-                            req.status === 'in-progress'
-                              ? 'bg-[#F0EBFF] text-[#4D41DF]'
-                              : req.status === 'pending'
-                              ? 'bg-[#FFDDB3] text-[#7F5300]'
-                              : req.status === 'completed'
-                              ? 'bg-[#E4DFFE] text-[#4D41DF]'
-                              : 'bg-[#F0EBFF] text-[#777587]'
-                          }`}
-                        >
-                          <span className="material-symbols-outlined text-[20px]">
-                            {req.icon || 'edit_note'}
-                          </span>
-                        </div>
-                        <span className="text-xs font-bold text-[#464555] uppercase tracking-wider">
-                          {req.service}
-                        </span>
-                      </div>
-
-                      {/* Status Badges Matching Stitch Spec */}
-                      {req.status === 'in-progress' && (
-                        <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#E4DFFE] text-[#170065] text-xs font-bold clay-pill-inset">
-                          <span className="w-2 h-2 rounded-full bg-[#5846C8] animate-pulse"></span>
-                          ● In Progress
-                        </span>
-                      )}
-                      {req.status === 'pending' && (
-                        <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#FFB951] text-[#291800] text-xs font-bold clay-pill-inset">
-                          ● Pending
-                        </span>
-                      )}
-                      {req.status === 'completed' && (
-                        <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#E4DFFE] text-[#4D41DF] text-xs font-bold clay-pill-inset">
-                          ✓ Completed
-                        </span>
-                      )}
-                      {req.status === 'cancelled' && (
-                        <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-[#F0EBFF] text-[#464555] text-xs font-bold clay-pill-inset">
-                          Cancelled
-                        </span>
-                      )}
-                    </div>
-
-                    {/* Title & ID */}
-                    <div>
-                      <h2 className="text-[18px] font-bold text-[#1B192F] leading-snug">
-                        {req.title}
-                      </h2>
-                      <span
-                        className={`inline-block mt-1 text-xs font-bold px-2.5 py-0.5 rounded-full ${
-                          req.status === 'pending'
-                            ? 'text-[#7F5300] bg-[#FFDDB3]'
-                            : req.status === 'cancelled'
-                            ? 'text-[#464555] bg-[#F0EBFF]'
-                            : 'text-[#4D41DF] bg-[#F0EBFF]'
-                        }`}
-                      >
-                        #{req.id}
-                      </span>
-                    </div>
-
-                    {/* Dates row */}
-                    <div className="grid grid-cols-2 gap-2 p-3 rounded-2xl bg-[#F6F1FF] text-xs text-[#464555] clay-pill-inset">
-                      <div className="flex items-center gap-1.5">
-                        <span className="material-symbols-outlined text-[16px] text-[#777587]">
-                          calendar_today
-                        </span>
-                        <span>
-                          Submitted: <strong className="text-[#1B192F] font-semibold">{req.submitted}</strong>
-                        </span>
-                      </div>
-                      <div className="flex items-center gap-1.5">
-                        <span
-                          className={`material-symbols-outlined text-[16px] ${
-                            req.status === 'completed'
-                              ? 'text-[#4D41DF]'
-                              : req.status === 'cancelled'
-                              ? 'text-[#BA1A1A]'
-                              : 'text-[#7F5300]'
-                          }`}
-                        >
-                          {req.status === 'completed'
-                            ? 'verified'
-                            : req.status === 'cancelled'
-                            ? 'event_busy'
-                            : 'schedule'}
-                        </span>
-                        <span>
-                          {req.status === 'completed'
-                            ? 'Delivered: '
-                            : req.status === 'cancelled'
-                            ? 'Cancelled: '
-                            : 'Due: '}
-                          <strong className="text-[#1B192F] font-semibold">
-                            {req.status === 'completed'
-                              ? req.deliveredDate
-                              : req.status === 'cancelled'
-                              ? req.cancelledDate
-                              : req.deadline}
-                          </strong>
-                        </span>
-                      </div>
-                    </div>
-
-                    {/* Tracking Status-Specific Content */}
-                    {/* 1. IN PROGRESS: 70% Progress bar with clay track + purple fill, expected completion */}
-                    {req.status === 'in-progress' && (
-                      <div className="space-y-1.5 pt-1">
-                        <div className="flex justify-between items-center text-xs">
-                          <span className="text-[#464555] font-medium">Work Progress</span>
-                          <span className="text-[#4D41DF] font-bold">{req.progress}%</span>
-                        </div>
-                        <div className="w-full h-2.5 rounded-full bg-[#EAE5FF] overflow-hidden clay-pill-inset p-0.5">
-                          <div
-                            className="h-full rounded-full bg-[#4D41DF] transition-all duration-700"
-                            style={{ width: `${req.progress}%` }}
-                          ></div>
-                        </div>
-                        <p className="text-[11px] text-[#464555] font-medium text-right">
-                          Expected completion: {req.expectedCompletion}
-                        </p>
-                      </div>
-                    )}
-
-                    {/* 2. PENDING: 'Waiting for review', NO fake progress bar */}
-                    {req.status === 'pending' && (
-                      <div className="p-3 rounded-2xl bg-[#F0EBFF] text-xs text-[#464555] flex items-center gap-2 clay-pill-inset">
-                        <span className="material-symbols-outlined text-[18px] text-[#7F5300]">
-                          hourglass_empty
-                        </span>
-                        <div>
-                          <p className="font-bold text-[#1B192F]">Waiting for review</p>
-                          <p className="text-[11px] text-[#464555]">
-                            {req.pendingNotice || 'Academic team is reviewing your files and requirements.'}
-                          </p>
-                        </div>
-                      </div>
-                    )}
-
-                    {/* 3. COMPLETED: Replace progress bar with 'Work completed' chip */}
-                    {req.status === 'completed' && (
-                      <div className="p-3 rounded-2xl bg-[#EAE5FF] flex items-center justify-between text-xs clay-card-sm border border-[#E4DFFE]/50">
-                        <span className="inline-flex items-center gap-1.5 font-bold text-[#4D41DF]">
-                          <span className="material-symbols-outlined text-[18px]">check_circle</span>
-                          Work completed
-                        </span>
-                        <span className="text-[#464555] font-medium text-[11px]">Ready for download</span>
-                      </div>
-                    )}
-
-                    {/* 4. CANCELLED: Cancellation date, No progress bar */}
-                    {req.status === 'cancelled' && (
-                      <div className="p-3 rounded-2xl bg-[#F0EBFF] text-xs text-[#464555] clay-pill-inset">
-                        <p className="font-medium">
-                          Request cancelled on {req.cancelledDate || '13 Sep 2026'}. File submission closed.
-                        </p>
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Bottom Action: Primary CTA raised tactile clay button */}
-                  <div className="pt-2 flex justify-end">
-                    <button
-                      type="button"
-                      onClick={() => handleOpenDrawer(req.id)}
-                      className="open-detail-btn px-5 py-2.5 rounded-full bg-[#F0EBFF] text-[#4D41DF] hover:bg-[#4D41DF] hover:text-white font-bold text-xs md:text-sm clay-card transition-all flex items-center gap-1.5 cursor-pointer shadow-sm"
-                    >
-                      <span>View Details</span>
-                      <span className="material-symbols-outlined text-[16px]">arrow_forward</span>
-                    </button>
-                  </div>
-                </article>
-              ))}
-            </div>
-          ) : (
-            /* Empty State Container */
-            <div className="flex flex-col items-center justify-center p-12 md:p-16 rounded-3xl bg-white clay-card text-center space-y-4 border border-white">
-              <div className="w-16 h-16 rounded-2xl bg-[#F0EBFF] flex items-center justify-center text-[#4D41DF] clay-pill-inset">
-                <span className="material-symbols-outlined text-[32px]">folder_off</span>
+          {/* 1. REQUEST DASHBOARD (Real Backend Metrics) */}
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6">
+            {/* Total Requests */}
+            <div className="p-6 rounded-3xl bg-white clay-card flex flex-col justify-between relative overflow-hidden transition-all duration-200 hover:-translate-y-0.5 border border-white">
+              <div className="flex items-center justify-between">
+                <span className="text-xs uppercase tracking-wider text-[#464555] font-bold">
+                  Total Requests
+                </span>
+                <div className="w-10 h-10 rounded-full bg-[#EAE5FF] text-[#4D41DF] flex items-center justify-center clay-pill">
+                  <span className="material-symbols-outlined text-[20px]">layers</span>
+                </div>
               </div>
-              <div className="space-y-1">
-                <h3 className="text-lg font-bold text-[#1B192F]">No Requests Found</h3>
-                <p className="text-xs md:text-sm text-[#464555] max-w-sm">
-                  No academic requests matched your current filter or search criteria.
-                </p>
-              </div>
-              <button
-                type="button"
-                onClick={() => {
-                  setActiveFilter('all');
-                  setSearchQuery('');
-                }}
-                className="px-5 py-2.5 rounded-full bg-[#4D41DF] text-white text-xs md:text-sm font-bold clay-btn-primary hover:opacity-95 cursor-pointer shadow-md"
-              >
-                Reset Filters
-              </button>
-            </div>
-          )}
-        </div>
-
-        {/* ======================================================== */}
-        {/* 3. REQUEST DETAIL VIEW (SLIDE-OUT DRAWER / MODAL)        */}
-        {/* ======================================================== */}
-        <div
-          className={`fixed inset-0 bg-[#302E45]/40 backdrop-blur-sm z-50 transition-opacity duration-300 flex justify-end ${
-            drawerOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
-          }`}
-          onClick={handleCloseDrawer}
-        >
-          <div
-            className={`w-full max-w-2xl bg-white h-full overflow-y-auto p-6 md:p-8 shadow-2xl transition-transform duration-300 flex flex-col justify-between space-y-6 ${
-              drawerOpen ? 'translate-x-0' : 'translate-x-full'
-            }`}
-            onClick={(e) => e.stopPropagation()}
-          >
-            {/* Drawer Content Container */}
-            <div className="space-y-6">
-              {/* Top header: Back button & ID badge */}
-              <div className="flex items-center justify-between border-b border-[#EAE5FF] pb-4">
-                <button
-                  type="button"
-                  onClick={handleCloseDrawer}
-                  className="flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#F0EBFF] text-xs md:text-sm font-bold text-[#1B192F] hover:bg-[#EAE5FF] transition-colors clay-pill-inset cursor-pointer"
-                >
-                  <span className="material-symbols-outlined text-[18px]">arrow_back</span>
-                  <span>Back to My Requests</span>
-                </button>
-                <span className="text-xs font-bold text-[#464555] bg-[#F0EBFF] px-3 py-1 rounded-full">
-                  #{activeRequest.id}
+              <div className="mt-4 flex items-baseline justify-between">
+                <span className="text-4xl sm:text-5xl font-extrabold text-[#1B192F] leading-none">
+                  {metrics.total}
+                </span>
+                <span className="px-3 py-1 rounded-full bg-[#F0EBFF] text-[#464555] text-xs font-bold clay-pill">
+                  Lifetime
                 </span>
               </div>
-
-              {/* Request Header */}
-              <div className="space-y-2">
-                <div className="flex flex-wrap items-center justify-between gap-2">
-                  <span className="text-xs font-bold text-[#4D41DF] bg-[#F0EBFF] px-3 py-1 rounded-full clay-pill-inset">
-                    {activeRequest.service}
-                  </span>
-                  <span className={`text-xs font-bold px-3 py-1 rounded-full clay-pill-inset ${activeRequest.statusBadgeClass}`}>
-                    {activeRequest.statusLabel}
-                  </span>
-                </div>
-                <h2 className="text-2xl font-extrabold text-[#1B192F] leading-tight">
-                  {activeRequest.title}
-                </h2>
-                <p className="text-xs text-[#464555] font-medium">Request ID: #{activeRequest.id}</p>
-              </div>
-
-              {/* REQUEST TRACKING TIMELINE (Vertical timeline matching Stitch Tracking Center) */}
-              <div className="p-5 md:p-6 rounded-2xl bg-[#F6F1FF] clay-pill-inset space-y-4">
-                <h3 className="text-xs font-bold text-[#464555] uppercase tracking-wider flex items-center gap-2">
-                  <span className="material-symbols-outlined text-[18px] text-[#4D41DF]">timeline</span>
-                  Request Tracking Timeline
-                </h3>
-
-                <div className="space-y-4 pl-1">
-                  {/* Timeline Item 1: Submitted */}
-                  <div className="flex items-start gap-3 relative">
-                    <div className="w-6 h-6 rounded-full bg-[#4D41DF] text-white flex items-center justify-center shrink-0 mt-0.5 shadow-sm">
-                      <span className="material-symbols-outlined text-[14px]">check</span>
-                    </div>
-                    <div className="space-y-0.5">
-                      <p className="text-xs font-bold text-[#1B192F]">Request Submitted</p>
-                      <p className="text-[11px] text-[#464555]">{activeRequest.timeline?.step1 || activeRequest.submitted}</p>
-                    </div>
-                  </div>
-
-                  {/* Timeline Item 2: Accepted / Review */}
-                  <div className="flex items-start gap-3 relative">
-                    <div
-                      className={`w-6 h-6 rounded-full flex items-center justify-center shrink-0 mt-0.5 shadow-sm ${
-                        activeRequest.status === 'cancelled'
-                          ? 'bg-[#BA1A1A] text-white'
-                          : activeRequest.status === 'pending'
-                          ? 'bg-[#FFB951] text-[#291800]'
-                          : 'bg-[#4D41DF] text-white'
-                      }`}
-                    >
-                      <span className="material-symbols-outlined text-[14px]">
-                        {activeRequest.status === 'cancelled' ? 'close' : activeRequest.status === 'pending' ? 'hourglass_top' : 'check'}
-                      </span>
-                    </div>
-                    <div className="space-y-0.5">
-                      <p className="text-xs font-bold text-[#1B192F]">
-                        {activeRequest.status === 'cancelled'
-                          ? 'Request Cancelled'
-                          : activeRequest.status === 'pending'
-                          ? 'Under Review'
-                          : 'Request Accepted'}
-                      </p>
-                      <p className="text-[11px] text-[#464555]">{activeRequest.timeline?.step2}</p>
-                    </div>
-                  </div>
-
-                  {/* Timeline Item 3: Work in Progress */}
-                  <div className="flex items-start gap-3 relative">
-                    <div
-                      className={`w-6 h-6 rounded-full flex items-center justify-center shrink-0 mt-0.5 shadow-sm ${
-                        activeRequest.status === 'in-progress'
-                          ? 'bg-[#5846C8] text-white ring-4 ring-[#5846C8]/20 animate-pulse'
-                          : activeRequest.status === 'completed'
-                          ? 'bg-[#4D41DF] text-white'
-                          : 'bg-[#F0EBFF] text-[#777587]'
-                      }`}
-                    >
-                      <span className="material-symbols-outlined text-[14px]">
-                        {activeRequest.status === 'completed' ? 'check' : activeRequest.status === 'in-progress' ? 'autorenew' : 'circle'}
-                      </span>
-                    </div>
-                    <div className="space-y-0.5">
-                      <p
-                        className={`text-xs font-bold ${
-                          activeRequest.status === 'in-progress' || activeRequest.status === 'completed'
-                            ? 'text-[#1B192F]'
-                            : 'text-[#777587]'
-                        }`}
-                      >
-                        {activeRequest.status === 'completed'
-                          ? 'Work In Progress — Completed'
-                          : activeRequest.status === 'in-progress'
-                          ? 'Work In Progress — Currently working'
-                          : 'Work In Progress'}
-                      </p>
-                      <p className="text-[11px] text-[#464555]">{activeRequest.timeline?.step3}</p>
-                    </div>
-                  </div>
-
-                  {/* Timeline Item 4: Completed */}
-                  <div className="flex items-start gap-3 relative">
-                    <div
-                      className={`w-6 h-6 rounded-full flex items-center justify-center shrink-0 mt-0.5 shadow-sm ${
-                        activeRequest.status === 'completed'
-                          ? 'bg-[#4D41DF] text-white'
-                          : 'bg-[#F0EBFF] text-[#777587]'
-                      }`}
-                    >
-                      <span className="material-symbols-outlined text-[14px]">
-                        {activeRequest.status === 'completed' ? 'check' : 'circle'}
-                      </span>
-                    </div>
-                    <div className="space-y-0.5">
-                      <p
-                        className={`text-xs font-bold ${
-                          activeRequest.status === 'completed' ? 'text-[#4D41DF]' : 'text-[#777587]'
-                        }`}
-                      >
-                        Completed
-                      </p>
-                      <p className="text-[11px] text-[#464555]">{activeRequest.timeline?.step4}</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* PROGRESS SECTION (Status-Specific) */}
-              <div>
-                {/* In Progress: Work Progress, 70% bar, Expected completion */}
-                {activeRequest.status === 'in-progress' && (
-                  <div className="p-4 rounded-2xl bg-[#F0EBFF] space-y-2 clay-card-sm border border-[#E4DFFE]/40">
-                    <div className="flex justify-between items-center text-xs font-bold">
-                      <span className="text-[#1B192F]">Work Progress</span>
-                      <span className="text-[#4D41DF]">{activeRequest.progress}%</span>
-                    </div>
-                    <div className="w-full h-2.5 rounded-full bg-[#EAE5FF] overflow-hidden clay-pill-inset p-0.5">
-                      <div
-                        className="h-full rounded-full bg-[#4D41DF]"
-                        style={{ width: `${activeRequest.progress}%` }}
-                      ></div>
-                    </div>
-                    <p className="text-[11px] text-[#464555] font-medium text-right">
-                      Expected completion: {activeRequest.expectedCompletion}
-                    </p>
-                  </div>
-                )}
-
-                {/* Completed: Work Completed chip banner */}
-                {activeRequest.status === 'completed' && (
-                  <div className="p-4 rounded-2xl bg-[#EAE5FF] text-xs font-bold text-[#4D41DF] clay-card-sm flex items-center gap-2 border border-[#E4DFFE]">
-                    <span className="material-symbols-outlined text-[20px]">check_circle</span>
-                    <span>✓ Work Completed - Completed on {activeRequest.deliveredDate || activeRequest.deadline}</span>
-                  </div>
-                )}
-              </div>
-
-              {/* REQUEST INFORMATION (Structured Compact Clay Cards) */}
-              <div className="space-y-3">
-                <h3 className="text-xs font-bold text-[#464555] uppercase tracking-wider">
-                  Request Information
-                </h3>
-                <div className="p-4 rounded-2xl bg-[#F6F1FF] space-y-3 text-xs clay-card-sm border border-[#EAE5FF]">
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pb-3 border-b border-[#EAE5FF]">
-                    <div>
-                      <span className="text-[#464555] block font-medium">Service</span>
-                      <span className="font-bold text-[#1B192F] text-sm">{activeRequest.service}</span>
-                    </div>
-                    <div>
-                      <span className="text-[#464555] block font-medium">Request Title</span>
-                      <span className="font-bold text-[#1B192F] text-sm">{activeRequest.title}</span>
-                    </div>
-                  </div>
-
-                  <div>
-                    <span className="text-[#464555] block font-medium mb-0.5">Description</span>
-                    <p className="text-[#1B192F] font-medium leading-relaxed">
-                      {activeRequest.description}
-                    </p>
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-3 py-2 border-y border-[#EAE5FF]">
-                    <div>
-                      <span className="text-[#464555] block font-medium">Submitted</span>
-                      <span className="font-bold text-[#1B192F]">{activeRequest.submitted}</span>
-                    </div>
-                    <div>
-                      <span className="text-[#464555] block font-medium">Deadline</span>
-                      <span className="font-bold text-[#1B192F]">{activeRequest.deadline}</span>
-                    </div>
-                  </div>
-
-                  <div>
-                    <span className="text-[#464555] block font-medium mb-0.5">Requirements</span>
-                    <p className="text-[#1B192F] font-medium leading-relaxed">
-                      {activeRequest.requirements}
-                    </p>
-                  </div>
-                </div>
-              </div>
-
-              {/* SUBMITTED FILES SECTION */}
-              <div className="space-y-3">
-                <h3 className="text-xs font-bold text-[#464555] uppercase tracking-wider">
-                  Submitted Files
-                </h3>
-                <div className="space-y-2">
-                  {activeRequest.submittedFiles?.map((file, idx) => (
-                    <div
-                      key={idx}
-                      className="flex items-center justify-between p-3 rounded-2xl bg-[#F0EBFF] text-xs clay-card-sm border border-white"
-                    >
-                      <div className="flex items-center gap-2.5">
-                        <span className="material-symbols-outlined text-[#4D41DF] text-[22px]">
-                          description
-                        </span>
-                        <div>
-                          <p className="font-bold text-[#1B192F]">{file.name}</p>
-                          <p className="text-[11px] text-[#464555]">{file.size}</p>
-                        </div>
-                      </div>
-                      <button
-                        type="button"
-                        onClick={() => showToast(`Downloading ${file.name}...`, 'info')}
-                        className="px-3 py-1.5 rounded-full bg-white text-[#4D41DF] font-bold hover:bg-[#EAE5FF] transition-colors text-xs clay-card-sm cursor-pointer"
-                      >
-                        Download
-                      </button>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              {/* DELIVERED FILES SECTION (ONLY shown when request is completed) */}
-              {activeRequest.status === 'completed' && activeRequest.deliveredFiles && (
-                <div className="space-y-3 animate-in fade-in duration-300">
-                  <h3 className="text-xs font-bold text-[#4D41DF] uppercase tracking-wider flex items-center gap-1.5">
-                    <span className="material-symbols-outlined text-[18px]">verified</span>
-                    Delivered Files
-                  </h3>
-                  <div className="p-4 rounded-2xl bg-[#EAE5FF] space-y-3 clay-card border border-[#E4DFFE]">
-                    <div className="space-y-2">
-                      {activeRequest.deliveredFiles.map((deliv, idx) => (
-                        <div
-                          key={idx}
-                          className="flex items-center justify-between p-3 rounded-xl bg-white text-xs shadow-sm"
-                        >
-                          <div className="flex items-center gap-2.5">
-                            <span className="material-symbols-outlined text-[#4D41DF] text-[22px]">
-                              {deliv.icon || 'description'}
-                            </span>
-                            <div>
-                              <p className="font-bold text-[#1B192F]">{deliv.name}</p>
-                              <p className="text-[11px] text-[#464555]">{deliv.size}</p>
-                            </div>
-                          </div>
-                          <button
-                            type="button"
-                            onClick={() => showToast(`Downloading ${deliv.name}...`, 'success')}
-                            className="px-3 py-1.5 rounded-full bg-[#F0EBFF] text-[#4D41DF] font-bold hover:bg-[#4D41DF] hover:text-white transition-colors text-xs cursor-pointer"
-                          >
-                            Download
-                          </button>
-                        </div>
-                      ))}
-                    </div>
-
-                    <div className="pt-2 flex justify-end">
-                      <button
-                        type="button"
-                        onClick={() => showToast(`Downloading all delivered files for #${activeRequest.id}...`, 'success')}
-                        className="px-5 py-2 rounded-full bg-[#4D41DF] text-white text-xs font-bold clay-btn-primary hover:opacity-95 flex items-center gap-1.5 cursor-pointer shadow-md"
-                      >
-                        <span className="material-symbols-outlined text-[16px]">download</span>
-                        <span>Download All</span>
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              )}
+              <p className="mt-2 text-xs text-[#464555]">All lifetime submissions</p>
             </div>
 
-            {/* CONTEXTUAL ACTIONS FOOTER (Strictly no chat or inquiry) */}
-            <div className="pt-4 border-t border-[#EAE5FF]">
-              <button
-                type="button"
-                onClick={handleDrawerDynamicAction}
-                disabled={activeRequest.status === 'cancelled'}
-                className={`w-full py-3 rounded-full font-bold text-xs md:text-sm transition-all flex items-center justify-center gap-2 cursor-pointer ${activeRequest.btnClass}`}
-              >
-                <span>{activeRequest.btnText}</span>
-              </button>
+            {/* Active Requests */}
+            <div className="p-6 rounded-3xl bg-white clay-card flex flex-col justify-between relative overflow-hidden transition-all duration-200 hover:-translate-y-0.5 border border-white">
+              <div className="flex items-center justify-between">
+                <span className="text-xs uppercase tracking-wider text-[#464555] font-bold">
+                  Active Requests
+                </span>
+                <div className="w-10 h-10 rounded-full bg-[#E4DFFF] text-[#5846C8] flex items-center justify-center clay-pill">
+                  <span className="material-symbols-outlined text-[20px]">sync</span>
+                </div>
+              </div>
+              <div className="mt-4 flex items-baseline justify-between">
+                <span className="text-4xl sm:text-5xl font-extrabold text-[#1B192F] leading-none">
+                  {metrics.active}
+                </span>
+                <span className="px-3 py-1 rounded-full bg-[#E4DFFE] text-[#4D41DF] text-xs font-bold clay-pill">
+                  Active
+                </span>
+              </div>
+              <p className="mt-2 text-xs text-[#464555]">In progress or review</p>
+            </div>
+
+            {/* Completed Requests */}
+            <div className="p-6 rounded-3xl bg-white clay-card flex flex-col justify-between relative overflow-hidden transition-all duration-200 hover:-translate-y-0.5 border border-white">
+              <div className="flex items-center justify-between">
+                <span className="text-xs uppercase tracking-wider text-[#464555] font-bold">
+                  Completed Requests
+                </span>
+                <div className="w-10 h-10 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center clay-pill">
+                  <span className="material-symbols-outlined text-[20px]">check_circle</span>
+                </div>
+              </div>
+              <div className="mt-4 flex items-baseline justify-between">
+                <span className="text-4xl sm:text-5xl font-extrabold text-[#1B192F] leading-none">
+                  {metrics.completed}
+                </span>
+                <span className="px-3 py-1 rounded-full bg-emerald-100 text-emerald-800 text-xs font-bold clay-pill">
+                  Completed
+                </span>
+              </div>
+              <p className="mt-2 text-xs text-[#464555]">Successfully delivered</p>
             </div>
           </div>
-        </div>
-      </main>
 
-      {/* ======================================================== */}
-      {/* 4. NEW REQUEST MODAL                                     */}
-      {/* ======================================================== */}
-      {requestModalOpen && (
-        <div
-          className="fixed inset-0 z-50 bg-[#302E45]/40 backdrop-blur-sm flex items-center justify-center p-4 transition-opacity animate-in fade-in duration-200"
-          onClick={() => setRequestModalOpen(false)}
-        >
-          <div
-            className="w-full max-w-xl bg-white rounded-3xl p-6 sm:p-8 clay-card shadow-2xl border border-white"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div className="flex items-center justify-between pb-4 border-b border-[#F0EBFF] mb-6">
-              <div className="flex items-center gap-2.5">
-                <div className="w-10 h-10 rounded-2xl bg-[#4D41DF] text-white flex items-center justify-center shadow-md">
-                  <span className="material-symbols-outlined text-[20px]">add_task</span>
-                </div>
-                <div>
-                  <h3 className="text-xl font-bold text-[#1B192F]">Submit New Academic Request</h3>
-                  <p className="text-xs text-[#464555]">Track progress from assignment to final delivery</p>
-                </div>
-              </div>
+          {/* Filter & Search Controls */}
+          <div className="p-4 rounded-3xl bg-white clay-card flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-4 border border-white">
+            {/* Status Tabs */}
+            <div className="flex items-center gap-1.5 p-1 rounded-full bg-[#F6F1FF] clay-pill-inset overflow-x-auto">
               <button
                 type="button"
-                onClick={() => setRequestModalOpen(false)}
-                className="w-8 h-8 rounded-full bg-[#F6F1FF] hover:bg-[#F0EBFF] text-[#1B192F] flex items-center justify-center text-lg font-bold transition-colors cursor-pointer"
+                onClick={() => setActiveTab('all')}
+                className={`px-4 py-1.5 rounded-full text-xs sm:text-sm font-bold transition-all whitespace-nowrap cursor-pointer ${
+                  activeTab === 'all'
+                    ? 'bg-[#4D41DF] text-white shadow-md'
+                    : 'text-[#464555] hover:text-[#1B192F]'
+                }`}
               >
-                ✕
+                All Requests ({metrics.total})
+              </button>
+              <button
+                type="button"
+                onClick={() => setActiveTab('active')}
+                className={`px-4 py-1.5 rounded-full text-xs sm:text-sm font-bold transition-all whitespace-nowrap cursor-pointer ${
+                  activeTab === 'active'
+                    ? 'bg-[#4D41DF] text-white shadow-md'
+                    : 'text-[#464555] hover:text-[#1B192F]'
+                }`}
+              >
+                Active ({metrics.active})
+              </button>
+              <button
+                type="button"
+                onClick={() => setActiveTab('completed')}
+                className={`px-4 py-1.5 rounded-full text-xs sm:text-sm font-bold transition-all whitespace-nowrap cursor-pointer ${
+                  activeTab === 'completed'
+                    ? 'bg-[#4D41DF] text-white shadow-md'
+                    : 'text-[#464555] hover:text-[#1B192F]'
+                }`}
+              >
+                Completed ({metrics.completed})
               </button>
             </div>
 
-            <form onSubmit={handleCreateRequest} className="space-y-4">
-              <div>
-                <label className="block text-xs font-bold text-[#1B192F]/70 mb-1.5">
-                  Assignment Title / Subject Topic *
-                </label>
-                <div className="p-3.5 rounded-2xl bg-[#F6F1FF] border border-[#E4DFFE] flex items-center">
-                  <input
-                    type="text"
-                    placeholder="e.g. Thermodynamics Problem Set or IoT Telemetry Code"
-                    value={reqTitle}
-                    onChange={(e) => setReqTitle(e.target.value)}
-                    className="w-full bg-transparent text-sm font-semibold text-[#1B192F] outline-none placeholder-[#464555]/50"
-                    required
-                  />
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-xs font-bold text-[#1B192F]/70 mb-1.5">Service Category</label>
-                <div className="p-3.5 rounded-2xl bg-[#F6F1FF] border border-[#E4DFFE] flex items-center">
-                  <select
-                    value={reqType}
-                    onChange={(e) => setReqType(e.target.value)}
-                    className="w-full bg-transparent text-sm font-semibold text-[#1B192F] outline-none cursor-pointer"
-                  >
-                    <option value="Assignment Writing">Assignment Writing (Core Academic)</option>
-                    <option value="Practical Files & Viva">Practical Files & Viva Prep</option>
-                    <option value="Coding & Technical">Coding & Technical Projects</option>
-                    <option value="PPT & Presentation">PPT & Slide Decks</option>
-                    <option value="Project Reports">Project Reports & Thesis</option>
-                    <option value="Engineering Drawing">Engineering Drawing & CAD</option>
-                  </select>
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-xs font-bold text-[#1B192F]/70 mb-1.5">Deadline *</label>
-                  <div className="p-3.5 rounded-2xl bg-[#F6F1FF] border border-[#E4DFFE] flex items-center">
-                    <input
-                      type="date"
-                      value={reqDeadline}
-                      onChange={(e) => setReqDeadline(e.target.value)}
-                      className="w-full bg-transparent text-sm font-semibold text-[#1B192F] outline-none cursor-pointer"
-                      required
-                    />
-                  </div>
-                </div>
-
-                <div>
-                  <label className="block text-xs font-bold text-[#1B192F]/70 mb-1.5">Output Format</label>
-                  <div className="p-3.5 rounded-2xl bg-[#F6F1FF] border border-[#E4DFFE] flex items-center">
-                    <select
-                      value={reqFormat}
-                      onChange={(e) => setReqFormat(e.target.value)}
-                      className="w-full bg-transparent text-sm font-semibold text-[#1B192F] outline-none cursor-pointer"
-                    >
-                      <option value="Digital PDF / Docs">Digital PDF / Docs</option>
-                      <option value="Handwritten Assignment">Handwritten Assignment</option>
-                      <option value="PowerPoint Presentation">PowerPoint Presentation</option>
-                      <option value="Source Code & Zip">Source Code & Zip</option>
-                      <option value="Physical Sheets (Speed Post)">Physical Sheets (Speed Post)</option>
-                    </select>
-                  </div>
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-xs font-bold text-[#1B192F]/70 mb-1.5">
-                  Specific Requirements or Instructions (Optional)
-                </label>
-                <textarea
-                  rows={3}
-                  placeholder="Paste teacher instructions, rubric guidelines, word limits, or special remarks..."
-                  value={reqNotes}
-                  onChange={(e) => setReqNotes(e.target.value)}
-                  className="w-full p-3.5 rounded-2xl bg-[#F6F1FF] border border-[#E4DFFE] text-sm text-[#1B192F] outline-none resize-none placeholder-[#464555]/50 font-medium"
+            {/* Search & Sort Controls */}
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+              <div className="relative flex-grow min-w-[260px]">
+                <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-[#777587] text-[18px]">
+                  search
+                </span>
+                <input
+                  type="text"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  placeholder="Search by Request ID, Topic, or Service..."
+                  className="w-full pl-11 pr-4 py-2.5 rounded-full bg-[#F6F1FF] text-[#1B192F] text-xs sm:text-sm clay-pill-inset focus:outline-none placeholder:text-[#777587]"
                 />
               </div>
 
-              <div className="flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-end gap-2.5 sm:gap-3 pt-4 border-t border-[#F0EBFF]">
+              <div className="relative">
+                <select
+                  value={sortBy}
+                  onChange={(e) => setSortBy(e.target.value)}
+                  className="w-full sm:w-auto appearance-none pl-4 pr-10 py-2.5 rounded-full bg-[#F6F1FF] text-[#464555] text-xs font-bold clay-pill-inset focus:outline-none cursor-pointer"
+                >
+                  <option value="newest">Sort by: Newest Submission</option>
+                  <option value="urgent">Sort by: Target Deadline</option>
+                  <option value="course">Sort by: Course Code</option>
+                </select>
+                <span className="material-symbols-outlined pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-[#777587] text-[18px]">
+                  expand_more
+                </span>
+              </div>
+            </div>
+          </div>
+
+          {/* 2. REQUEST LIST (Compact Rows, Only ONE List) */}
+          <div className="flex flex-col gap-4">
+            
+            {/* Loading State */}
+            {isLoading && (
+              <div className="p-12 rounded-3xl bg-white clay-card flex flex-col items-center justify-center text-center gap-3 border border-white">
+                <div className="w-8 h-8 border-3 border-[#4D41DF] border-t-transparent rounded-full animate-spin"></div>
+                <p className="text-sm font-bold text-[#464555]">Loading your request records...</p>
+              </div>
+            )}
+
+            {/* Error State */}
+            {!isLoading && error && (
+              <div className="p-8 rounded-3xl bg-white clay-card flex flex-col items-center text-center gap-3 border border-red-200">
+                <span className="material-symbols-outlined text-red-500 text-[32px]">error</span>
+                <h3 className="text-lg font-bold text-[#1B192F]">Unable to load requests</h3>
+                <p className="text-xs text-[#464555]">{error}</p>
                 <button
                   type="button"
-                  onClick={() => setRequestModalOpen(false)}
-                  className="w-full sm:w-auto px-5 py-2.5 rounded-full text-xs font-bold text-[#464555] hover:bg-[#F6F1FF] text-center cursor-pointer"
+                  onClick={fetchUserRequests}
+                  className="px-6 py-2 rounded-full bg-[#4D41DF] text-white text-xs font-bold cursor-pointer hover:bg-[#675DF9]"
                 >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  className="w-full sm:w-auto px-6 py-2.5 rounded-full bg-[#4D41DF] text-white text-xs font-bold clay-btn-primary hover:bg-[#3d32ce] transition-all text-center cursor-pointer shadow-md"
-                >
-                  Submit Academic Request
+                  Retry
                 </button>
               </div>
-            </form>
-          </div>
-        </div>
-      )}
+            )}
 
-      {/* ======================================================== */}
-      {/* 5. PROFILE EDIT MODAL                                    */}
-      {/* ======================================================== */}
-      {profileModalOpen && (
+            {/* Empty State */}
+            {!isLoading && !error && filteredRequests.length === 0 && (
+              <div className="p-12 sm:p-16 rounded-3xl bg-white clay-card flex flex-col items-center text-center gap-4 border border-white">
+                <div className="w-16 h-16 rounded-full bg-[#F0EBFF] text-[#4D41DF] flex items-center justify-center clay-pill shadow-inner">
+                  <span className="material-symbols-outlined text-[32px]">folder_open</span>
+                </div>
+                <div className="flex flex-col gap-1 max-w-md">
+                  <h3 className="text-xl font-bold text-[#1B192F]">No academic requests found</h3>
+                  <p className="text-xs sm:text-sm text-[#464555] leading-relaxed">
+                    {searchQuery || activeTab !== 'all'
+                      ? 'No requests match your current filters. Try changing your search query.'
+                      : "You haven't submitted any service requests yet. When you submit an assignment or custom project, it will automatically appear here."}
+                  </p>
+                </div>
+                <Link
+                  to="/services"
+                  className="mt-2 inline-flex items-center gap-2 px-6 py-3 rounded-full bg-[#4D41DF] hover:bg-[#675DF9] text-white font-bold text-xs sm:text-sm shadow-md transition-transform active:scale-95"
+                >
+                  <span className="material-symbols-outlined text-[18px]">add</span>
+                  <span>Browse Academic Services</span>
+                </Link>
+              </div>
+            )}
+
+            {/* Compact Rows */}
+            {!isLoading && !error && filteredRequests.length > 0 && (
+              filteredRequests.map((req) => {
+                const statusBadge = getStatusBadge(req.status);
+                return (
+                  <article
+                    key={req.id}
+                    onClick={() => setSelectedRequest(req)}
+                    className="group p-4 sm:px-6 sm:py-4 rounded-3xl bg-white clay-card hover:shadow-xl flex flex-col md:flex-row md:items-center justify-between gap-4 transition-all duration-200 cursor-pointer hover:-translate-y-0.5 border-l-4 border-[#4D41DF] border-t border-r border-b border-white relative overflow-hidden"
+                  >
+                    {/* Left: Request ID, Service, Topic, Subject */}
+                    <div className="flex flex-col md:flex-row md:items-center gap-4 flex-grow min-w-0">
+                      <div className="flex items-center gap-2 shrink-0">
+                        <button
+                          type="button"
+                          onClick={(e) => handleCopyId(e, req.id)}
+                          title="Copy Request ID"
+                          className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-[#F0EBFF] text-xs font-bold text-[#4D41DF] clay-pill hover:bg-[#EAE5FF] transition-colors"
+                        >
+                          <span>{req.id}</span>
+                          <span className="material-symbols-outlined text-[14px]">
+                            {copiedId === req.id ? 'check' : 'content_copy'}
+                          </span>
+                        </button>
+
+                        <span className="px-3 py-1 rounded-full bg-[#E4DFFF] text-[#5846C8] text-xs font-bold clay-pill">
+                          {req.service || 'Assignment'}
+                        </span>
+                      </div>
+
+                      <div className="flex flex-col min-w-0 text-left">
+                        <span className="text-[11px] text-[#777587] font-semibold">
+                          {req.subject || 'Standard Coursework'}
+                        </span>
+                        <h2 className="text-base sm:text-lg font-bold text-[#1B192F] truncate group-hover:text-[#4D41DF] transition-colors">
+                          {req.title || 'Untitled Request'}
+                        </h2>
+                      </div>
+                    </div>
+
+                    {/* Right: Deadline, Status, Details Button */}
+                    <div className="flex flex-wrap sm:flex-nowrap items-center justify-between md:justify-end gap-4 shrink-0">
+                      <div className="flex flex-col text-left md:text-right">
+                        <span className="text-[10px] text-[#464555] uppercase font-bold">Target Due</span>
+                        <span className="text-xs sm:text-sm font-bold text-[#1B192F]">
+                          {req.deadline || 'Pending'}
+                        </span>
+                      </div>
+
+                      <div className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold border ${statusBadge.badgeClass}`}>
+                        <span className={`w-2 h-2 rounded-full ${statusBadge.dotClass}`}></span>
+                        <span>{statusBadge.label}</span>
+                      </div>
+
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setSelectedRequest(req);
+                        }}
+                        className="inline-flex items-center justify-center gap-1 px-4 py-2 rounded-full bg-[#4D41DF] text-white text-xs font-bold shadow-md transition-transform group-hover:scale-105 active:scale-95 cursor-pointer"
+                      >
+                        <span>Details</span>
+                        <span className="material-symbols-outlined text-[16px]">arrow_forward</span>
+                      </button>
+                    </div>
+                  </article>
+                );
+              })
+            )}
+
+          </div>
+
+        </div>
+      </main>
+
+      {/* 3. REQUEST DETAILS MODAL / DRAWER (Stitch Full Details View) */}
+      {selectedRequest && (
         <div
-          className="fixed inset-0 z-50 bg-[#302E45]/40 backdrop-blur-sm flex items-center justify-center p-4 transition-opacity animate-in fade-in duration-200"
-          onClick={() => setProfileModalOpen(false)}
+          className="fixed inset-0 z-50 flex justify-end bg-[#1B192F]/50 backdrop-blur-sm transition-opacity duration-300 animate-in fade-in"
+          onClick={() => setSelectedRequest(null)}
         >
           <div
-            className="w-full max-w-md bg-white rounded-3xl p-5 sm:p-8 clay-card shadow-2xl border border-white"
+            className="w-full max-w-2xl h-full bg-white shadow-2xl flex flex-col justify-between overflow-y-auto transform transition-transform duration-300 animate-in slide-in-from-right"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="flex items-center justify-between pb-4 border-b border-[#F0EBFF] mb-6">
-              <div className="flex items-center gap-2.5">
-                <div className="w-10 h-10 rounded-2xl bg-[#4D41DF] text-white flex items-center justify-center shadow-md">
-                  <span className="material-symbols-outlined text-[20px]">account_circle</span>
-                </div>
-                <div>
-                  <h3 className="text-xl font-bold text-[#1B192F]">Student Profile</h3>
-                  <p className="text-xs text-[#464555]">Manage your account details</p>
+            {/* Drawer Header */}
+            <div className="sticky top-0 bg-white/95 backdrop-blur-md p-6 flex items-center justify-between border-b border-[#F0EBFF] shadow-sm z-10">
+              <div className="flex items-center gap-3">
+                <button
+                  type="button"
+                  onClick={(e) => handleCopyId(e, selectedRequest.id)}
+                  title="Click to copy ID"
+                  className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#E4DFFF] text-[#5846C8] font-bold text-xs sm:text-sm clay-pill"
+                >
+                  <span>{selectedRequest.id}</span>
+                  <span className="material-symbols-outlined text-[14px]">
+                    {copiedId === selectedRequest.id ? 'check' : 'content_copy'}
+                  </span>
+                </button>
+
+                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#E4DFFE] text-[#4D41DF] text-xs font-bold clay-pill">
+                  <span className="w-2 h-2 rounded-full bg-[#4D41DF] animate-ping"></span>
+                  <span>{selectedRequest.statusLabel || 'In Progress'}</span>
                 </div>
               </div>
+
               <button
                 type="button"
-                onClick={() => setProfileModalOpen(false)}
-                className="w-8 h-8 rounded-full bg-[#F6F1FF] hover:bg-[#F0EBFF] text-[#1B192F] flex items-center justify-center text-lg font-bold transition-colors cursor-pointer"
+                aria-label="Close Drawer"
+                onClick={() => setSelectedRequest(null)}
+                className="w-9 h-9 rounded-full bg-[#F6F1FF] text-[#464555] hover:text-[#1B192F] flex items-center justify-center transition-colors cursor-pointer"
               >
-                ✕
+                <span className="material-symbols-outlined text-[20px]">close</span>
               </button>
             </div>
 
-            <form onSubmit={handleSaveProfile} className="space-y-4">
-              <div>
-                <label className="block text-xs font-bold text-[#1B192F]/70 mb-1.5">Full Name</label>
-                <div className="p-3.5 rounded-2xl bg-[#F6F1FF] border border-[#E4DFFE] flex items-center">
-                  <input
-                    type="text"
-                    value={editName}
-                    onChange={(e) => setEditName(e.target.value)}
-                    className="w-full bg-transparent text-sm font-bold text-[#1B192F] outline-none"
-                    required
-                  />
+            {/* Drawer Body Content */}
+            <div className="p-6 sm:p-8 flex flex-col gap-6 text-left">
+              
+              {/* Title and Subject */}
+              <div className="flex flex-col gap-1">
+                <span className="px-3 py-1 rounded-full bg-[#F0EBFF] text-xs font-bold text-[#464555] w-fit clay-pill">
+                  {selectedRequest.subject || 'Academic Coursework'}
+                </span>
+                <h2 className="text-2xl sm:text-3xl font-bold text-[#1B192F] mt-1 leading-snug">
+                  {selectedRequest.title || 'Untitled Request'}
+                </h2>
+              </div>
+
+              {/* Status Stepper Progression */}
+              <div className="p-5 rounded-3xl bg-[#F6F1FF] clay-pill-inset flex flex-col gap-4">
+                <div className="flex items-center justify-between text-xs font-bold">
+                  <span className="text-[#464555] uppercase tracking-wider">Milestone Progress</span>
+                  <span className="text-[#4D41DF]">Active Intake</span>
+                </div>
+
+                <div className="grid grid-cols-4 gap-2 text-center text-xs">
+                  <div className="flex flex-col items-center gap-1">
+                    <div className="w-8 h-8 rounded-full bg-[#4D41DF] text-white flex items-center justify-center font-bold text-xs shadow-sm">
+                      <span className="material-symbols-outlined text-[16px]">check</span>
+                    </div>
+                    <span className="font-bold text-[#1B192F]">Submitted</span>
+                  </div>
+                  <div className="flex flex-col items-center gap-1">
+                    <div className="w-8 h-8 rounded-full bg-[#4D41DF] text-white flex items-center justify-center font-bold text-xs shadow-sm">
+                      <span className="material-symbols-outlined text-[16px]">check</span>
+                    </div>
+                    <span className="font-bold text-[#1B192F]">In Review</span>
+                  </div>
+                  <div className="flex flex-col items-center gap-1">
+                    <div className="w-8 h-8 rounded-full bg-[#675DF9] text-white flex items-center justify-center font-bold text-xs shadow-md animate-pulse">
+                      <span className="material-symbols-outlined text-[16px]">pending</span>
+                    </div>
+                    <span className="font-bold text-[#4D41DF]">Working</span>
+                  </div>
+                  <div className="flex flex-col items-center gap-1 opacity-50">
+                    <div className="w-8 h-8 rounded-full bg-[#EAE5FF] text-[#464555] flex items-center justify-center font-bold text-xs">
+                      <span className="material-symbols-outlined text-[16px]">done_all</span>
+                    </div>
+                    <span className="text-[#464555]">Delivered</span>
+                  </div>
                 </div>
               </div>
 
-              <div>
-                <label className="block text-xs font-bold text-[#1B192F]/70 mb-1.5">College / University</label>
-                <div className="p-3.5 rounded-2xl bg-[#F6F1FF] border border-[#E4DFFE] flex items-center">
-                  <input
-                    type="text"
-                    value={editCollege}
-                    onChange={(e) => setEditCollege(e.target.value)}
-                    className="w-full bg-transparent text-sm font-semibold text-[#1B192F] outline-none"
-                    placeholder="e.g. Stanford University or MIT"
-                  />
+              {/* Key Parameters Grid */}
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 p-4 rounded-3xl bg-[#F6F1FF] clay-pill-inset">
+                <div className="flex flex-col">
+                  <span className="text-[10px] uppercase font-bold text-[#464555]">Service Category</span>
+                  <span className="text-xs sm:text-sm font-bold text-[#1B192F]">
+                    {selectedRequest.service || 'Assignment Writing'}
+                  </span>
+                </div>
+                <div className="flex flex-col">
+                  <span className="text-[10px] uppercase font-bold text-[#464555]">Scope / Volume</span>
+                  <span className="text-xs sm:text-sm font-bold text-[#1B192F]">
+                    {selectedRequest.serviceSpecific?.numberOfPages || selectedRequest.serviceSpecific?.slideCount || 'Standard Scope'}
+                  </span>
+                </div>
+                <div className="flex flex-col">
+                  <span className="text-[10px] uppercase font-bold text-[#464555]">Delivery Format</span>
+                  <span className="text-xs sm:text-sm font-bold text-[#1B192F]">
+                    {selectedRequest.serviceSpecific?.deliveryFormat || selectedRequest.serviceSpecific?.slideFormat || 'Digital Files'}
+                  </span>
+                </div>
+                <div className="flex flex-col">
+                  <span className="text-[10px] uppercase font-bold text-[#464555]">Submitted Date</span>
+                  <span className="text-xs sm:text-sm font-bold text-[#1B192F]">
+                    {selectedRequest.createdAt ? new Date(selectedRequest.createdAt).toLocaleDateString() : 'Today'}
+                  </span>
+                </div>
+                <div className="flex flex-col sm:col-span-2">
+                  <span className="text-[10px] uppercase font-bold text-[#464555]">Target Deadline</span>
+                  <span className="text-xs sm:text-sm font-bold text-[#4D41DF]">
+                    {selectedRequest.deadline || 'Pending'}
+                  </span>
                 </div>
               </div>
 
-              <div>
-                <label className="block text-xs font-bold text-[#1B192F]/70 mb-1.5">Course / Degree</label>
-                <div className="p-3.5 rounded-2xl bg-[#F6F1FF] border border-[#E4DFFE] flex items-center">
-                  <input
-                    type="text"
-                    value={editCourse}
-                    onChange={(e) => setEditCourse(e.target.value)}
-                    className="w-full bg-transparent text-sm font-semibold text-[#1B192F] outline-none"
-                    placeholder="e.g. B.Tech Computer Science"
-                  />
+              {/* Complete Description / Scope */}
+              <div className="flex flex-col gap-1.5">
+                <h3 className="text-sm font-bold text-[#1B192F]">Complete Academic Scope / Prompt</h3>
+                <div className="p-4 rounded-2xl bg-white clay-card border border-white text-xs sm:text-sm text-[#464555] leading-relaxed whitespace-pre-wrap">
+                  {selectedRequest.description || 'No description provided.'}
                 </div>
               </div>
 
-              <div className="flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-end gap-2.5 sm:gap-3 pt-4 border-t border-[#F0EBFF]">
+              {/* Special Instructions */}
+              {selectedRequest.additionalInstructions && (
+                <div className="flex flex-col gap-1.5">
+                  <h3 className="text-sm font-bold text-[#1B192F]">Special Mentor / Coordinator Notes</h3>
+                  <div className="p-4 rounded-2xl bg-[#E4DFFF]/40 text-xs sm:text-sm text-[#1B192F] leading-relaxed border border-[#E4DFFF]">
+                    {selectedRequest.additionalInstructions}
+                  </div>
+                </div>
+              )}
+
+              {/* Uploaded Reference Files */}
+              <div className="flex flex-col gap-2">
+                <h3 className="text-sm font-bold text-[#1B192F]">
+                  Attached Reference Materials ({(selectedRequest.files || []).length})
+                </h3>
+
+                {(selectedRequest.files || []).length === 0 ? (
+                  <p className="text-xs text-[#777587] italic">No reference files uploaded for this request.</p>
+                ) : (
+                  <div className="flex flex-col gap-2">
+                    {selectedRequest.files.map((file, idx) => (
+                      <div
+                        key={idx}
+                        className="flex items-center justify-between p-3 rounded-2xl bg-[#F6F1FF] clay-pill-inset"
+                      >
+                        <div className="flex items-center gap-3 truncate">
+                          <span className="material-symbols-outlined text-[#4D41DF] text-[20px]">
+                            {getFileIcon(file.name)}
+                          </span>
+                          <span className="text-xs font-bold text-[#1B192F] truncate">
+                            {file.name}
+                          </span>
+                          <span className="text-[11px] text-[#777587] shrink-0">
+                            ({(file.size / (1024 * 1024)).toFixed(2)} MB)
+                          </span>
+                        </div>
+                        {file.url ? (
+                          <a
+                            href={file.url}
+                            download={file.name}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="w-8 h-8 rounded-full bg-white text-[#4D41DF] flex items-center justify-center clay-card hover:bg-[#FAF8FF] shadow-sm shrink-0"
+                          >
+                            <span className="material-symbols-outlined text-[16px]">download</span>
+                          </a>
+                        ) : (
+                          <span className="text-[10px] text-[#464555] bg-white px-2 py-1 rounded-full font-bold">
+                            Uploaded
+                          </span>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* Linked Inquiries Chat Action Card */}
+              <div className="p-5 rounded-3xl bg-[#F0EBFF] clay-pill flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mt-2">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-full bg-[#4D41DF] text-white flex items-center justify-center shrink-0 shadow-md">
+                    <span className="material-symbols-outlined text-[20px]">chat</span>
+                  </div>
+                  <div>
+                    <h4 className="text-sm font-bold text-[#1B192F]">Dedicated Inquiry Channel</h4>
+                    <p className="text-xs text-[#464555]">Direct communication linked to this request</p>
+                  </div>
+                </div>
+
                 <button
                   type="button"
-                  onClick={() => setProfileModalOpen(false)}
-                  className="w-full sm:w-auto px-5 py-2.5 rounded-full text-xs font-bold text-[#464555] hover:bg-[#F6F1FF] text-center cursor-pointer"
+                  onClick={() => navigate(`/inquiries?requestId=${selectedRequest.id}`)}
+                  className="px-4 py-2 rounded-full bg-[#4D41DF] text-white font-bold text-xs shadow-md hover:bg-[#675DF9] transition-transform active:scale-95 cursor-pointer shrink-0"
                 >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  className="w-full sm:w-auto px-6 py-2.5 rounded-full bg-[#4D41DF] text-white text-xs font-bold clay-btn-primary hover:bg-[#3d32ce] transition-all text-center cursor-pointer shadow-md"
-                >
-                  Save Changes
+                  Open Inquiries Chat
                 </button>
               </div>
-            </form>
+
+            </div>
+
+            {/* Drawer Bottom Bar */}
+            <div className="sticky bottom-0 bg-white/95 backdrop-blur-md p-6 border-t border-[#F0EBFF] shadow-lg flex items-center justify-between">
+              <button
+                type="button"
+                onClick={() => setSelectedRequest(null)}
+                className="px-6 py-2.5 rounded-full bg-[#F6F1FF] text-[#1B192F] text-xs font-bold clay-pill hover:bg-[#F0EBFF] transition-all cursor-pointer"
+              >
+                Close Window
+              </button>
+
+              <button
+                type="button"
+                onClick={() => navigate(`/inquiries?requestId=${selectedRequest.id}`)}
+                className="px-6 py-2.5 rounded-full bg-[#4D41DF] text-white text-xs font-bold shadow-lg hover:bg-[#675DF9] transition-transform active:scale-95 cursor-pointer flex items-center gap-1.5"
+              >
+                <span className="material-symbols-outlined text-[16px]">chat</span>
+                <span>Open Inquiries Chat</span>
+              </button>
+            </div>
+
           </div>
         </div>
       )}
 
-      {/* ======================================================== */}
-      {/* 6. MOBILE BOTTOM NAVIGATION                               */}
-      {/* ======================================================== */}
-      <MobileBottomNav activeTab="requests" onOpenProfile={() => setProfileModalOpen(true)} />
-
-      {/* ======================================================== */}
-      {/* 7. FOOTER                                                */}
-      {/* ======================================================== */}
-      <footer className="w-full bg-[#F6F1FF] border-t border-[#EAE5FF]/60 py-10 mt-auto">
-        <div className="max-w-7xl mx-auto px-4 md:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between gap-6">
-          <div className="flex flex-col items-center md:items-start gap-1">
-            <p className="text-sm font-bold text-[#1B192F]">Assignment Hub © 2025</p>
-            <p className="text-xs text-[#464555]">You give us your work — we take care of the rest.</p>
-          </div>
-          <div className="flex flex-wrap items-center justify-center gap-6 text-xs font-semibold text-[#464555]">
-            <Link to="/about" className="hover:text-[#4D41DF] transition-colors">About</Link>
-            <Link to="/contact" className="hover:text-[#4D41DF] transition-colors">Contact</Link>
-            <Link to="/support" className="hover:text-[#4D41DF] transition-colors">Support</Link>
-            <Link to="/privacy-policy" className="hover:text-[#4D41DF] transition-colors">Privacy Policy</Link>
-            <Link to="/terms-conditions" className="hover:text-[#4D41DF] transition-colors">Terms &amp; Conditions</Link>
-          </div>
-        </div>
-      </footer>
+      {/* Agent 3 Fixed Mobile Claymorphic Dock */}
+      <MobileBottomNav activePath="my-requests" />
     </div>
   );
 }

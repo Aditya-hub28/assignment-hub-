@@ -1,0 +1,649 @@
+<!DOCTYPE html><html lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<meta content="web_standard" name="shell-type">
+<link href="https://fonts.googleapis.com" rel="preconnect">
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<style>
+@layer base {
+  html, body { margin: 0; padding: 0; }
+  body { overscroll-behavior: none; }
+  main > :first-child { margin-top: 0 !important; }
+  main > :last-child { margin-bottom: 0 !important; }
+}
+::-webkit-scrollbar { display: none; }
+</style>
+<script src="https://cdn.tailwindcss.com"></script>
+<script id="tailwind-config">
+tailwind.config = {
+  darkMode: "class",
+  theme: {
+    extend: {
+      "colors": {
+        "surface-container-lowest": "#ffffff",
+        "outline": "#777587",
+        "on-tertiary-fixed": "#291800",
+        "inverse-on-surface": "#f3eeff",
+        "on-primary-fixed-variant": "#3622ca",
+        "surface-container": "#f0ebff",
+        "on-primary-container": "#fffbff",
+        "secondary-fixed": "#e4dfff",
+        "on-tertiary-fixed-variant": "#633f00",
+        "primary-fixed-dim": "#c4c0ff",
+        "inverse-surface": "#302e45",
+        "primary-fixed": "#e3dfff",
+        "tertiary-container": "#a06900",
+        "surface-bright": "#fcf8ff",
+        "tertiary-fixed": "#ffddb3",
+        "error": "#ba1a1a",
+        "on-secondary": "#ffffff",
+        "primary-container": "#675df9",
+        "primary": "#4d41df",
+        "tertiary": "#7f5300",
+        "secondary": "#5846c8",
+        "surface-variant": "#e4dffe",
+        "secondary-fixed-dim": "#c7bfff",
+        "secondary-container": "#7161e3",
+        "on-tertiary-container": "#fffbff",
+        "on-secondary-fixed": "#170065",
+        "inverse-primary": "#c4c0ff",
+        "on-primary-fixed": "#100069",
+        "surface-container-low": "#f6f1ff",
+        "on-error": "#ffffff",
+        "surface-container-highest": "#e4dffe",
+        "on-tertiary": "#ffffff",
+        "on-background": "#1b192f",
+        "background": "#fcf8ff",
+        "on-primary": "#ffffff",
+        "tertiary-fixed-dim": "#ffb951",
+        "on-surface": "#1b192f",
+        "error-container": "#ffdad6",
+        "surface": "#fcf8ff",
+        "surface-container-high": "#eae5ff",
+        "outline-variant": "#c7c4d8",
+        "on-error-container": "#93000a",
+        "on-surface-variant": "#464555",
+        "surface-tint": "#4f44e2",
+        "surface-dim": "#dbd6f5",
+        "on-secondary-container": "#fffbff",
+        "on-secondary-fixed-variant": "#422db2"
+      },
+      "borderRadius": {
+        "DEFAULT": "1rem",
+        "lg": "2rem",
+        "xl": "3rem",
+        "full": "9999px"
+      },
+      "spacing": {
+        "gutter": "1.5rem",
+        "space-xs": "0.25rem",
+        "space-lg": "1.5rem",
+        "space-sm": "0.5rem",
+        "gutter-mobile": "1rem",
+        "margin-mobile": "1.25rem",
+        "space-xl": "2.5rem",
+        "space-md": "1rem",
+        "margin": "3rem"
+      },
+      "fontFamily": {
+        "body-lg": ["Plus Jakarta Sans"],
+        "headline-md": ["Plus Jakarta Sans"],
+        "body-md": ["Plus Jakarta Sans"],
+        "display-mobile": ["Plus Jakarta Sans"],
+        "headline-lg": ["Plus Jakarta Sans"],
+        "display": ["Plus Jakarta Sans"],
+        "body-sm": ["Plus Jakarta Sans"],
+        "label-md": ["Plus Jakarta Sans"],
+        "label-sm": ["Plus Jakarta Sans"],
+        "label-lg": ["Plus Jakarta Sans"],
+        "headline-lg-mobile": ["Plus Jakarta Sans"],
+        "headline-sm": ["Plus Jakarta Sans"],
+        "title-md": ["Plus Jakarta Sans"]
+      },
+      "fontSize": {
+        "body-lg": ["18px", { "lineHeight": "28px", "letterSpacing": "0em", "fontWeight": "400" }],
+        "headline-md": ["28px", { "lineHeight": "36px", "letterSpacing": "-0.01em", "fontWeight": "700" }],
+        "body-md": ["16px", { "lineHeight": "24px", "letterSpacing": "0em", "fontWeight": "400" }],
+        "display-mobile": ["36px", { "lineHeight": "44px", "letterSpacing": "-0.02em", "fontWeight": "800" }],
+        "headline-lg": ["40px", { "lineHeight": "48px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+        "display": ["56px", { "lineHeight": "64px", "letterSpacing": "-0.03em", "fontWeight": "800" }],
+        "body-sm": ["14px", { "lineHeight": "20px", "letterSpacing": "0em", "fontWeight": "400" }],
+        "label-md": ["12px", { "lineHeight": "16px", "letterSpacing": "0.04em", "fontWeight": "600" }],
+        "label-sm": ["10px", { "lineHeight": "14px", "letterSpacing": "0.06em", "fontWeight": "700" }],
+        "label-lg": ["14px", { "lineHeight": "20px", "letterSpacing": "0.02em", "fontWeight": "700" }],
+        "headline-lg-mobile": ["28px", { "lineHeight": "36px", "letterSpacing": "-0.01em", "fontWeight": "700" }],
+        "headline-sm": ["22px", { "lineHeight": "30px", "letterSpacing": "0em", "fontWeight": "600" }],
+        "title-md": ["18px", { "lineHeight": "26px", "letterSpacing": "0em", "fontWeight": "600" }]
+      }
+    }
+  }
+};
+</script>
+</head>
+<body class="bg-background font-body-md text-on-surface antialiased selection:bg-primary-fixed selection:text-on-primary-fixed min-h-screen flex flex-col justify-between">
+<header class="fixed top-0 left-0 right-0 z-50 bg-surface/85 backdrop-blur-xl shadow-[0_12px_32px_rgba(108,99,255,0.06)]">
+<div class="h-20 w-full px-gutter md:px-margin flex items-center justify-between gap-gutter">
+<div class="flex items-center gap-space-lg">
+<a class="flex items-center gap-space-sm group focus:outline-none" data-path="home" href="#">
+<div class="w-10 h-10 rounded-full bg-primary flex items-center justify-center text-on-primary shadow-[inset_2px_2px_4px_rgba(255,255,255,0.45),inset_-2px_-2px_4px_rgba(0,0,0,0.1),6px_10px_20px_rgba(108,99,255,0.25)] transition-transform duration-200 group-hover:-translate-y-0.5">
+<span class="material-symbols-outlined text-[20px]">school</span>
+</div>
+<div class="flex items-center gap-space-sm">
+<span class="font-title-md text-title-md text-on-surface tracking-tight">AssignmentHub</span>
+<span class="px-space-sm py-space-xs rounded-full bg-secondary-fixed text-on-secondary-fixed-variant font-label-sm text-label-sm uppercase tracking-wider shadow-[inset_1px_1px_2px_rgba(255,255,255,0.8)]">ACADEMIC DESK</span>
+</div>
+</a>
+<nav class="hidden lg:flex items-center gap-space-xs p-space-xs rounded-full bg-surface-container-low shadow-[inset_2px_2px_4px_rgba(37,35,58,0.04),inset_-2px_-2px_4px_rgba(255,255,255,0.9)]" data-active-classes="bg-primary-container text-on-primary-container shadow-[inset_2px_2px_4px_rgba(255,255,255,0.4)]">
+<a class="px-space-md py-space-xs rounded-full font-label-lg text-label-lg text-on-surface-variant hover:text-on-surface hover:bg-surface-container transition-all duration-200" data-path="home" href="#">Home</a>
+<a class="px-space-md py-space-xs rounded-full font-label-lg text-label-lg text-on-surface-variant hover:text-on-surface hover:bg-surface-container transition-all duration-200" data-path="services" href="#">Services</a>
+<a aria-current="page" class="px-space-md py-space-xs rounded-full font-label-lg transition-all duration-200 bg-primary-container text-on-primary-container shadow-[inset_2px_2px_4px_rgba(255,255,255,0.4)]" data-path="my-requests" href="#">My Requests</a>
+<a class="px-space-md py-space-xs rounded-full font-label-lg text-label-lg text-on-surface-variant hover:text-on-surface hover:bg-surface-container transition-all duration-200" data-path="inquiries" href="#">Inquiries</a>
+</nav>
+</div>
+<div class="flex items-center gap-space-md">
+<a class="hidden sm:inline-flex items-center justify-center px-space-lg py-space-sm rounded-full bg-primary text-on-primary font-label-lg text-label-lg shadow-[6px_10px_20px_rgba(108,99,255,0.35),inset_2px_2px_4px_rgba(255,255,255,0.45),inset_-2px_-2px_4px_rgba(0,0,0,0.1)] transition-all duration-200 hover:-translate-y-0.5 active:translate-y-0 active:shadow-[4px_6px_12px_rgba(108,99,255,0.25)]" data-path="new-request" href="#">+ New Request</a>
+<div class="relative flex items-center justify-center">
+<button aria-label="Notifications" class="w-10 h-10 rounded-full bg-surface-container-lowest text-on-surface-variant flex items-center justify-center shadow-[inset_2px_2px_4px_rgba(255,255,255,0.8),inset_-2px_-2px_4px_rgba(108,99,255,0.12),4px_6px_12px_rgba(108,99,255,0.08)] hover:text-on-surface transition-colors focus:outline-none" type="button">
+<span class="material-symbols-outlined text-[20px]">notifications</span>
+</button>
+<span class="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-error text-on-error font-label-sm text-label-sm flex items-center justify-center shadow-[inset_1px_1px_2px_rgba(255,255,255,0.5),0_2px_6px_rgba(186,26,26,0.35)]">2</span>
+</div>
+<div class="flex items-center gap-space-sm pl-space-xs">
+<div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-on-primary shadow-[inset_2px_2px_4px_rgba(255,255,255,0.4),0_4px_10px_rgba(108,99,255,0.2)]">
+<span class="material-symbols-outlined text-[18px]">person</span>
+</div>
+<div class="hidden md:flex flex-col">
+<span class="font-label-lg text-label-lg text-on-surface leading-tight">Aditya K.</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant leading-tight">Student</span>
+</div>
+</div>
+</div>
+</div>
+</header>
+<main class="w-full pt-20 bg-background flex-grow">
+<div class="flex flex-col w-full">
+<div class="w-full px-gutter md:px-margin py-space-xl flex flex-col gap-space-xl max-w-7xl mx-auto">
+<!-- Top Header & Subtitle -->
+<div class="flex flex-col md:flex-row md:items-end justify-between gap-space-md">
+<div class="flex flex-col gap-space-xs">
+<div class="inline-flex items-center gap-space-xs px-space-md py-space-xs rounded-full bg-secondary-fixed text-on-secondary-fixed-variant font-label-sm text-label-sm w-fit shadow-[inset_1px_1px_2px_rgba(255,255,255,0.8)]">
+<span class="material-symbols-outlined text-[16px]">folder_managed</span>
+<span class="">STUDENT WORKSPACE</span>
+</div>
+<h1 class="font-headline-lg text-headline-lg text-on-surface tracking-tight">My Requests</h1>
+<p class="font-body-md text-body-md text-on-surface-variant max-w-2xl">
+          Track, review, and manage your academic briefs and active coordinator deliverables with real-time verification benchmarks.
+        </p>
+</div>
+<div class="flex items-center gap-space-sm">
+<button class="inline-flex items-center justify-center gap-space-xs px-space-lg py-space-sm rounded-full bg-surface-container-lowest text-on-surface font-label-lg text-label-lg shadow-[6px_10px_20px_rgba(108,99,255,0.08),inset_2px_2px_4px_rgba(255,255,255,0.9),inset_-2px_-2px_4px_rgba(108,99,255,0.06)] hover:-translate-y-0.5 active:translate-y-0 transition-transform" type="button">
+<span class="material-symbols-outlined text-[18px]">download</span>
+<span class="">Export Summary</span>
+</button>
+<button class="inline-flex items-center justify-center gap-space-xs px-space-lg py-space-sm rounded-full bg-primary text-on-primary font-label-lg text-label-lg shadow-[6px_10px_20px_rgba(108,99,255,0.35),inset_2px_2px_4px_rgba(255,255,255,0.45),inset_-2px_-2px_4px_rgba(0,0,0,0.1)] hover:-translate-y-0.5 active:translate-y-0 transition-transform" type="button">
+<span class="material-symbols-outlined text-[18px]">add_circle</span>
+<span class="">Submit Brief</span>
+</button>
+</div>
+</div>
+<!-- 4 Claymorphic Metric Cards -->
+<div class="grid grid-cols-1 sm:grid-cols-3 gap-space-md">
+<!-- Total Requests -->
+<div class="p-space-lg rounded-2xl bg-surface-container-lowest shadow-[12px_16px_32px_rgba(108,99,255,0.08),-8px_-8px_24px_rgba(255,255,255,0.9)] flex flex-col justify-between relative overflow-hidden transition-all duration-200 hover:-translate-y-1">
+<div class="flex items-center justify-between">
+<span class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider font-semibold">Total Requests</span>
+<div class="w-10 h-10 rounded-full bg-surface-container-high text-primary flex items-center justify-center shadow-[inset_2px_2px_4px_rgba(255,255,255,0.8),inset_-2px_-2px_4px_rgba(108,99,255,0.1)]">
+<span class="material-symbols-outlined text-[20px]">layers</span>
+</div>
+</div>
+<div class="mt-space-md flex items-baseline justify-between">
+<span class="font-display text-display text-on-surface font-extrabold leading-none">12</span>
+<span class="px-space-sm py-space-xs rounded-full bg-surface-container text-on-surface-variant font-label-sm text-label-sm shadow-[inset_1px_1px_2px_rgba(255,255,255,0.9)]">
+Lifetime
+</span>
+</div>
+<p class="mt-space-xs font-body-sm text-body-sm text-on-surface-variant">All lifetime submissions</p>
+</div>
+<!-- Active Requests -->
+<div class="p-space-lg rounded-2xl bg-surface-container-lowest shadow-[12px_16px_32px_rgba(108,99,255,0.08),-8px_-8px_24px_rgba(255,255,255,0.9)] flex flex-col justify-between relative overflow-hidden transition-all duration-200 hover:-translate-y-1">
+<div class="flex items-center justify-between">
+<span class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider font-semibold">Active Requests</span>
+<div class="w-10 h-10 rounded-full bg-secondary-fixed text-secondary flex items-center justify-center shadow-[inset_2px_2px_4px_rgba(255,255,255,0.8),inset_-2px_-2px_4px_rgba(88,70,200,0.1)]">
+<span class="material-symbols-outlined text-[20px]">sync</span>
+</div>
+</div>
+<div class="mt-space-md flex items-baseline justify-between">
+<span class="font-display text-display text-on-surface font-extrabold leading-none">5</span>
+<span class="px-space-sm py-space-xs rounded-full bg-secondary-container/20 text-secondary font-label-sm text-label-sm font-bold shadow-[inset_1px_1px_2px_rgba(255,255,255,0.9)]">
+Active
+</span>
+</div>
+<p class="mt-space-xs font-body-sm text-body-sm text-on-surface-variant">In progress or review</p>
+</div>
+<!-- Completed Requests -->
+<div class="p-space-lg rounded-2xl bg-surface-container-lowest shadow-[12px_16px_32px_rgba(108,99,255,0.08),-8px_-8px_24px_rgba(255,255,255,0.9)] flex flex-col justify-between relative overflow-hidden transition-all duration-200 hover:-translate-y-1">
+<div class="flex items-center justify-between">
+<span class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider font-semibold">Completed Requests</span>
+<div class="w-10 h-10 rounded-full bg-surface-container-high text-primary flex items-center justify-center shadow-[inset_2px_2px_4px_rgba(255,255,255,0.8),inset_-2px_-2px_4px_rgba(108,99,255,0.1)]">
+<span class="material-symbols-outlined text-[20px]">check_circle</span>
+</div>
+</div>
+<div class="mt-space-md flex items-baseline justify-between">
+<span class="font-display text-display text-on-surface font-extrabold leading-none">7</span>
+<span class="px-space-sm py-space-xs rounded-full bg-surface-container text-primary font-label-sm text-label-sm font-bold shadow-[inset_1px_1px_2px_rgba(255,255,255,0.9)]">
+Completed
+</span>
+</div>
+<p class="mt-space-xs font-body-sm text-body-sm text-on-surface-variant">Successfully delivered</p>
+</div>
+</div>
+<!-- Filter & Search Controls -->
+<div class="p-space-md rounded-2xl bg-surface-container-lowest shadow-[12px_16px_32px_rgba(108,99,255,0.06),-8px_-8px_24px_rgba(255,255,255,0.9)] flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-space-md">
+<!-- Status Tabs -->
+<div class="flex items-center gap-space-xs p-space-xs rounded-full bg-surface-container-low shadow-[inset_2px_2px_4px_rgba(37,35,58,0.04),inset_-2px_-2px_4px_rgba(255,255,255,0.9)] overflow-x-auto">
+<button class="request-tab px-space-md py-space-xs rounded-full font-label-md text-label-md transition-all duration-200 bg-primary-container text-on-primary-container shadow-[inset_2px_2px_4px_rgba(255,255,255,0.4)] whitespace-nowrap" type="button">
+          All Requests (12)
+        </button>
+<button class="request-tab px-space-md py-space-xs rounded-full font-label-md text-label-md transition-all duration-200 text-on-surface-variant hover:text-on-surface hover:bg-surface-container whitespace-nowrap" type="button">
+          Active (3)
+        </button>
+<button class="request-tab px-space-md py-space-xs rounded-full font-label-md text-label-md transition-all duration-200 text-on-surface-variant hover:text-on-surface hover:bg-surface-container whitespace-nowrap" type="button">
+          In Review (2)
+        </button>
+<button class="request-tab px-space-md py-space-xs rounded-full font-label-md text-label-md transition-all duration-200 text-on-surface-variant hover:text-on-surface hover:bg-surface-container whitespace-nowrap" type="button">
+          Completed (7)
+        </button>
+</div>
+<!-- Search & Sort Row -->
+<div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-space-sm">
+<!-- Search Input -->
+<div class="relative flex-grow min-w-[280px]">
+<span class="material-symbols-outlined absolute left-space-md top-1/2 -translate-y-1/2 text-outline text-[20px]">search</span>
+<input class="w-full pl-11 pr-space-md py-space-sm rounded-full bg-surface-container-low text-on-surface font-body-sm text-body-sm shadow-[inset_2px_2px_4px_rgba(37,35,58,0.06),inset_-2px_-2px_4px_rgba(255,255,255,0.9)] focus:outline-none focus:ring-0 focus:bg-surface-container-lowest placeholder:text-outline" placeholder="Search by Request ID, Topic, or Service..." type="text">
+</div>
+<!-- Sort Select -->
+<div class="relative">
+<select class="w-full sm:w-auto appearance-none pl-space-md pr-10 py-space-sm rounded-full bg-surface-container-low text-on-surface-variant font-label-sm text-label-sm shadow-[inset_2px_2px_4px_rgba(37,35,58,0.04),inset_-2px_-2px_4px_rgba(255,255,255,0.9)] focus:outline-none cursor-pointer">
+<option>Sort by: Newest Submission</option>
+<option>Sort by: Urgent Deadline</option>
+<option>Sort by: Course Code</option>
+</select>
+<span class="material-symbols-outlined pointer-events-none absolute right-space-md top-1/2 -translate-y-1/2 text-outline text-[18px]">expand_more</span>
+</div>
+</div>
+</div>
+<!-- REQUEST LIST -->
+<div class="flex flex-col gap-space-lg"><!-- Compact Request Row 1 (In Progress) -->
+<article class="group p-space-md md:px-space-lg md:py-space-md rounded-2xl bg-surface-container-lowest shadow-[12px_16px_32px_rgba(108,99,255,0.08),-8px_-8px_24px_rgba(255,255,255,0.95)] hover:shadow-[12px_16px_32px_rgba(108,99,255,0.12),-8px_-8px_24px_rgba(255,255,255,1)] flex flex-col md:flex-row md:items-center justify-between gap-space-md transition-all duration-200 cursor-pointer hover:-translate-y-0.5 border-l-4 border-primary relative overflow-hidden" onclick="showRequestDetails('REQ-20261004-001')">
+<div class="flex flex-col md:flex-row md:items-center gap-space-md flex-grow min-w-0">
+<div class="flex items-center gap-space-xs shrink-0">
+<button class="inline-flex items-center gap-space-xs px-space-sm py-space-xs rounded-full bg-surface-container font-label-sm text-label-sm text-primary tracking-wide shadow-[inset_1px_1px_2px_rgba(255,255,255,0.8)] hover:bg-surface-container-high transition-colors" onclick="event.stopPropagation(); navigator.clipboard.writeText('REQ-20261004-001')" title="Copy Request ID" type="button">
+<span class="">REQ-20261004-001</span>
+<span class="material-symbols-outlined text-[14px]">content_copy</span>
+</button>
+<span class="px-space-sm py-space-xs rounded-full bg-secondary-fixed text-on-secondary-fixed font-label-sm text-label-sm font-semibold shadow-[inset_1px_1px_2px_rgba(255,255,255,0.8)]">Assignment Writing</span>
+</div>
+<div class="flex flex-col min-w-0 pr-space-sm">
+<div class="flex items-center gap-space-xs">
+<span class="font-label-sm text-label-sm text-outline">CS402 Database Systems</span>
+</div>
+<h2 class="font-headline-sm text-[18px] text-on-surface font-bold truncate group-hover:text-primary transition-colors">
+        Distributed Database Architectures &amp; Replication Schemes
+      </h2>
+</div>
+</div>
+<div class="flex flex-wrap sm:flex-nowrap items-center justify-between md:justify-end gap-space-md shrink-0">
+<div class="flex flex-col text-left md:text-right">
+<span class="font-label-sm text-label-sm text-on-surface-variant">Target Due</span>
+<span class="font-label-md text-label-md font-bold text-tertiary">30 Oct 2026, 11:59 PM</span>
+</div>
+<div class="inline-flex items-center gap-space-xs px-space-md py-space-xs rounded-full bg-secondary-container/15 text-primary font-label-sm text-label-sm font-semibold shadow-[inset_1px_1px_2px_rgba(255,255,255,0.8)]">
+<span class="w-2 h-2 rounded-full bg-primary animate-ping"></span>
+<span class="">In Progress</span>
+</div>
+<button class="inline-flex items-center justify-center gap-space-xs px-space-md py-space-xs rounded-full bg-primary text-on-primary font-label-md text-label-md shadow-[6px_10px_20px_rgba(108,99,255,0.35),inset_2px_2px_4px_rgba(255,255,255,0.45),inset_-2px_-2px_4px_rgba(0,0,0,0.1)] transition-transform group-hover:scale-105" type="button">
+<span class="">Details</span>
+<span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+</button>
+</div>
+</article>
+<!-- Compact Request Row 2 (In Coordinator Review) -->
+<article class="group p-space-md md:px-space-lg md:py-space-md rounded-2xl bg-surface-container-lowest shadow-[12px_16px_32px_rgba(108,99,255,0.08),-8px_-8px_24px_rgba(255,255,255,0.95)] hover:shadow-[12px_16px_32px_rgba(108,99,255,0.12),-8px_-8px_24px_rgba(255,255,255,1)] flex flex-col md:flex-row md:items-center justify-between gap-space-md transition-all duration-200 cursor-pointer hover:-translate-y-0.5 border-l-4 border-tertiary relative overflow-hidden" onclick="showRequestDetails('REQ-20261002-089')">
+<div class="flex flex-col md:flex-row md:items-center gap-space-md flex-grow min-w-0">
+<div class="flex items-center gap-space-xs shrink-0">
+<button class="inline-flex items-center gap-space-xs px-space-sm py-space-xs rounded-full bg-surface-container font-label-sm text-label-sm text-primary tracking-wide shadow-[inset_1px_1px_2px_rgba(255,255,255,0.8)] hover:bg-surface-container-high transition-colors" onclick="event.stopPropagation(); navigator.clipboard.writeText('REQ-20261002-089')" title="Copy Request ID" type="button">
+<span class="">REQ-20261002-089</span>
+<span class="material-symbols-outlined text-[14px]">content_copy</span>
+</button>
+<span class="px-space-sm py-space-xs rounded-full bg-secondary-fixed text-on-secondary-fixed font-label-sm text-label-sm font-semibold shadow-[inset_1px_1px_2px_rgba(255,255,255,0.8)]">Custom Scope</span>
+</div>
+<div class="flex flex-col min-w-0 pr-space-sm">
+<div class="flex items-center gap-space-xs">
+<span class="font-label-sm text-label-sm text-outline">Aerospace Engineering / Viscous Flow</span>
+</div>
+<h2 class="font-headline-sm text-[18px] text-on-surface font-bold truncate group-hover:text-primary transition-colors">
+        Computational Fluid Dynamics Simulation &amp; Case Analysis Report
+      </h2>
+</div>
+</div>
+<div class="flex flex-wrap sm:flex-nowrap items-center justify-between md:justify-end gap-space-md shrink-0">
+<div class="flex flex-col text-left md:text-right">
+<span class="font-label-sm text-label-sm text-on-surface-variant">Target Due</span>
+<span class="font-label-md text-label-md font-bold text-on-surface">05 Nov 2026, 11:59 PM</span>
+</div>
+<div class="inline-flex items-center gap-space-xs px-space-md py-space-xs rounded-full bg-tertiary-fixed text-on-tertiary-fixed font-label-sm text-label-sm font-semibold shadow-[inset_1px_1px_2px_rgba(255,255,255,0.8)]">
+<span class="material-symbols-outlined text-[14px]">hourglass_top</span>
+<span class="">In Review</span>
+</div>
+<button class="inline-flex items-center justify-center gap-space-xs px-space-md py-space-xs rounded-full bg-surface-container-low text-on-surface font-label-md text-label-md shadow-[inset_2px_2px_4px_rgba(255,255,255,0.9),inset_-2px_-2px_4px_rgba(108,99,255,0.08)] hover:bg-surface-container transition-all group-hover:text-primary" type="button">
+<span class="">Details</span>
+<span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+</button>
+</div>
+</article>
+<!-- Compact Request Row 3 (Coordinator Matching) -->
+<article class="group p-space-md md:px-space-lg md:py-space-md rounded-2xl bg-surface-container-lowest shadow-[12px_16px_32px_rgba(108,99,255,0.08),-8px_-8px_24px_rgba(255,255,255,0.95)] hover:shadow-[12px_16px_32px_rgba(108,99,255,0.12),-8px_-8px_24px_rgba(255,255,255,1)] flex flex-col md:flex-row md:items-center justify-between gap-space-md transition-all duration-200 cursor-pointer hover:-translate-y-0.5 border-l-4 border-secondary relative overflow-hidden" onclick="showRequestDetails('REQ-20260928-112')">
+<div class="flex flex-col md:flex-row md:items-center gap-space-md flex-grow min-w-0">
+<div class="flex items-center gap-space-xs shrink-0">
+<button class="inline-flex items-center gap-space-xs px-space-sm py-space-xs rounded-full bg-surface-container font-label-sm text-label-sm text-primary tracking-wide shadow-[inset_1px_1px_2px_rgba(255,255,255,0.8)] hover:bg-surface-container-high transition-colors" onclick="event.stopPropagation(); navigator.clipboard.writeText('REQ-20260928-112')" title="Copy Request ID" type="button">
+<span class="">REQ-20260928-112</span>
+<span class="material-symbols-outlined text-[14px]">content_copy</span>
+</button>
+<span class="px-space-sm py-space-xs rounded-full bg-secondary-fixed text-on-secondary-fixed font-label-sm text-label-sm font-semibold shadow-[inset_1px_1px_2px_rgba(255,255,255,0.8)]">Literature Review</span>
+</div>
+<div class="flex flex-col min-w-0 pr-space-sm">
+<div class="flex items-center gap-space-xs">
+<span class="font-label-sm text-label-sm text-outline">Biomedical Informatics / GenAI</span>
+</div>
+<h2 class="font-headline-sm text-[18px] text-on-surface font-bold truncate group-hover:text-primary transition-colors">
+        Systematic Meta-Analysis on Transformer Models in Oncology Diagnostics
+      </h2>
+</div>
+</div>
+<div class="flex flex-wrap sm:flex-nowrap items-center justify-between md:justify-end gap-space-md shrink-0">
+<div class="flex flex-col text-left md:text-right">
+<span class="font-label-sm text-label-sm text-on-surface-variant">Target Due</span>
+<span class="font-label-md text-label-md font-bold text-on-surface">12 Nov 2026, 06:00 PM</span>
+</div>
+<div class="inline-flex items-center gap-space-xs px-space-md py-space-xs rounded-full bg-surface-container text-secondary font-label-sm text-label-sm font-semibold shadow-[inset_1px_1px_2px_rgba(255,255,255,0.8)]">
+<span class="material-symbols-outlined text-[14px]">person_search</span>
+<span class="">Specialist Matching</span>
+</div>
+<button class="inline-flex items-center justify-center gap-space-xs px-space-md py-space-xs rounded-full bg-surface-container-low text-on-surface font-label-md text-label-md shadow-[inset_2px_2px_4px_rgba(255,255,255,0.9),inset_-2px_-2px_4px_rgba(108,99,255,0.08)] hover:bg-surface-container transition-all group-hover:text-primary" type="button">
+<span class="">Details</span>
+<span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+</button>
+</div>
+</article>
+<!-- Compact Request Row 4 (Delivered & Completed) -->
+<article class="group p-space-md md:px-space-lg md:py-space-md rounded-2xl bg-surface-container-lowest shadow-[12px_16px_32px_rgba(108,99,255,0.08),-8px_-8px_24px_rgba(255,255,255,0.95)] hover:shadow-[12px_16px_32px_rgba(108,99,255,0.12),-8px_-8px_24px_rgba(255,255,255,1)] flex flex-col md:flex-row md:items-center justify-between gap-space-md transition-all duration-200 cursor-pointer hover:-translate-y-0.5 border-l-4 border-surface-container-highest relative overflow-hidden" onclick="showRequestDetails('REQ-20260918-044')">
+<div class="flex flex-col md:flex-row md:items-center gap-space-md flex-grow min-w-0">
+<div class="flex items-center gap-space-xs shrink-0">
+<button class="inline-flex items-center gap-space-xs px-space-sm py-space-xs rounded-full bg-surface-container font-label-sm text-label-sm text-primary tracking-wide shadow-[inset_1px_1px_2px_rgba(255,255,255,0.8)] hover:bg-surface-container-high transition-colors" onclick="event.stopPropagation(); navigator.clipboard.writeText('REQ-20260918-044')" title="Copy Request ID" type="button">
+<span class="">REQ-20260918-044</span>
+<span class="material-symbols-outlined text-[14px]">content_copy</span>
+</button>
+<span class="px-space-sm py-space-xs rounded-full bg-secondary-fixed text-on-secondary-fixed font-label-sm text-label-sm font-semibold shadow-[inset_1px_1px_2px_rgba(255,255,255,0.8)]">Code &amp; Systems</span>
+</div>
+<div class="flex flex-col min-w-0 pr-space-sm">
+<div class="flex items-center gap-space-xs">
+<span class="font-label-sm text-label-sm text-outline">Cloud Computing / Distributed Systems</span>
+</div>
+<h2 class="font-headline-sm text-[18px] text-on-surface font-bold truncate group-hover:text-primary transition-colors">
+        Full-Stack Microservices Architecture &amp; Containerization with Docker
+      </h2>
+</div>
+</div>
+<div class="flex flex-wrap sm:flex-nowrap items-center justify-between md:justify-end gap-space-md shrink-0">
+<div class="flex flex-col text-left md:text-right">
+<span class="font-label-sm text-label-sm text-on-surface-variant">Delivered On</span>
+<span class="font-label-md text-label-md font-bold text-primary">26 Sep 2026</span>
+</div>
+<div class="inline-flex items-center gap-space-xs px-space-md py-space-xs rounded-full bg-surface-container text-primary font-label-sm text-label-sm font-semibold shadow-[inset_1px_1px_2px_rgba(255,255,255,0.8)]">
+<span class="material-symbols-outlined text-[14px]">verified</span>
+<span class="">Completed</span>
+</div>
+<button class="inline-flex items-center justify-center gap-space-xs px-space-md py-space-xs rounded-full bg-surface-container-low text-on-surface font-label-md text-label-md shadow-[inset_2px_2px_4px_rgba(255,255,255,0.9),inset_-2px_-2px_4px_rgba(108,99,255,0.08)] hover:bg-surface-container transition-all group-hover:text-primary" type="button">
+<span class="">Details</span>
+<span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+</button>
+</div>
+</article></div>
+<!-- Visual Academic Integrity Banner -->
+
+</div>
+<!-- INTERACTIVE REQUEST DETAILS SLIDE-OVER / MODAL -->
+<!-- INTERACTIVE REQUEST DETAILS SLIDE-OVER / DRAWER -->
+<div class="fixed inset-0 z-50 flex justify-end bg-inverse-surface/40 backdrop-blur-sm transition-opacity duration-300 opacity-0 pointer-events-none" id="request-details-modal">
+<div class="w-full max-w-2xl h-full bg-surface-container-lowest shadow-[-16px_0_40px_rgba(108,99,255,0.18)] flex flex-col justify-between overflow-y-auto transform translate-x-full transition-transform duration-300" id="modal-panel">
+<!-- Dynamic Header -->
+<div class="sticky top-0 bg-surface-container-lowest/95 backdrop-blur-md p-space-lg flex items-center justify-between shadow-[0_4px_12px_rgba(108,99,255,0.04)] z-10">
+<div class="flex items-center gap-space-sm">
+<button class="group flex items-center gap-space-xs px-space-md py-space-xs rounded-full bg-secondary-fixed text-on-secondary-fixed font-label-md text-label-md font-bold shadow-[inset_1px_1px_2px_rgba(255,255,255,0.8)]" id="modal-req-id-btn" onclick="navigator.clipboard.writeText(this.innerText)" title="Click to copy ID" type="button">
+<span id="modal-req-id" class="">REQ-20261004-001</span>
+<span class="material-symbols-outlined text-[14px]">content_copy</span>
+</button>
+<div class="inline-flex items-center gap-space-xs px-space-sm py-space-xs rounded-full bg-secondary-container/20 text-primary font-label-sm text-label-sm font-semibold shadow-[inset_1px_1px_2px_rgba(255,255,255,0.8)]" id="modal-status-pill">
+<span class="w-2 h-2 rounded-full bg-primary-container animate-ping"></span>
+<span id="modal-status-text" class="">In Progress</span>
+</div>
+</div>
+<button aria-label="Close Drawer" class="w-10 h-10 rounded-full bg-surface-container-low text-on-surface-variant flex items-center justify-center shadow-[inset_2px_2px_4px_rgba(255,255,255,0.8),inset_-2px_-2px_4px_rgba(108,99,255,0.1)] hover:text-on-surface transition-colors focus:outline-none" onclick="closeDetailsModal()" type="button">
+<span class="material-symbols-outlined text-[20px]">close</span>
+</button>
+</div>
+<!-- Dynamic Body Content -->
+<div class="p-space-lg md:p-space-xl flex flex-col gap-space-lg">
+<!-- Title and Course -->
+<div class="flex flex-col gap-space-xs">
+<div class="flex items-center gap-space-xs">
+<span class="px-space-sm py-space-xs rounded-full bg-surface-container font-label-sm text-label-sm text-on-surface-variant font-semibold shadow-[inset_1px_1px_2px_rgba(255,255,255,0.8)]" id="modal-subject">
+            Computer Science CS402 / Database Systems
+          </span>
+</div>
+<h2 class="font-headline-sm text-headline-sm text-on-surface font-bold mt-space-xs" id="modal-title">
+          Distributed Database Architectures &amp; Replication Schemes
+        </h2>
+</div>
+<!-- Status Stepper Card -->
+<div class="p-space-lg rounded-2xl bg-surface-container-low shadow-[inset_2px_2px_4px_rgba(37,35,58,0.04),inset_-2px_-2px_4px_rgba(255,255,255,0.9)] flex flex-col gap-space-md">
+<div class="flex items-center justify-between">
+<span class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider font-bold">Progression Milestone</span>
+<span class="font-label-sm text-label-sm text-primary font-bold" id="modal-step-counter">Step 3 of 5</span>
+</div>
+<div class="relative flex items-center justify-between">
+<div class="absolute left-4 right-4 top-1/2 -translate-y-1/2 h-1 bg-surface-container-highest rounded-full z-0">
+<div class="h-full bg-primary-container rounded-full w-1/2 transition-all duration-300" id="modal-progress-bar"></div>
+</div>
+<div class="relative z-10 flex flex-col items-center">
+<div class="w-8 h-8 rounded-full bg-primary text-on-primary flex items-center justify-center shadow-[inset_1px_1px_2px_rgba(255,255,255,0.4)]">
+<span class="material-symbols-outlined text-[16px]">check</span>
+</div>
+<span class="mt-1 font-label-sm text-label-sm text-on-surface font-semibold">Submitted</span>
+</div>
+<div class="relative z-10 flex flex-col items-center">
+<div class="w-8 h-8 rounded-full bg-primary text-on-primary flex items-center justify-center shadow-[inset_1px_1px_2px_rgba(255,255,255,0.4)]">
+<span class="material-symbols-outlined text-[16px]">check</span>
+</div>
+<span class="mt-1 font-label-sm text-label-sm text-on-surface font-semibold">Review</span>
+</div>
+<div class="relative z-10 flex flex-col items-center">
+<div class="w-8 h-8 rounded-full bg-primary-container text-on-primary-container flex items-center justify-center shadow-[0_0_12px_rgba(103,93,249,0.5),inset_1px_1px_2px_rgba(255,255,255,0.5)]" id="modal-step-assigned-icon">
+<span class="material-symbols-outlined text-[16px]">pending</span>
+</div>
+<span class="mt-1 font-label-sm text-label-sm text-primary font-bold">Assigned</span>
+</div>
+<div class="relative z-10 flex flex-col items-center">
+<div class="w-8 h-8 rounded-full bg-surface-container-highest text-outline flex items-center justify-center shadow-[inset_1px_1px_2px_rgba(255,255,255,0.8)]">
+<span class="material-symbols-outlined text-[16px]">verified</span>
+</div>
+<span class="mt-1 font-label-sm text-label-sm text-outline">Audit</span>
+</div>
+<div class="relative z-10 flex flex-col items-center">
+<div class="w-8 h-8 rounded-full bg-surface-container-highest text-outline flex items-center justify-center shadow-[inset_1px_1px_2px_rgba(255,255,255,0.8)]">
+<span class="material-symbols-outlined text-[16px]">done_all</span>
+</div>
+<span class="mt-1 font-label-sm text-label-sm text-outline">Delivered</span>
+</div>
+</div>
+</div>
+<!-- Key Parameters Grid -->
+<div class="grid grid-cols-2 sm:grid-cols-3 gap-space-sm p-space-md rounded-2xl bg-surface-container-low shadow-[inset_2px_2px_4px_rgba(37,35,58,0.04),inset_-2px_-2px_4px_rgba(255,255,255,0.9)]">
+<div class="flex flex-col">
+<span class="font-label-sm text-label-sm text-on-surface-variant">Service Category</span>
+<span class="font-label-md text-label-md text-on-surface font-semibold" id="modal-category">Assignment Writing</span>
+</div>
+<div class="flex flex-col">
+<span class="font-label-sm text-label-sm text-on-surface-variant">Target Volume</span>
+<span class="font-label-md text-label-md text-on-surface font-semibold" id="modal-volume">12 Pages (~3,000 wds)</span>
+</div>
+<div class="flex flex-col">
+<span class="font-label-sm text-label-sm text-on-surface-variant">Citation Style</span>
+<span class="font-label-md text-label-md text-on-surface font-semibold" id="modal-citation">IEEE Standard Style</span>
+</div>
+<div class="flex flex-col">
+<span class="font-label-sm text-label-sm text-on-surface-variant">Submission Date</span>
+<span class="font-label-md text-label-md text-on-surface font-semibold" id="modal-submitted">Oct 24, 2026</span>
+</div>
+<div class="flex flex-col sm:col-span-2">
+<span class="font-label-sm text-label-sm text-on-surface-variant">Target Final Deadline</span>
+<span class="font-label-md text-label-md text-primary font-bold" id="modal-deadline">30 Oct 2026, 11:59 PM (EST)</span>
+</div>
+</div>
+<!-- Full Scope & Requirements Prompt -->
+<div class="flex flex-col gap-space-xs">
+<h3 class="font-title-md text-title-md text-on-surface font-bold">Complete Academic Scope</h3>
+<div class="p-space-md rounded-2xl bg-surface-container-lowest shadow-[inset_2px_2px_4px_rgba(37,35,58,0.04),inset_-2px_-2px_4px_rgba(255,255,255,0.9)] font-body-md text-body-md text-on-surface-variant leading-relaxed">
+<p id="modal-description" class="">
+            Evaluate multi-master active-active database replication versus single-leader consensus protocols (Raft and Paxos). Detail conflict resolution algorithms (CRDTs vs Last-Write-Wins), partition tolerance edge cases under network partitions, and demonstrate latency metrics using an architectural benchmark comparison table.
+          </p>
+</div>
+</div>
+<!-- Special Instructions / Notes -->
+<div class="flex flex-col gap-space-xs">
+<h3 class="font-title-md text-title-md text-on-surface font-bold">Special Instructions</h3>
+<div class="p-space-md rounded-2xl bg-surface-container/60 shadow-[inset_1px_1px_2px_rgba(255,255,255,0.8)] font-body-sm text-body-sm text-on-surface-variant" id="modal-instructions">
+          Please emphasize CAP theorem trade-offs in Section 3 and include source SQL script queries in an appendix. Ensure all distributed consensus pseudocode follows standard academic formatting.
+        </div>
+</div>
+<!-- Reference Files -->
+<div class="flex flex-col gap-space-xs">
+<h3 class="font-title-md text-title-md text-on-surface font-bold">Uploaded Reference Materials</h3>
+<div class="flex flex-col gap-space-xs" id="modal-files-list">
+<div class="flex items-center justify-between p-space-sm px-space-md rounded-xl bg-surface-container-low shadow-[inset_1px_1px_2px_rgba(255,255,255,0.8)]">
+<div class="flex items-center gap-space-sm truncate">
+<span class="material-symbols-outlined text-primary text-[20px]">picture_as_pdf</span>
+<span class="font-label-md text-label-md text-on-surface truncate">Database_Assignment_Rubric_2026.pdf</span>
+<span class="text-outline text-label-sm shrink-0">(3.4 MB)</span>
+</div>
+<button class="w-8 h-8 shrink-0 rounded-full bg-surface-container-lowest text-primary flex items-center justify-center shadow-[inset_1px_1px_2px_rgba(255,255,255,0.8),inset_-1px_-1px_2px_rgba(108,99,255,0.1)] hover:bg-surface-container transition-colors" type="button">
+<span class="material-symbols-outlined text-[16px]">download</span>
+</button>
+</div>
+<div class="flex items-center justify-between p-space-sm px-space-md rounded-xl bg-surface-container-low shadow-[inset_1px_1px_2px_rgba(255,255,255,0.8)]">
+<div class="flex items-center gap-space-sm truncate">
+<span class="material-symbols-outlined text-primary text-[20px]">folder_zip</span>
+<span class="font-label-md text-label-md text-on-surface truncate">Sample_Schema_Architecture_Seeds.zip</span>
+<span class="text-outline text-label-sm shrink-0">(14.2 MB)</span>
+</div>
+<button class="w-8 h-8 shrink-0 rounded-full bg-surface-container-lowest text-primary flex items-center justify-center shadow-[inset_1px_1px_2px_rgba(255,255,255,0.8),inset_-1px_-1px_2px_rgba(108,99,255,0.1)] hover:bg-surface-container transition-colors" type="button">
+<span class="material-symbols-outlined text-[16px]">download</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Assigned Coordinator & Chat Trigger -->
+<div class="p-space-lg rounded-2xl bg-surface-container shadow-[12px_16px_32px_rgba(108,99,255,0.06),-8px_-8px_24px_rgba(255,255,255,0.9)] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-space-md">
+<div class="flex items-center gap-space-md">
+<div class="w-12 h-12 rounded-full bg-primary flex items-center justify-center text-on-primary shadow-[inset_2px_2px_4px_rgba(255,255,255,0.4)] shrink-0">
+<span class="material-symbols-outlined text-[24px]">psychology</span>
+</div>
+<div class="flex flex-col">
+<span class="font-label-sm text-label-sm text-on-surface-variant">Academic Coordinator</span>
+<span class="font-title-md text-title-md text-on-surface font-bold" id="modal-coordinator-name">Dr. Marcus Vance</span>
+<span class="font-label-sm text-label-sm text-primary" id="modal-coordinator-role">CS Systems &amp; Concurrency Fellow</span>
+</div>
+</div>
+<button class="inline-flex items-center justify-center gap-space-xs px-space-md py-space-xs rounded-full bg-surface-container-lowest text-primary font-label-md text-label-md shadow-[inset_2px_2px_4px_rgba(255,255,255,0.9),inset_-2px_-2px_4px_rgba(108,99,255,0.08)] hover:bg-surface-container-high transition-all shrink-0" type="button">
+<span class="material-symbols-outlined text-[18px]">chat</span>
+<span class="">Open Inquiries Chat</span>
+</button>
+</div>
+</div>
+<!-- Drawer Bottom Actions -->
+<div class="sticky bottom-0 bg-surface-container-lowest/95 backdrop-blur-md p-space-lg shadow-[0_-4px_16px_rgba(108,99,255,0.06)] flex items-center justify-between">
+<button class="px-space-lg py-space-sm rounded-full bg-surface-container-low text-on-surface font-label-lg text-label-lg shadow-[inset_2px_2px_4px_rgba(255,255,255,0.9),inset_-2px_-2px_4px_rgba(108,99,255,0.08)] hover:bg-surface-container transition-all" onclick="closeDetailsModal()" type="button">
+        Close Window
+      </button>
+<button class="inline-flex items-center justify-center gap-space-xs px-space-lg py-space-sm rounded-full bg-primary text-on-primary font-label-lg text-label-lg shadow-[6px_10px_20px_rgba(108,99,255,0.35),inset_2px_2px_4px_rgba(255,255,255,0.45),inset_-2px_-2px_4px_rgba(0,0,0,0.1)] hover:-translate-y-0.5 active:translate-y-0 transition-transform" type="button">
+<span class="material-symbols-outlined text-[18px]">chat</span>
+<span class="">Open Live Briefing</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Vanilla Javascript for Drawer micro-interactions and tab selection -->
+<script>
+    function openDetailsModal() {
+      const modal = document.getElementById('request-details-modal');
+      const panel = document.getElementById('modal-panel');
+      modal.classList.remove('opacity-0', 'pointer-events-none');
+      modal.classList.add('opacity-100');
+      panel.classList.remove('translate-x-full');
+      panel.classList.add('translate-x-0');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeDetailsModal() {
+      const modal = document.getElementById('request-details-modal');
+      const panel = document.getElementById('modal-panel');
+      modal.classList.remove('opacity-100');
+      modal.classList.add('opacity-0', 'pointer-events-none');
+      panel.classList.remove('translate-x-0');
+      panel.classList.add('translate-x-full');
+      document.body.style.overflow = '';
+    }
+
+    // Modal background backdrop click handler
+    document.getElementById('request-details-modal').addEventListener('click', function(e) {
+      if (e.target === this) {
+        closeDetailsModal();
+      }
+    });
+
+    // Tab toggle styling
+    const tabs = document.querySelectorAll('.request-tab');
+    tabs.forEach(tab => {
+      tab.addEventListener('click', function() {
+        tabs.forEach(t => {
+          t.className = 'request-tab px-space-md py-space-xs rounded-full font-label-md text-label-md transition-all duration-200 text-on-surface-variant hover:text-on-surface hover:bg-surface-container whitespace-nowrap';
+        });
+        this.className = 'request-tab px-space-md py-space-xs rounded-full font-label-md text-label-md transition-all duration-200 bg-primary-container text-on-primary-container shadow-[inset_2px_2px_4px_rgba(255,255,255,0.4)] whitespace-nowrap';
+      });
+    });
+  </script>
+</div>
+</main>
+<footer class="w-full bg-surface-container-low shadow-[inset_0_2px_6px_rgba(255,255,255,0.9)] py-space-xl">
+<div class="w-full px-gutter md:px-margin flex flex-col md:flex-row items-center justify-between gap-space-lg">
+<div class="flex flex-col sm:flex-row items-center gap-space-md">
+<div class="flex items-center gap-space-xs px-space-md py-space-xs rounded-full bg-surface-container-lowest text-on-surface-variant font-label-sm text-label-sm shadow-[inset_2px_2px_4px_rgba(255,255,255,0.8),inset_-2px_-2px_4px_rgba(108,99,255,0.1),4px_6px_14px_rgba(108,99,255,0.06)]">
+<span class="material-symbols-outlined text-primary text-[16px]">verified_user</span>
+<span class="">FERPA Encrypted</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant text-center sm:text-left">© 2024 AssignmentHub Academic Services. All rights reserved.</p>
+</div>
+<nav class="flex flex-wrap items-center justify-center gap-space-md">
+<a class="font-label-sm text-label-sm text-on-surface-variant hover:text-primary transition-colors" data-path="about" href="#">About</a>
+<a class="font-label-sm text-label-sm text-on-surface-variant hover:text-primary transition-colors" data-path="terms" href="#">Terms</a>
+<a class="font-label-sm text-label-sm text-on-surface-variant hover:text-primary transition-colors" data-path="privacy-policy" href="#">Privacy Policy</a>
+<a class="font-label-sm text-label-sm text-on-surface-variant hover:text-primary transition-colors" data-path="academic-integrity" href="#">Academic Integrity</a>
+</nav>
+</div>
+</footer>
+
+
+</body></html>

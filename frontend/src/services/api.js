@@ -109,5 +109,10 @@ export const api = {
     createRequest: (body) => request('/services/requests', { method: 'POST', body }),
     getRequests: () => request('/services/requests', { method: 'GET' }),
     getRequestById: (id) => request(`/services/requests/${id}`, { method: 'GET' })
+  },
+  inquiries: {
+    getInquiries: () => request('/inquiries', { method: 'GET' }),
+    getInquiryById: (id) => request(`/inquiries/${id}`, { method: 'GET' }),
+    sendMessage: (id, body) => request(`/inquiries/${id}/messages`, { method: 'POST', body })
   }
 };

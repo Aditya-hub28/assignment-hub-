@@ -1,1328 +1,713 @@
-import React, { useState, useRef, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
 import { MobileBottomNav } from '../components/MobileBottomNav';
 import { Navbar } from '../components/Navbar';
-
-// Dataset aligned with Stitch Screen 303be452a5684a22ad716eaa66b36904
-const INITIAL_INQUIRIES = [
-  {
-    id: 'REQ-1024',
-    title: 'Assignment Deadline Question',
-    requestNumber: '#REQ-1024',
-    requestTitle: 'Engineering Mathematics Assignment',
-    status: 'open',
-    quote: '“Can I get this assignment delivered one day earlier? My professor moved the submission deadline to Friday morning at 10 AM instead of Saturday.”',
-    messagesCount: 2,
-    updatedAt: 'Updated 2h ago',
-    category: 'Request Question',
-    coordinator: 'Dr. Banerjee (Academic Reviewer)',
-    createdAt: '26 Sep 2026, 10:30 AM',
-    lastActivity: '26 Sep 2026, 11:40 AM',
-    keywords: 'Assignment Deadline Question #REQ-1024 Engineering Mathematics earlier professor Friday',
-    thread: [
-      {
-        id: 'msg-1',
-        sender: 'student',
-        senderName: 'Aditya K. (You)',
-        badge: 'Student',
-        time: '26 Sep 2026 • 10:30 AM',
-        text: 'Can I get this assignment delivered one day earlier? My professor moved the submission deadline to Friday morning at 10 AM instead of Saturday.',
-        attachment: {
-          name: 'revised_schedule_notice.pdf',
-          size: '850 KB'
-        }
-      },
-      {
-        id: 'msg-2',
-        sender: 'coordinator',
-        senderName: 'Dr. Banerjee',
-        badge: 'Academic Coordinator',
-        time: '26 Sep 2026 • 11:05 AM',
-        text: 'Hello Aditya, we have coordinated with your assigned subject specialist. Since the mathematical proofs are already 70% completed, we can expedite the final review and deliver by Thursday, 9:00 PM without compromising academic integrity standards.'
-      },
-      {
-        id: 'msg-3',
-        sender: 'student',
-        senderName: 'Aditya K. (You)',
-        badge: 'Student',
-        time: '26 Sep 2026 • 11:40 AM',
-        text: 'That works wonderfully! Please proceed with the expedited Thursday timeline. Thank you for the quick turnaround.'
-      }
-    ]
-  },
-  {
-    id: 'REQ-1018',
-    title: 'Clarification on Dataset & Chart Requirements',
-    requestNumber: '#REQ-1018',
-    requestTitle: 'IoT Smart Weather Station Simulation',
-    status: 'awaiting',
-    requiresStudentInput: true,
-    quote: '“Assignment Hub: We have reviewed your initial schematic. Could you please confirm if Python 3.11 is mandatory or if 3.10 is acceptable for the test scripts?”',
-    messagesCount: 4,
-    updatedAt: 'Updated 45m ago',
-    category: 'Technical Specification',
-    coordinator: 'Eng. Vikram Rao (Technical Mentor)',
-    createdAt: '25 Sep 2026, 03:15 PM',
-    lastActivity: '26 Sep 2026, 01:10 PM',
-    keywords: 'Clarification on Dataset Chart Requirements #REQ-1018 IoT Smart Weather Station Simulation Python 3.11 3.10',
-    thread: [
-      {
-        id: 'msg-101',
-        sender: 'student',
-        senderName: 'Aditya K. (You)',
-        badge: 'Student',
-        time: '25 Sep 2026 • 03:15 PM',
-        text: 'Attached the circuit simulator guidelines from university portal for IoT Smart Weather Station.'
-      },
-      {
-        id: 'msg-102',
-        sender: 'coordinator',
-        senderName: 'Eng. Vikram Rao',
-        badge: 'Technical Mentor',
-        time: '25 Sep 2026 • 04:30 PM',
-        text: 'Thanks Aditya. The schematics and sensor arrays look good. Are you running the visualization script on Linux or Windows host?'
-      },
-      {
-        id: 'msg-103',
-        sender: 'student',
-        senderName: 'Aditya K. (You)',
-        badge: 'Student',
-        time: '26 Sep 2026 • 09:20 AM',
-        text: 'We are demonstrating it on a Windows laptop with VS Code.'
-      },
-      {
-        id: 'msg-104',
-        sender: 'coordinator',
-        senderName: 'Eng. Vikram Rao',
-        badge: 'Technical Mentor',
-        time: '26 Sep 2026 • 01:10 PM',
-        text: 'Understood. We have reviewed your initial schematic. Could you please confirm if Python 3.11 is mandatory or if 3.10 is acceptable for the test scripts?'
-      }
-    ]
-  },
-  {
-    id: 'REQ-1028',
-    title: 'Citation Format: APA 7th vs IEEE for Project Report',
-    requestNumber: '#REQ-1028',
-    requestTitle: 'Data Structures & Algorithms Lab File',
-    status: 'open',
-    quote: '“The department handbook mentions APA 7th for literature reviews but IEEE for code citations. Should the final bibliography combine both?”',
-    messagesCount: 1,
-    updatedAt: 'Updated 4h ago',
-    category: 'Formatting Guidelines',
-    coordinator: 'Prof. Ananya Sen (Review Coordinator)',
-    createdAt: '26 Sep 2026, 08:30 AM',
-    lastActivity: '26 Sep 2026, 08:30 AM',
-    keywords: 'Citation Format APA 7th vs IEEE Project Report #REQ-1028 Data Structures Algorithms Lab File bibliography',
-    thread: [
-      {
-        id: 'msg-201',
-        sender: 'student',
-        senderName: 'Aditya K. (You)',
-        badge: 'Student',
-        time: '26 Sep 2026 • 08:30 AM',
-        text: 'The department handbook mentions APA 7th for literature reviews but IEEE for code citations. Should the final bibliography combine both?'
-      }
-    ]
-  },
-  {
-    id: 'REQ-1009',
-    title: 'Request for Additional Appendix in Physics Record',
-    requestNumber: '#REQ-1009',
-    requestTitle: 'Physics Practical Lab File',
-    status: 'resolved',
-    quote: '“Assignment Hub: The additional observation table has been appended to Section 4. Deliverable updated on your My Requests page.”',
-    messagesCount: 3,
-    updatedAt: 'Resolved on 25 Sep 2026',
-    category: 'Revision & Addendum',
-    coordinator: 'Dr. Mukherjee (Physics Specialist)',
-    createdAt: '24 Sep 2026, 11:00 AM',
-    lastActivity: '25 Sep 2026, 04:45 PM',
-    keywords: 'Request for Additional Appendix Physics Record #REQ-1009 Physics Practical Lab File observation table Section 4',
-    thread: [
-      {
-        id: 'msg-301',
-        sender: 'student',
-        senderName: 'Aditya K. (You)',
-        badge: 'Student',
-        time: '24 Sep 2026 • 11:00 AM',
-        text: 'Could you please include the second observation table for error analysis in Experiment 4?'
-      },
-      {
-        id: 'msg-302',
-        sender: 'coordinator',
-        senderName: 'Dr. Mukherjee',
-        badge: 'Physics Specialist',
-        time: '24 Sep 2026 • 02:15 PM',
-        text: 'Certainly! We are generating the residual error curve and adding the second table into Section 4.'
-      },
-      {
-        id: 'msg-303',
-        sender: 'coordinator',
-        senderName: 'Dr. Mukherjee',
-        badge: 'Physics Specialist',
-        time: '25 Sep 2026 • 04:45 PM',
-        text: 'The additional observation table has been appended to Section 4. Deliverable updated on your My Requests page.'
-      }
-    ]
-  },
-  {
-    id: 'GEN-1001',
-    title: 'General Question on Presentation Speaker Notes',
-    requestNumber: 'General Inquiry',
-    requestTitle: 'No Request Linked',
-    status: 'resolved',
-    quote: '“Student: Thank you, the speaker notes format provided matches university guidelines perfectly!”',
-    messagesCount: 2,
-    updatedAt: 'Resolved on 22 Sep 2026',
-    category: 'General Question',
-    coordinator: 'Academic Advising Desk',
-    createdAt: '22 Sep 2026, 09:10 AM',
-    lastActivity: '22 Sep 2026, 02:30 PM',
-    keywords: 'General Question Presentation Speaker Notes General Inquiry No Request Linked university guidelines',
-    thread: [
-      {
-        id: 'msg-401',
-        sender: 'student',
-        senderName: 'Aditya K. (You)',
-        badge: 'Student',
-        time: '22 Sep 2026 • 09:10 AM',
-        text: 'What format do your specialists follow for speaker notes in presentation decks?'
-      },
-      {
-        id: 'msg-402',
-        sender: 'coordinator',
-        senderName: 'Academic Advising Desk',
-        badge: 'Advising Lead',
-        time: '22 Sep 2026 • 10:15 AM',
-        text: 'We provide structured 3-part presenter cues: 1. Hook/Intro, 2. Key Data Point Explanation, 3. Anticipated Viva/Audience Question with sample answer.'
-      },
-      {
-        id: 'msg-403',
-        sender: 'student',
-        senderName: 'Aditya K. (You)',
-        badge: 'Student',
-        time: '22 Sep 2026 • 02:30 PM',
-        text: 'Thank you, the speaker notes format provided matches university guidelines perfectly!'
-      }
-    ]
-  }
-];
+import { api } from '../services/api';
 
 export function InquiriesPage() {
-  const { user, logout } = useAuth();
-  const { showToast } = useToast();
+  const { user } = useAuth();
+  const { addToast } = useToast();
   const navigate = useNavigate();
   const location = useLocation();
 
-  // Core state
-  const [inquiries, setInquiries] = useState(INITIAL_INQUIRIES);
-  const [currentFilter, setCurrentFilter] = useState('all'); // all | open | awaiting | resolved
+  const [inquiries, setInquiries] = useState([]);
+  const [selectedInquiryId, setSelectedInquiryId] = useState(null);
+  const [activeTab, setActiveTab] = useState('all'); // 'all' | 'active' | 'resolved'
   const [searchQuery, setSearchQuery] = useState('');
-  const [sortOrder, setSortOrder] = useState('latest'); // latest | oldest
+  const [messageInput, setMessageInput] = useState('');
+  const [isSending, setIsSending] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [copiedId, setCopiedId] = useState(null);
 
-  // Handle open inquiry passed via navigation state (e.g. from notification bell on other pages)
-  useEffect(() => {
-    if (location.state?.openInquiryId) {
-      const match = inquiries.find(i => i.id === location.state.openInquiryId);
-      if (match) {
-        setSelectedInquiry(match);
-        setDrawerMobileTab('chat');
-      }
-    }
-  }, [location.state?.openInquiryId, inquiries]);
+  // Mobile navigation state: show list or chat thread
+  const [showMobileChat, setShowMobileChat] = useState(false);
 
-  // Modals & Panels
-  const [newInquiryModalOpen, setNewInquiryModalOpen] = useState(false);
-  const [selectedInquiry, setSelectedInquiry] = useState(null);
-  const [drawerMobileTab, setDrawerMobileTab] = useState('chat'); // 'chat' | 'details'
-  const [replyText, setReplyText] = useState('');
+  const messagesEndRef = useRef(null);
 
-  // New inquiry form state
-  const [formSubject, setFormSubject] = useState('');
-  const [formRequest, setFormRequest] = useState('');
-  const [formCategory, setFormCategory] = useState('Request Question');
-  const [formMessage, setFormMessage] = useState('');
-  const [formAttachment, setFormAttachment] = useState('syllabus_clause_revision.pdf (1.2 MB)');
+  // Parse query params (e.g., ?requestId=REQ-...)
+  const queryRequestId = useMemo(() => {
+    const params = new URLSearchParams(location.search);
+    return params.get('requestId') || params.get('inquiryId');
+  }, [location.search]);
 
-  const threadEndRef = useRef(null);
+  // Fetch inquiries from backend
+  const fetchInquiries = async (silent = false) => {
+    if (!silent) setIsLoading(true);
+    try {
+      const res = await api.inquiries.getInquiries();
+      const list = res?.data || [];
+      setInquiries(list);
+      setError(null);
 
-  // Auto scroll in conversation drawer
-  useEffect(() => {
-    if (selectedInquiry && threadEndRef.current && drawerMobileTab === 'chat') {
-      threadEndRef.current.scrollIntoView({ behavior: 'smooth' });
-    }
-  }, [selectedInquiry, selectedInquiry?.thread, drawerMobileTab]);
-
-  // Compute stat counts
-  const statCounts = useMemo(() => {
-    const total = inquiries.length;
-    const open = inquiries.filter(i => i.status === 'open').length;
-    const awaiting = inquiries.filter(i => i.status === 'awaiting').length;
-    const resolved = inquiries.filter(i => i.status === 'resolved').length;
-    return { total, open, awaiting, resolved };
-  }, [inquiries]);
-
-  // Filtered and sorted inquiries
-  const filteredInquiries = useMemo(() => {
-    let result = inquiries.filter(inq => {
-      const matchesFilter = (currentFilter === 'all') || (inq.status === currentFilter);
-      const q = searchQuery.toLowerCase().trim();
-      const matchesQuery = !q || inq.title.toLowerCase().includes(q) ||
-        inq.requestNumber.toLowerCase().includes(q) ||
-        inq.requestTitle.toLowerCase().includes(q) ||
-        inq.keywords?.toLowerCase().includes(q);
-      return matchesFilter && matchesQuery;
-    });
-
-    if (sortOrder === 'oldest') {
-      return [...result].reverse();
-    }
-    return result;
-  }, [inquiries, currentFilter, searchQuery, sortOrder]);
-
-  // Handle send reply in conversation drawer
-  const handleSendReply = (e) => {
-    e.preventDefault();
-    const text = replyText.trim();
-    if (!text || !selectedInquiry) return;
-
-    const newMsg = {
-      id: `msg-${Date.now()}`,
-      sender: 'student',
-      senderName: `${user?.name || 'Aditya K.'} (You)`,
-      badge: 'Student',
-      time: 'Just now',
-      text
-    };
-
-    const updatedInquiries = inquiries.map(inq => {
-      if (inq.id === selectedInquiry.id) {
-        return {
-          ...inq,
-          status: inq.status === 'awaiting' ? 'open' : inq.status,
-          messagesCount: inq.messagesCount + 1,
-          updatedAt: 'Updated just now',
-          thread: [...inq.thread, newMsg]
-        };
-      }
-      return inq;
-    });
-
-    setInquiries(updatedInquiries);
-    const updatedCurrent = updatedInquiries.find(i => i.id === selectedInquiry.id);
-    setSelectedInquiry(updatedCurrent);
-    setReplyText('');
-    showToast('Reply sent to academic coordinator', 'success');
-  };
-
-  // Toggle resolve status
-  const handleToggleResolve = () => {
-    if (!selectedInquiry) return;
-    const isNowResolved = selectedInquiry.status !== 'resolved';
-    const newStatus = isNowResolved ? 'resolved' : 'open';
-
-    const updatedInquiries = inquiries.map(inq => {
-      if (inq.id === selectedInquiry.id) {
-        return {
-          ...inq,
-          status: newStatus,
-          updatedAt: isNowResolved ? 'Resolved just now' : 'Reopened just now'
-        };
-      }
-      return inq;
-    });
-
-    setInquiries(updatedInquiries);
-    setSelectedInquiry(prev => ({
-      ...prev,
-      status: newStatus,
-      updatedAt: isNowResolved ? 'Resolved just now' : 'Reopened just now'
-    }));
-
-    showToast(
-      isNowResolved ? 'Inquiry marked as resolved' : 'Inquiry reopened for discussion',
-      'info'
-    );
-  };
-
-  // Handle new inquiry submission
-  const handleSubmitNewInquiry = (e) => {
-    e.preventDefault();
-    if (!formSubject.trim() || !formMessage.trim()) {
-      showToast('Please fill out all required fields', 'error');
-      return;
-    }
-
-    const newInquiry = {
-      id: `INQ-${Date.now().toString().slice(-4)}`,
-      title: formSubject,
-      requestNumber: formRequest || 'General Inquiry',
-      requestTitle: formRequest ? 'Linked Academic Request' : 'No Request Linked',
-      status: 'open',
-      quote: `“${formMessage}”`,
-      messagesCount: 1,
-      updatedAt: 'Updated just now',
-      category: formCategory,
-      coordinator: 'Assignment Hub Academic Coordinator',
-      createdAt: 'Just now',
-      lastActivity: 'Just now',
-      keywords: `${formSubject} ${formRequest} ${formCategory} ${formMessage}`,
-      thread: [
-        {
-          id: `msg-${Date.now()}`,
-          sender: 'student',
-          senderName: `${user?.name || 'Aditya K.'} (You)`,
-          badge: 'Student',
-          time: 'Just now',
-          text: formMessage,
-          attachment: formAttachment ? { name: formAttachment, size: 'Uploaded file' } : null
+      // Auto-select logic
+      setSelectedInquiryId((prevSelected) => {
+        if (queryRequestId) {
+          const match = list.find((i) => i.requestId === queryRequestId || i.id === queryRequestId);
+          if (match) return match.id;
         }
-      ]
-    };
+        if (prevSelected && list.some((i) => i.id === prevSelected)) {
+          return prevSelected;
+        }
+        return list.length > 0 ? list[0].id : null;
+      });
+    } catch (err) {
+      console.error('Failed to load inquiries:', err);
+      if (!silent) {
+        setError(err.message || 'Failed to load inquiries from server.');
+      }
+    } finally {
+      if (!silent) setIsLoading(false);
+    }
+  };
 
-    setInquiries([newInquiry, ...inquiries]);
-    setNewInquiryModalOpen(false);
-    setFormSubject('');
-    setFormRequest('');
-    setFormMessage('');
-    showToast('Your inquiry has been submitted! Our academic mentor team will get back to you shortly.', 'success');
+  useEffect(() => {
+    fetchInquiries(false);
+    // Background polling every 5s for live chat updates
+    const pollInterval = setInterval(() => {
+      fetchInquiries(true);
+    }, 5000);
+    return () => clearInterval(pollInterval);
+  }, [user]);
+
+  // If queryRequestId changes dynamically in URL, select it
+  useEffect(() => {
+    if (queryRequestId && inquiries.length > 0) {
+      const match = inquiries.find((i) => i.requestId === queryRequestId || i.id === queryRequestId);
+      if (match) {
+        setSelectedInquiryId(match.id);
+        setShowMobileChat(true);
+      }
+    }
+  }, [queryRequestId, inquiries]);
+
+  // The currently selected inquiry object
+  const activeInquiry = useMemo(() => {
+    return inquiries.find((i) => i.id === selectedInquiryId) || null;
+  }, [inquiries, selectedInquiryId]);
+
+  // Scroll to bottom when messages update
+  useEffect(() => {
+    if (activeInquiry?.messages?.length) {
+      messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    }
+  }, [activeInquiry?.messages?.length, selectedInquiryId]);
+
+  // Filtered inquiries list
+  const filteredInquiries = useMemo(() => {
+    return inquiries.filter((inq) => {
+      // Tab filter
+      if (activeTab === 'active' && inq.status === 'resolved') return false;
+      if (activeTab === 'resolved' && inq.status !== 'resolved') return false;
+
+      // Search query
+      if (searchQuery.trim()) {
+        const q = searchQuery.toLowerCase();
+        const inReqId = inq.requestId?.toLowerCase().includes(q);
+        const inId = inq.id?.toLowerCase().includes(q);
+        const inTitle = inq.title?.toLowerCase().includes(q);
+        const inSubject = inq.subject?.toLowerCase().includes(q);
+        const inLatest = inq.latestMessage?.toLowerCase().includes(q);
+        return inReqId || inId || inTitle || inSubject || inLatest;
+      }
+      return true;
+    });
+  }, [inquiries, activeTab, searchQuery]);
+
+  // Copy Request ID to clipboard with feedback
+  const handleCopyReqId = (reqId) => {
+    if (!reqId) return;
+    navigator.clipboard.writeText(reqId);
+    setCopiedId(reqId);
+    addToast(`Copied ${reqId} to clipboard!`, 'info');
+    setTimeout(() => {
+      setCopiedId(null);
+    }, 2000);
+  };
+
+  // Send message
+  const handleSendMessage = async (e, textOverride = null) => {
+    if (e) e.preventDefault();
+    const textToSend = (textOverride || messageInput).trim();
+    if (!textToSend || !activeInquiry || isSending) return;
+
+    setIsSending(true);
+    try {
+      const res = await api.inquiries.sendMessage(activeInquiry.id, {
+        content: textToSend,
+        senderRole: 'user'
+      });
+
+      if (!textOverride) {
+        setMessageInput('');
+      }
+
+      // Optimistically or immediately update local state
+      const updatedMsg = res?.data?.content ? res.data : (res?.data?.message || res?.data);
+      if (updatedMsg && (updatedMsg.content || updatedMsg.text)) {
+        setInquiries((prev) =>
+          prev.map((item) => {
+            if (item.id === activeInquiry.id) {
+              const msgs = [...(item.messages || []), updatedMsg];
+              return {
+                ...item,
+                messages: msgs,
+                latestMessage: updatedMsg.content,
+                latestMessageTime: updatedMsg.createdAt,
+                updatedAt: updatedMsg.createdAt
+              };
+            }
+            return item;
+          })
+        );
+      } else {
+        await fetchInquiries(true);
+      }
+    } catch (err) {
+      console.error('Failed to send message:', err);
+      addToast(err.message || 'Failed to send message. Please try again.', 'error');
+    } finally {
+      setIsSending(false);
+    }
+  };
+
+  // Format date helper
+  const formatDate = (isoString) => {
+    if (!isoString) return '';
+    try {
+      const d = new Date(isoString);
+      return d.toLocaleDateString('en-GB', {
+        day: '2-digit',
+        month: 'short',
+        year: 'numeric'
+      });
+    } catch {
+      return isoString;
+    }
+  };
+
+  const formatTime = (isoString) => {
+    if (!isoString) return '';
+    try {
+      const d = new Date(isoString);
+      return d.toLocaleTimeString('en-US', {
+        hour: 'numeric',
+        minute: '2-digit',
+        hour12: true
+      });
+    } catch {
+      return '';
+    }
+  };
+
+  const formatDueTime = (isoString) => {
+    if (!isoString) return 'Flexible Deadline';
+    try {
+      const d = new Date(isoString);
+      return `${d.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })}, ${d.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true })}`;
+    } catch {
+      return isoString;
+    }
   };
 
   return (
-    <div className="min-h-screen bg-surface font-sans text-on-surface antialiased selection:bg-primary-fixed selection:text-on-primary-fixed flex flex-col relative">
-      {/* ─────────────────────────────────────────────────────────────
-          1. TOP NAVIGATION BAR (Unified Reusable Component)
-      ────────────────────────────────────────────────────────────── */}
-      <Navbar
-        onSelectInquiry={(inqId) => {
-          const match = inquiries.find((i) => i.id === inqId);
-          if (match) {
-            setSelectedInquiry(match);
-            setDrawerMobileTab('chat');
-          }
-        }}
-      />
+    <div className="min-h-screen bg-[#FCF8FF] text-[#1B192F] flex flex-col font-['Plus_Jakarta_Sans',sans-serif]">
+      <Navbar />
 
-      {/* ─────────────────────────────────────────────────────────────
-          2. MAIN CONTENT AREA (Responsive Margins & Paddings)
-      ────────────────────────────────────────────────────────────── */}
-      <main className="w-full pt-24 sm:pt-28 pb-28 sm:pb-32 lg:pb-16 px-3.5 sm:px-8 lg:px-12 max-w-7xl mx-auto flex-1 flex flex-col gap-6 sm:gap-10">
-        {/* 1. PAGE HEADER */}
-        <section className="flex flex-col md:flex-row md:items-end justify-between gap-4 sm:gap-6 pb-1 sm:pb-2">
-          <div className="flex flex-col gap-1.5 sm:gap-2 max-w-2xl">
-            <div className="inline-flex items-center gap-1.5 sm:gap-2 px-3 py-1 rounded-full bg-surface-container-high w-fit shadow-[inset_1px_1px_2px_rgba(255,255,255,0.9),inset_-1px_-1px_2px_rgba(77,65,223,0.08)]">
-              <span className="text-[13px] sm:text-[14px]">💬</span>
-              <span className="text-[10px] sm:text-xs uppercase tracking-wider text-primary font-bold">
-                Academic Support &amp; Clarification
-              </span>
+      <main className="w-full flex-1 pt-24 px-4 sm:px-6 lg:px-12 max-w-7xl mx-auto pb-24 lg:pb-12">
+        {/* Page Header */}
+        <section className="flex flex-col gap-4 mb-6">
+          <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-4">
+            <div className="space-y-1.5">
+              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#E3DFFF] text-[#100069] text-xs font-bold uppercase tracking-wider shadow-[inset_1px_1px_2px_rgba(255,255,255,0.8),inset_-1px_-1px_2px_rgba(108,99,255,0.15)]">
+                <span className="material-symbols-outlined text-[14px]">forum</span>
+                Direct Academic Workspace
+              </div>
+              <h1 className="text-3xl sm:text-4xl font-extrabold text-[#1B192F] tracking-tight">
+                Inquiries
+              </h1>
+              <p className="text-[#464555] text-sm sm:text-base max-w-2xl">
+                Direct academic support and updates for your submitted requests. Every inquiry is linked to your active or past requests.
+              </p>
             </div>
-            <h1 className="font-extrabold text-2xl sm:text-3xl lg:text-4xl text-on-surface tracking-tight">
-              Inquiries
-            </h1>
-            <p className="text-xs sm:text-sm lg:text-base text-on-surface-variant leading-relaxed">
-              Get help with your requests, services, and academic work directly from mentors &amp; coordinators.
-            </p>
-          </div>
 
-          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 sm:gap-3 w-full md:w-auto">
-            <button
-              type="button"
-              id="btn-open-demo"
-              onClick={() => {
-                setSelectedInquiry(inquiries[0]);
-                setDrawerMobileTab('chat');
-              }}
-              className="group flex items-center justify-center gap-2 px-4 sm:px-5 py-2.5 rounded-full bg-surface-container-lowest text-primary text-xs sm:text-sm font-bold shadow-[8px_12px_24px_rgba(108,99,255,0.12),-6px_-6px_16px_rgba(255,255,255,0.95)] hover:shadow-[12px_18px_30px_rgba(108,99,255,0.18)] hover:-translate-y-0.5 transition-all"
-            >
-              <span className="material-symbols-outlined text-[18px] sm:text-[20px] text-primary transition-transform group-hover:scale-110">
-                chat
-              </span>
-              <span>Quick Demo: Open Conversation</span>
-            </button>
-            <button
-              type="button"
-              id="btn-open-modal"
-              onClick={() => setNewInquiryModalOpen(true)}
-              className="flex items-center justify-center gap-2 px-5 sm:px-6 py-2.5 rounded-full bg-primary text-white text-xs sm:text-sm font-bold shadow-[6px_10px_20px_rgba(108,99,255,0.35)] hover:bg-primary-container hover:-translate-y-0.5 transition-all"
-            >
-              <span className="material-symbols-outlined text-[18px] sm:text-[20px]">add</span>
-              <span>New Inquiry</span>
-            </button>
-          </div>
-        </section>
-
-        {/* 2. QUICK METRIC STAT CARDS (2x2 Grid on Mobile, 4 Cols on Desktop) */}
-        <section className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-5">
-          {/* Total Inquiries */}
-          <div
-            onClick={() => setCurrentFilter('all')}
-            className={`p-3.5 sm:p-6 rounded-2xl sm:rounded-3xl bg-surface-container-lowest shadow-[8px_12px_24px_rgba(108,99,255,0.06),-6px_-6px_18px_rgba(255,255,255,0.9)] flex items-center justify-between relative overflow-hidden group hover:-translate-y-0.5 transition-all cursor-pointer ${
-              currentFilter === 'all' ? 'ring-2 ring-primary/40' : ''
-            }`}
-          >
-            <div className="flex flex-col gap-0.5 sm:gap-1 z-10">
-              <span className="text-[10px] sm:text-xs uppercase tracking-wider text-on-surface-variant font-bold">
-                Total Inquiries
-              </span>
-              <span className="text-2xl sm:text-3xl font-extrabold text-on-surface">{statCounts.total}</span>
-              <span className="text-[10px] sm:text-xs text-on-surface-variant font-medium truncate">
-                Active conversations
-              </span>
-            </div>
-            <div className="w-9 h-9 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl bg-surface-container flex items-center justify-center text-primary shadow-[inset_2px_2px_4px_rgba(255,255,255,0.8),inset_-2px_-2px_4px_rgba(77,65,223,0.1)] shrink-0">
-              <span className="material-symbols-outlined text-[20px] sm:text-[24px]">forum</span>
+            {/* Quick Stats & Security Badges */}
+            <div className="flex items-center gap-3">
+              <div className="flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white shadow-[6px_10px_20px_rgba(108,99,255,0.08),inset_2px_2px_4px_rgba(255,255,255,0.9)]">
+                <span className="w-2.5 h-2.5 rounded-full bg-[#4D41DF] animate-pulse"></span>
+                <span className="text-xs sm:text-sm font-semibold text-[#1B192F]">
+                  {inquiries.filter((i) => i.status !== 'resolved').length} Active Streams
+                </span>
+              </div>
+              <div className="hidden sm:flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white shadow-[6px_10px_20px_rgba(108,99,255,0.08),inset_2px_2px_4px_rgba(255,255,255,0.9)]">
+                <span className="material-symbols-outlined text-[#4D41DF] text-[18px]">verified</span>
+                <span className="text-xs sm:text-sm font-medium text-[#464555]">FERPA Verified</span>
+              </div>
             </div>
           </div>
 
-          {/* Open */}
-          <div
-            onClick={() => setCurrentFilter('open')}
-            className={`p-3.5 sm:p-6 rounded-2xl sm:rounded-3xl bg-surface-container-lowest shadow-[8px_12px_24px_rgba(108,99,255,0.06),-6px_-6px_18px_rgba(255,255,255,0.9)] flex items-center justify-between relative overflow-hidden group hover:-translate-y-0.5 transition-all cursor-pointer ${
-              currentFilter === 'open' ? 'ring-2 ring-tertiary-fixed-dim/60' : ''
-            }`}
-          >
-            <div className="flex flex-col gap-0.5 sm:gap-1 z-10">
-              <span className="text-[10px] sm:text-xs uppercase tracking-wider text-tertiary font-bold">Open</span>
-              <span className="text-2xl sm:text-3xl font-extrabold text-on-surface">{statCounts.open}</span>
-              <span className="text-[10px] sm:text-xs text-on-surface-variant font-medium truncate">
-                Waiting coordinator
-              </span>
-            </div>
-            <div className="w-9 h-9 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl bg-tertiary-fixed flex items-center justify-center text-on-tertiary-fixed shadow-[inset_2px_2px_4px_rgba(255,255,255,0.8),inset_-2px_-2px_4px_rgba(160,105,0,0.15)] shrink-0">
-              <span className="material-symbols-outlined text-[20px] sm:text-[24px]">hourglass_top</span>
-            </div>
-          </div>
-
-          {/* Awaiting Reply */}
-          <div
-            onClick={() => setCurrentFilter('awaiting')}
-            className={`p-3.5 sm:p-6 rounded-2xl sm:rounded-3xl bg-surface-container-lowest shadow-[8px_12px_24px_rgba(108,99,255,0.06),-6px_-6px_18px_rgba(255,255,255,0.9)] flex items-center justify-between relative overflow-hidden group hover:-translate-y-0.5 transition-all cursor-pointer ${
-              currentFilter === 'awaiting' ? 'ring-2 ring-primary/40' : ''
-            }`}
-          >
-            <div className="flex flex-col gap-0.5 sm:gap-1 z-10">
-              <span className="text-[10px] sm:text-xs uppercase tracking-wider text-primary font-bold">
-                Awaiting Reply
-              </span>
-              <span className="text-2xl sm:text-3xl font-extrabold text-primary">{statCounts.awaiting}</span>
-              <span className="text-[10px] sm:text-xs text-on-surface-variant font-medium truncate">
-                Your input needed
-              </span>
-            </div>
-            <div className="w-9 h-9 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl bg-primary-fixed flex items-center justify-center text-on-primary-fixed shadow-[inset_2px_2px_4px_rgba(255,255,255,0.8),inset_-2px_-2px_4px_rgba(77,65,223,0.15)] shrink-0">
-              <span className="material-symbols-outlined text-[20px] sm:text-[24px]">notifications_active</span>
-            </div>
-          </div>
-
-          {/* Resolved */}
-          <div
-            onClick={() => setCurrentFilter('resolved')}
-            className={`p-3.5 sm:p-6 rounded-2xl sm:rounded-3xl bg-surface-container-lowest shadow-[8px_12px_24px_rgba(108,99,255,0.06),-6px_-6px_18px_rgba(255,255,255,0.9)] flex items-center justify-between relative overflow-hidden group hover:-translate-y-0.5 transition-all cursor-pointer ${
-              currentFilter === 'resolved' ? 'ring-2 ring-outline/40' : ''
-            }`}
-          >
-            <div className="flex flex-col gap-0.5 sm:gap-1 z-10">
-              <span className="text-[10px] sm:text-xs uppercase tracking-wider text-on-surface-variant font-bold">
-                Resolved
-              </span>
-              <span className="text-2xl sm:text-3xl font-extrabold text-on-surface">{statCounts.resolved}</span>
-              <span className="text-[10px] sm:text-xs text-on-surface-variant font-medium truncate">
-                Completed &amp; closed
-              </span>
-            </div>
-            <div className="w-9 h-9 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl bg-surface-container-high flex items-center justify-center text-on-surface-variant shadow-[inset_2px_2px_4px_rgba(255,255,255,0.8),inset_-2px_-2px_4px_rgba(77,65,223,0.08)] shrink-0">
-              <span className="material-symbols-outlined text-[20px] sm:text-[24px]">check_circle</span>
-            </div>
-          </div>
-        </section>
-
-        {/* 3. STATUS FILTERS & SEARCH + SORT BAR */}
-        <section className="flex flex-col gap-3 sm:gap-4">
-          {/* Scrollable Tabs */}
-          <div className="w-full overflow-x-auto no-scrollbar py-1">
-            <div className="flex items-center gap-1.5 sm:gap-2 p-1 sm:p-1.5 rounded-full bg-surface-container-low max-w-fit shadow-[inset_2px_2px_4px_rgba(37,35,58,0.04),inset_-2px_-2px_4px_rgba(255,255,255,0.8)]">
-              <button
-                type="button"
-                onClick={() => setCurrentFilter('all')}
-                className={`px-3.5 sm:px-5 py-1.5 sm:py-2 rounded-full text-xs font-bold transition-all whitespace-nowrap shrink-0 ${
-                  currentFilter === 'all'
-                    ? 'text-primary bg-surface-container-lowest shadow-[4px_6px_14px_rgba(108,99,255,0.12),inset_1px_1px_2px_rgba(255,255,255,0.9)]'
-                    : 'text-on-surface-variant hover:text-on-surface'
-                }`}
-              >
-                All ({statCounts.total})
-              </button>
-              <button
-                type="button"
-                onClick={() => setCurrentFilter('open')}
-                className={`px-3.5 sm:px-5 py-1.5 sm:py-2 rounded-full text-xs font-bold transition-all whitespace-nowrap shrink-0 ${
-                  currentFilter === 'open'
-                    ? 'text-primary bg-surface-container-lowest shadow-[4px_6px_14px_rgba(108,99,255,0.12),inset_1px_1px_2px_rgba(255,255,255,0.9)]'
-                    : 'text-on-surface-variant hover:text-on-surface'
-                }`}
-              >
-                Open ({statCounts.open})
-              </button>
-              <button
-                type="button"
-                onClick={() => setCurrentFilter('awaiting')}
-                className={`px-3.5 sm:px-5 py-1.5 sm:py-2 rounded-full text-xs font-bold transition-all whitespace-nowrap shrink-0 ${
-                  currentFilter === 'awaiting'
-                    ? 'text-primary bg-surface-container-lowest shadow-[4px_6px_14px_rgba(108,99,255,0.12),inset_1px_1px_2px_rgba(255,255,255,0.9)]'
-                    : 'text-on-surface-variant hover:text-on-surface'
-                }`}
-              >
-                Awaiting Reply ({statCounts.awaiting})
-              </button>
-              <button
-                type="button"
-                onClick={() => setCurrentFilter('resolved')}
-                className={`px-3.5 sm:px-5 py-1.5 sm:py-2 rounded-full text-xs font-bold transition-all whitespace-nowrap shrink-0 ${
-                  currentFilter === 'resolved'
-                    ? 'text-primary bg-surface-container-lowest shadow-[4px_6px_14px_rgba(108,99,255,0.12),inset_1px_1px_2px_rgba(255,255,255,0.9)]'
-                    : 'text-on-surface-variant hover:text-on-surface'
-                }`}
-              >
-                Resolved ({statCounts.resolved})
-              </button>
-            </div>
-          </div>
-
-          {/* Search & Sort Controls Row */}
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 sm:gap-4">
-            <div className="relative flex-1 max-w-xl">
-              <span className="material-symbols-outlined absolute left-3.5 sm:left-4 top-1/2 -translate-y-1/2 text-on-surface-variant text-[18px] sm:text-[20px]">
+          {/* Search & Filter Toolbar */}
+          <div className="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3 bg-[#F6F1FF] p-2 rounded-2xl shadow-[inset_2px_2px_5px_rgba(37,35,58,0.05),inset_-2px_-2px_5px_rgba(255,255,255,0.8)]">
+            {/* Clay Search Input */}
+            <div className="relative flex-1 max-w-md">
+              <span className="material-symbols-outlined absolute left-3.5 top-1/2 -translate-y-1/2 text-[#777587] text-[20px]">
                 search
               </span>
               <input
                 type="text"
-                id="search-input"
                 value={searchQuery}
-                onChange={e => setSearchQuery(e.target.value)}
-                placeholder="Search by subject, request ID or keyword..."
-                className="w-full pl-10 sm:pl-11 pr-4 py-2.5 sm:py-3 rounded-xl sm:rounded-2xl bg-surface-container-low text-on-surface placeholder:text-on-surface-variant text-xs sm:text-sm shadow-[inset_3px_3px_6px_rgba(37,35,58,0.06),inset_-3px_-3px_6px_rgba(255,255,255,0.8)] focus:outline-none focus:bg-surface-container-lowest transition-all"
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Search by Request ID or Assignment title..."
+                className="w-full pl-11 pr-4 py-2 bg-white rounded-full text-xs sm:text-sm text-[#1B192F] placeholder:text-[#777587] shadow-[inset_2px_2px_4px_rgba(37,35,58,0.06),inset_-2px_-2px_4px_rgba(255,255,255,0.9)] focus:outline-none focus:ring-2 focus:ring-[#4D41DF]/40 transition-all"
               />
+              {searchQuery && (
+                <button
+                  onClick={() => setSearchQuery('')}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                >
+                  <span className="material-symbols-outlined text-[16px]">close</span>
+                </button>
+              )}
             </div>
 
-            <div className="flex items-center gap-2 sm:gap-4 justify-between md:justify-end">
-              <div className="flex items-center gap-1.5 sm:gap-2">
-                <span className="text-[11px] sm:text-xs font-semibold text-on-surface-variant">Sort:</span>
-                <div className="relative">
-                  <select
-                    id="sort-select"
-                    value={sortOrder}
-                    onChange={e => setSortOrder(e.target.value)}
-                    className="appearance-none pl-3 pr-7 sm:pr-8 py-1.5 sm:py-2 rounded-full bg-surface-container-lowest text-on-surface text-[11px] sm:text-xs font-bold shadow-[4px_6px_12px_rgba(108,99,255,0.08),inset_1px_1px_2px_rgba(255,255,255,0.9)] focus:outline-none cursor-pointer"
-                  >
-                    <option value="latest">Latest</option>
-                    <option value="oldest">Oldest</option>
-                  </select>
-                  <span className="material-symbols-outlined pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 text-on-surface-variant text-[16px] sm:text-[18px]">
-                    expand_more
-                  </span>
-                </div>
-              </div>
-
-              <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-surface-container text-on-surface-variant text-[10px] sm:text-xs font-semibold">
-                <span className="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
-                <span>
-                  {filteredInquiries.length} conversation{filteredInquiries.length === 1 ? '' : 's'}
-                </span>
-              </div>
+            {/* Category Filter Tabs */}
+            <div className="flex items-center gap-1 p-1 bg-[#F0EBFF] rounded-full overflow-x-auto">
+              <button
+                type="button"
+                onClick={() => setActiveTab('all')}
+                className={`px-3 py-1.5 rounded-full text-xs font-bold transition-all whitespace-nowrap ${
+                  activeTab === 'all'
+                    ? 'bg-white text-[#4D41DF] shadow-[2px_4px_10px_rgba(108,99,255,0.12),inset_1px_1px_2px_rgba(255,255,255,0.9)]'
+                    : 'text-[#464555] hover:text-[#1B192F]'
+                }`}
+              >
+                All Inquiries ({inquiries.length})
+              </button>
+              <button
+                type="button"
+                onClick={() => setActiveTab('active')}
+                className={`px-3 py-1.5 rounded-full text-xs font-bold transition-all whitespace-nowrap ${
+                  activeTab === 'active'
+                    ? 'bg-white text-[#4D41DF] shadow-[2px_4px_10px_rgba(108,99,255,0.12),inset_1px_1px_2px_rgba(255,255,255,0.9)]'
+                    : 'text-[#464555] hover:text-[#1B192F]'
+                }`}
+              >
+                Active ({inquiries.filter((i) => i.status !== 'resolved').length})
+              </button>
+              <button
+                type="button"
+                onClick={() => setActiveTab('resolved')}
+                className={`px-3 py-1.5 rounded-full text-xs font-bold transition-all whitespace-nowrap ${
+                  activeTab === 'resolved'
+                    ? 'bg-white text-[#4D41DF] shadow-[2px_4px_10px_rgba(108,99,255,0.12),inset_1px_1px_2px_rgba(255,255,255,0.9)]'
+                    : 'text-[#464555] hover:text-[#1B192F]'
+                }`}
+              >
+                Resolved ({inquiries.filter((i) => i.status === 'resolved').length})
+              </button>
             </div>
           </div>
         </section>
 
-        {/* 4. INQUIRY CARDS CONTAINER */}
-        <section className="flex flex-col gap-3.5 sm:gap-5" id="inquiry-list">
-          {filteredInquiries.length === 0 ? (
-            /* Empty State */
-            <div
-              id="empty-state"
-              className="p-8 sm:p-12 rounded-2xl sm:rounded-3xl bg-surface-container-lowest shadow-[12px_16px_32px_rgba(108,99,255,0.06)] flex flex-col items-center justify-center text-center gap-3 sm:gap-4"
+        {/* Loading & Error States */}
+        {isLoading && inquiries.length === 0 && (
+          <div className="flex flex-col items-center justify-center py-20 bg-white rounded-3xl shadow-[12px_16px_36px_rgba(108,99,255,0.08)]">
+            <div className="w-12 h-12 rounded-full border-4 border-[#4D41DF]/20 border-t-[#4D41DF] animate-spin mb-4" />
+            <p className="text-base font-semibold text-[#1B192F]">Connecting to Inquiries Chat Desk...</p>
+            <p className="text-xs text-[#464555] mt-1">Retrieving your verified academic communications.</p>
+          </div>
+        )}
+
+        {error && inquiries.length === 0 && (
+          <div className="p-8 bg-red-50 border border-red-200 rounded-3xl text-center max-w-xl mx-auto my-12">
+            <span className="material-symbols-outlined text-red-500 text-4xl mb-2">warning</span>
+            <h3 className="text-lg font-bold text-red-800">Unable to Load Inquiries</h3>
+            <p className="text-sm text-red-600 mt-1">{error}</p>
+            <button
+              onClick={() => fetchInquiries(false)}
+              className="mt-4 px-6 py-2 bg-red-600 text-white rounded-full text-xs font-bold shadow-md hover:bg-red-700 transition-colors"
             >
-              <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-xl sm:rounded-2xl bg-surface-container flex items-center justify-center text-primary shadow-[inset_2px_2px_4px_rgba(255,255,255,0.9),inset_-2px_-2px_4px_rgba(77,65,223,0.1)]">
-                <span className="material-symbols-outlined text-[24px] sm:text-[32px]">drafts</span>
-              </div>
-              <h3 className="font-bold text-lg sm:text-xl text-on-surface">No Inquiries Found</h3>
-              <p className="text-xs sm:text-sm text-on-surface-variant max-w-md">
-                There are no conversations matching your selected filter or search terms.
-              </p>
-              <button
-                type="button"
-                onClick={() => {
-                  setCurrentFilter('all');
-                  setSearchQuery('');
-                }}
-                className="mt-2 px-5 sm:px-6 py-2 sm:py-2.5 rounded-full bg-primary text-white text-xs font-bold shadow-[4px_6px_14px_rgba(108,99,255,0.3)] hover:bg-primary-container transition-all"
-              >
-                Show All Inquiries
-              </button>
-            </div>
-          ) : (
-            filteredInquiries.map(inq => (
-              <article
-                key={inq.id}
-                className={`inquiry-card p-4 sm:p-6 md:p-8 rounded-2xl sm:rounded-3xl bg-surface-container-lowest shadow-[12px_16px_32px_rgba(108,99,255,0.08),-8px_-8px_24px_rgba(255,255,255,0.95)] hover:shadow-[18px_24px_40px_rgba(108,99,255,0.13)] transition-all flex flex-col gap-3.5 sm:gap-5 relative group ${
-                  inq.status === 'resolved' ? 'opacity-90 hover:opacity-100' : ''
-                }`}
-              >
-                {/* Header Row */}
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                  <div className="flex items-start sm:items-center gap-3">
-                    <div
-                      className={`w-10 h-10 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl shrink-0 flex items-center justify-center shadow-[inset_2px_2px_4px_rgba(255,255,255,0.9),inset_-2px_-2px_4px_rgba(77,65,223,0.12)] ${
-                        inq.status === 'awaiting'
-                          ? 'bg-primary-fixed text-primary'
-                          : inq.status === 'open'
-                          ? inq.id === 'REQ-1028'
-                            ? 'bg-secondary-fixed text-secondary'
-                            : 'bg-surface-variant text-primary'
-                          : 'bg-surface-container-high text-on-surface-variant'
-                      }`}
-                    >
-                      <span className="material-symbols-outlined text-[20px] sm:text-[24px]">
-                        {inq.status === 'awaiting'
-                          ? 'notifications'
-                          : inq.status === 'resolved'
-                          ? 'task_alt'
-                          : inq.id === 'REQ-1028'
-                          ? 'help'
-                          : 'chat_bubble'}
-                      </span>
-                    </div>
-
-                    <div className="min-w-0">
-                      <div className="flex items-center gap-2 flex-wrap">
-                        <h2
-                          onClick={() => {
-                            setSelectedInquiry(inq);
-                            setDrawerMobileTab('chat');
-                          }}
-                          className="font-bold text-base sm:text-lg sm:text-xl text-on-surface tracking-tight group-hover:text-primary transition-colors cursor-pointer leading-tight"
-                        >
-                          {inq.title}
-                        </h2>
-                        {inq.requiresStudentInput && inq.status === 'awaiting' && (
-                          <span className="px-2 py-0.5 rounded-full bg-error-container text-on-error-container text-[10px] sm:text-[11px] font-bold animate-pulse whitespace-nowrap">
-                            ⚡ Requires student input
-                          </span>
-                        )}
-                      </div>
-
-                      {inq.requestNumber !== 'General Inquiry' ? (
-                        <Link
-                          to="/my-requests"
-                          className="text-[11px] sm:text-xs font-semibold text-primary hover:underline flex items-center gap-1 mt-0.5"
-                        >
-                          <span className="truncate">Regarding: {inq.requestNumber} — {inq.requestTitle}</span>
-                          <span className="material-symbols-outlined text-[12px] sm:text-[14px] shrink-0">arrow_outward</span>
-                        </Link>
-                      ) : (
-                        <span className="text-[11px] sm:text-xs font-semibold text-on-surface-variant flex items-center gap-1 mt-0.5">
-                          <span>General Inquiry (No Request Linked)</span>
-                        </span>
-                      )}
-                    </div>
-                  </div>
-
-                  {/* Status Badge */}
-                  <div className="self-start sm:self-center shrink-0">
-                    {inq.status === 'open' && (
-                      <span className="inline-flex items-center gap-1.5 px-3 py-0.5 sm:px-3.5 sm:py-1 rounded-full bg-tertiary-fixed text-on-tertiary-fixed text-[11px] sm:text-xs font-bold shadow-[inset_1px_1px_2px_rgba(255,255,255,0.8),inset_-1px_-1px_2px_rgba(160,105,0,0.1)]">
-                        <span className="w-2 h-2 rounded-full bg-tertiary"></span>
-                        <span>Open</span>
-                      </span>
-                    )}
-                    {inq.status === 'awaiting' && (
-                      <span className="inline-flex items-center gap-1.5 px-3 py-0.5 sm:px-3.5 sm:py-1 rounded-full bg-secondary-container text-on-secondary-container text-[11px] sm:text-xs font-bold shadow-[4px_6px_12px_rgba(113,97,227,0.25)]">
-                        <span className="w-2 h-2 rounded-full bg-surface-bright"></span>
-                        <span>Awaiting Your Reply</span>
-                      </span>
-                    )}
-                    {inq.status === 'resolved' && (
-                      <span className="inline-flex items-center gap-1.5 px-3 py-0.5 sm:px-3.5 sm:py-1 rounded-full bg-surface-container-high text-on-surface text-[11px] sm:text-xs font-bold shadow-[inset_1px_1px_2px_rgba(255,255,255,0.9)]">
-                        <span className="material-symbols-outlined text-[14px] sm:text-[16px]">check</span>
-                        <span>Resolved</span>
-                      </span>
-                    )}
-                  </div>
-                </div>
-
-                {/* Quote Box */}
-                <div className="p-3 sm:p-4 rounded-xl sm:rounded-2xl bg-surface-container-low text-on-surface-variant text-xs sm:text-sm shadow-[inset_2px_2px_5px_rgba(37,35,58,0.04),inset_-2px_-2px_5px_rgba(255,255,255,0.8)] italic leading-relaxed">
-                  {inq.quote}
-                </div>
-
-                {/* Footer Row */}
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-1">
-                  <div className="flex items-center gap-3 text-on-surface-variant text-[11px] sm:text-xs font-semibold">
-                    <span className="flex items-center gap-1">
-                      <span className="material-symbols-outlined text-[14px] sm:text-[16px]">forum</span>
-                      {inq.messagesCount} {inq.messagesCount === 1 ? 'Message' : 'Messages'}
-                    </span>
-                    <span>•</span>
-                    <span
-                      className={`flex items-center gap-1 ${
-                        inq.status === 'awaiting' ? 'text-primary font-bold' : ''
-                      }`}
-                    >
-                      <span className="material-symbols-outlined text-[14px] sm:text-[16px]">
-                        {inq.status === 'resolved' ? 'done_all' : 'schedule'}
-                      </span>
-                      {inq.updatedAt}
-                    </span>
-                  </div>
-
-                  {inq.status === 'awaiting' ? (
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setSelectedInquiry(inq);
-                        setDrawerMobileTab('chat');
-                      }}
-                      className="w-full sm:w-auto justify-center px-4 sm:px-5 py-2 sm:py-2.5 rounded-full bg-primary text-white text-xs font-bold shadow-[4px_6px_14px_rgba(108,99,255,0.3)] hover:bg-primary-container transition-all flex items-center gap-1.5"
-                    >
-                      <span>Reply Now</span>
-                      <span className="material-symbols-outlined text-[15px] sm:text-[16px]">reply</span>
-                    </button>
-                  ) : inq.status === 'resolved' ? (
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setSelectedInquiry(inq);
-                        setDrawerMobileTab('chat');
-                      }}
-                      className="w-full sm:w-auto justify-center px-4 sm:px-5 py-2 sm:py-2.5 rounded-full bg-surface-container text-on-surface-variant text-xs font-bold hover:bg-surface-container-highest transition-all flex items-center gap-1.5"
-                    >
-                      <span>View Archive</span>
-                      <span className="material-symbols-outlined text-[15px] sm:text-[16px]">history</span>
-                    </button>
-                  ) : (
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setSelectedInquiry(inq);
-                        setDrawerMobileTab('chat');
-                      }}
-                      className="w-full sm:w-auto justify-center px-4 sm:px-5 py-2 sm:py-2.5 rounded-full bg-surface-container-high text-primary text-xs font-bold shadow-[4px_6px_14px_rgba(108,99,255,0.12),inset_1px_1px_2px_rgba(255,255,255,0.9)] hover:bg-primary hover:text-white transition-all flex items-center gap-1.5"
-                    >
-                      <span>View Inquiry</span>
-                      <span className="material-symbols-outlined text-[15px] sm:text-[16px]">arrow_forward</span>
-                    </button>
-                  )}
-                </div>
-              </article>
-            ))
-          )}
-        </section>
-
-        {/* 5. ACADEMIC INTEGRITY & STRICT HONOR CODE GUARANTEE BANNER */}
-        <section className="p-4 sm:p-6 md:p-8 rounded-2xl sm:rounded-3xl bg-surface-container-low shadow-[12px_16px_32px_rgba(108,99,255,0.06),-8px_-8px_24px_rgba(255,255,255,0.9)] flex flex-col md:flex-row items-center gap-4 sm:gap-6">
-          <div className="w-12 h-12 sm:w-14 sm:h-14 shrink-0 rounded-xl sm:rounded-2xl bg-primary text-white flex items-center justify-center shadow-[6px_10px_20px_rgba(108,99,255,0.3)]">
-            <span className="material-symbols-outlined text-[24px] sm:text-[30px]">verified_user</span>
+              Retry Connection
+            </button>
           </div>
-          <div className="flex flex-col gap-1 text-center md:text-left flex-1">
-            <h4 className="font-bold text-base sm:text-lg text-on-surface">
-              Academic Integrity &amp; Strict Honor Code Guarantee
-            </h4>
-            <p className="text-xs sm:text-sm text-on-surface-variant leading-relaxed">
-              All discussions, files, and queries exchanged with Assignment Hub subject coordinators remain strictly
-              encrypted, private, and bound by institutional academic integrity benchmarks.
+        )}
+
+        {/* Empty State: No inquiries at all */}
+        {!isLoading && inquiries.length === 0 && !error && (
+          <div className="flex flex-col items-center justify-center py-16 px-6 bg-white rounded-3xl shadow-[12px_16px_36px_rgba(108,99,255,0.08)] text-center max-w-2xl mx-auto">
+            <div className="w-20 h-20 rounded-full bg-[#E3DFFF] flex items-center justify-center text-[#4D41DF] mb-4 shadow-[inset_2px_2px_4px_rgba(255,255,255,0.8)]">
+              <span className="material-symbols-outlined text-4xl">mark_chat_unread</span>
+            </div>
+            <h2 className="text-2xl font-bold text-[#1B192F]">No Active Inquiries</h2>
+            <p className="text-sm text-[#464555] max-w-md mt-2">
+              Inquiries are automatically created when you submit a service request. When you have active coursework, your specialist communications and milestone drafts will appear here.
             </p>
-          </div>
-          <div className="flex items-center gap-1.5 sm:gap-2 px-3.5 sm:px-4 py-1.5 sm:py-2 rounded-full bg-surface-container-lowest text-primary text-[11px] sm:text-xs font-bold shadow-[inset_1px_1px_2px_rgba(255,255,255,0.9)] shrink-0">
-            <span className="material-symbols-outlined text-[16px] sm:text-[18px]">lock</span>
-            <span>End-to-End Private</span>
-          </div>
-        </section>
-      </main>
-
-      {/* ─────────────────────────────────────────────────────────────
-          3. NEW INQUIRY MODAL DIALOG (Mobile-Safe Bottom Sheet)
-      ────────────────────────────────────────────────────────────── */}
-      {newInquiryModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-inverse-surface/40 backdrop-blur-md animate-in fade-in duration-200">
-          <div className="w-full max-w-2xl bg-surface rounded-t-3xl sm:rounded-3xl p-5 sm:p-8 shadow-[24px_32px_60px_rgba(37,35,58,0.25),-12px_-12px_32px_rgba(255,255,255,0.9)] flex flex-col gap-5 sm:gap-6 max-h-[90vh] overflow-y-auto">
-            {/* Modal Header */}
-            <div className="flex items-center justify-between pb-2 border-none">
-              <div>
-                <h2 className="font-extrabold text-xl sm:text-2xl text-on-surface tracking-tight">New Inquiry</h2>
-                <p className="text-xs text-on-surface-variant">
-                  Tell us what you need help with. A coordinator will review within 2 hours.
-                </p>
-              </div>
-              <button
-                type="button"
-                id="modal-close"
-                onClick={() => setNewInquiryModalOpen(false)}
-                className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-surface-container flex items-center justify-center text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-colors"
+            <div className="flex flex-wrap items-center justify-center gap-3 mt-6">
+              <Link
+                to="/services"
+                className="px-6 py-2.5 rounded-full bg-[#4D41DF] text-white text-xs sm:text-sm font-bold shadow-[4px_8px_16px_rgba(108,99,255,0.35)] hover:-translate-y-0.5 transition-transform"
               >
-                <span className="material-symbols-outlined text-[18px] sm:text-[20px]">close</span>
-              </button>
+                Browse Services &amp; Request
+              </Link>
+              <Link
+                to="/my-requests"
+                className="px-6 py-2.5 rounded-full bg-[#F6F1FF] text-[#1B192F] text-xs sm:text-sm font-bold hover:bg-[#EAE5FF] transition-colors"
+              >
+                View My Requests
+              </Link>
             </div>
-
-            {/* Modal Form */}
-            <form onSubmit={handleSubmitNewInquiry} className="flex flex-col gap-4 sm:gap-5">
-              {/* Field 1: Subject */}
-              <div className="flex flex-col gap-1.5">
-                <label className="text-xs font-bold text-on-surface" htmlFor="inquiry-subject">
-                  Subject *
-                </label>
-                <input
-                  type="text"
-                  id="inquiry-subject"
-                  required
-                  value={formSubject}
-                  onChange={e => setFormSubject(e.target.value)}
-                  placeholder="Enter inquiry subject (e.g. Deadline question, revision query)"
-                  className="w-full px-3.5 sm:px-4 py-2.5 sm:py-3 rounded-xl sm:rounded-2xl bg-surface-container-low text-on-surface placeholder:text-on-surface-variant text-xs sm:text-sm shadow-[inset_3px_3px_6px_rgba(37,35,58,0.06),inset_-3px_-3px_6px_rgba(255,255,255,0.8)] focus:outline-none focus:bg-surface-container-lowest"
-                />
-              </div>
-
-              {/* Field 2 & 3: Related Request & Category */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
-                <div className="flex flex-col gap-1.5">
-                  <label className="text-xs font-bold text-on-surface" htmlFor="inquiry-request">
-                    Related Request
-                  </label>
-                  <div className="relative">
-                    <select
-                      id="inquiry-request"
-                      value={formRequest}
-                      onChange={e => setFormRequest(e.target.value)}
-                      className="w-full appearance-none pl-3.5 sm:pl-4 pr-10 py-2.5 sm:py-3 rounded-xl sm:rounded-2xl bg-surface-container-low text-on-surface text-xs sm:text-sm shadow-[inset_3px_3px_6px_rgba(37,35,58,0.06),inset_-3px_-3px_6px_rgba(255,255,255,0.8)] focus:outline-none focus:bg-surface-container-lowest cursor-pointer"
-                    >
-                      <option value="">Select a request (Optional)</option>
-                      <option value="#REQ-1024">#REQ-1024 — Engineering Mathematics</option>
-                      <option value="#REQ-1028">#REQ-1028 — DSA Lab File</option>
-                      <option value="#REQ-1018">#REQ-1018 — IoT Weather Simulation</option>
-                      <option value="none">No Related Request (General Question)</option>
-                    </select>
-                    <span className="material-symbols-outlined pointer-events-none absolute right-3.5 top-1/2 -translate-y-1/2 text-on-surface-variant text-[18px] sm:text-[20px]">
-                      expand_more
-                    </span>
-                  </div>
-                </div>
-
-                <div className="flex flex-col gap-1.5">
-                  <label className="text-xs font-bold text-on-surface" htmlFor="inquiry-category">
-                    Category
-                  </label>
-                  <div className="relative">
-                    <select
-                      id="inquiry-category"
-                      value={formCategory}
-                      onChange={e => setFormCategory(e.target.value)}
-                      className="w-full appearance-none pl-3.5 sm:pl-4 pr-10 py-2.5 sm:py-3 rounded-xl sm:rounded-2xl bg-surface-container-low text-on-surface text-xs sm:text-sm shadow-[inset_3px_3px_6px_rgba(37,35,58,0.06),inset_-3px_-3px_6px_rgba(255,255,255,0.8)] focus:outline-none focus:bg-surface-container-lowest cursor-pointer"
-                    >
-                      <option value="Request Question">Request Question</option>
-                      <option value="Service Question">Service Question</option>
-                      <option value="Delivery Question">Delivery Question</option>
-                      <option value="Revision Question">Revision Question</option>
-                      <option value="General Question">General Question</option>
-                      <option value="Other">Other</option>
-                    </select>
-                    <span className="material-symbols-outlined pointer-events-none absolute right-3.5 top-1/2 -translate-y-1/2 text-on-surface-variant text-[18px] sm:text-[20px]">
-                      expand_more
-                    </span>
-                  </div>
-                </div>
-              </div>
-
-              {/* Field 4: Message */}
-              <div className="flex flex-col gap-1.5">
-                <label className="text-xs font-bold text-on-surface" htmlFor="inquiry-message">
-                  Message *
-                </label>
-                <textarea
-                  id="inquiry-message"
-                  required
-                  rows={3}
-                  value={formMessage}
-                  onChange={e => setFormMessage(e.target.value)}
-                  placeholder="Describe your question or issue in detail..."
-                  className="w-full p-3.5 sm:p-4 rounded-xl sm:rounded-2xl bg-surface-container-low text-on-surface placeholder:text-on-surface-variant text-xs sm:text-sm shadow-[inset_3px_3px_6px_rgba(37,35,58,0.06),inset_-3px_-3px_6px_rgba(255,255,255,0.8)] focus:outline-none focus:bg-surface-container-lowest"
-                />
-              </div>
-
-              {/* Field 5: Attachment Dropzone */}
-              <div className="flex flex-col gap-1.5">
-                <span className="text-xs font-bold text-on-surface">Attachments (Optional)</span>
-                <label className="p-4 sm:p-5 rounded-xl sm:rounded-2xl bg-surface-container-low/70 flex flex-col items-center justify-center text-center gap-1.5 cursor-pointer hover:bg-surface-container transition-colors shadow-[inset_2px_2px_4px_rgba(37,35,58,0.04)]">
-                  <input
-                    type="file"
-                    className="hidden"
-                    onChange={e => {
-                      if (e.target.files?.[0]) {
-                        setFormAttachment(`${e.target.files[0].name} (${(e.target.files[0].size / 1024 / 1024).toFixed(1)} MB)`);
-                      }
-                    }}
-                  />
-                  <span className="material-symbols-outlined text-[24px] sm:text-[28px] text-primary">cloud_upload</span>
-                  <span className="text-[11px] sm:text-xs font-bold text-primary">+ Add Attachment (PDF, DOCX, PNG up to 25MB)</span>
-                  <span className="text-[10px] sm:text-[11px] text-on-surface-variant">Drop relevant syllabi, project sheets, or screenshots</span>
-                </label>
-
-                {formAttachment && (
-                  <div className="flex items-center justify-between p-2.5 px-3.5 rounded-xl bg-surface-container-high text-on-surface text-xs font-medium">
-                    <div className="flex items-center gap-2 truncate">
-                      <span className="material-symbols-outlined text-[18px] text-primary shrink-0">description</span>
-                      <span className="font-semibold text-xs truncate">{formAttachment}</span>
-                    </div>
-                    <button
-                      type="button"
-                      onClick={() => setFormAttachment('')}
-                      className="text-on-surface-variant hover:text-error transition-colors flex items-center shrink-0 ml-2"
-                    >
-                      <span className="material-symbols-outlined text-[16px]">close</span>
-                    </button>
-                  </div>
-                )}
-              </div>
-
-              {/* Actions */}
-              <div className="flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-end gap-2.5 sm:gap-3 pt-2">
-                <button
-                  type="button"
-                  id="modal-cancel"
-                  onClick={() => setNewInquiryModalOpen(false)}
-                  className="w-full sm:w-auto px-5 py-2.5 rounded-full bg-surface-container text-on-surface-variant text-xs sm:text-sm font-bold hover:bg-surface-container-high transition-all"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  className="w-full sm:w-auto px-6 py-2.5 rounded-full bg-primary text-white text-xs sm:text-sm font-bold shadow-[6px_10px_20px_rgba(108,99,255,0.35)] hover:bg-primary-container transition-all"
-                >
-                  Submit Inquiry
-                </button>
-              </div>
-            </form>
           </div>
-        </div>
-      )}
+        )}
 
-      {/* ─────────────────────────────────────────────────────────────
-          4. INQUIRY CONVERSATION DETAIL SLIDE-OUT DRAWER (Mobile Tabs)
-      ────────────────────────────────────────────────────────────── */}
-      {selectedInquiry && (
-        <div className="fixed inset-0 z-50 bg-inverse-surface/40 backdrop-blur-md flex justify-end animate-in fade-in duration-200">
-          <div className="w-full lg:max-w-4xl bg-surface h-full shadow-[-20px_0_40px_rgba(37,35,58,0.2)] flex flex-col overflow-hidden animate-in slide-in-from-right duration-300">
-            {/* Top Bar */}
-            <div className="px-4 sm:px-6 py-3 sm:py-4 bg-surface-container-low flex items-center justify-between gap-2 shadow-[0_2px_8px_rgba(0,0,0,0.03)] shrink-0">
-              <div className="flex items-center gap-2.5 min-w-0">
-                <button
-                  type="button"
-                  id="detail-back"
-                  onClick={() => setSelectedInquiry(null)}
-                  className="p-1.5 sm:p-2 rounded-full bg-surface-container-lowest text-on-surface hover:bg-surface-container transition-colors shadow-[2px_4px_8px_rgba(108,99,255,0.08)] shrink-0"
-                >
-                  <span className="material-symbols-outlined text-[18px] sm:text-[20px]">arrow_back</span>
-                </button>
-                <div className="flex flex-col min-w-0">
-                  <div className="flex items-center gap-2 flex-wrap">
-                    <h3 className="font-bold text-sm sm:text-lg text-on-surface truncate max-w-[200px] sm:max-w-md">
-                      {selectedInquiry.title}
-                    </h3>
-                    <span
-                      className={`px-2.5 py-0.5 rounded-full text-[10px] sm:text-xs font-bold shrink-0 ${
-                        selectedInquiry.status === 'open'
-                          ? 'bg-tertiary-fixed text-on-tertiary-fixed'
-                          : selectedInquiry.status === 'awaiting'
-                          ? 'bg-secondary-container text-on-secondary-container'
-                          : 'bg-surface-container-high text-on-surface'
-                      }`}
-                    >
-                      ● {selectedInquiry.status === 'awaiting' ? 'Awaiting Reply' : selectedInquiry.status === 'resolved' ? 'Resolved' : 'Open'}
-                    </span>
-                  </div>
-                  <span className="text-[11px] sm:text-xs font-semibold text-primary truncate">
-                    {selectedInquiry.requestNumber} — {selectedInquiry.requestTitle}
-                  </span>
-                </div>
+        {/* Main 2-Column Claymorphic Workspace Interface */}
+        {inquiries.length > 0 && (
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start min-h-[700px]">
+            {/* LEFT COLUMN: Inquiries List */}
+            <aside
+              className={`lg:col-span-5 xl:col-span-4 flex flex-col gap-3 ${
+                showMobileChat ? 'hidden lg:flex' : 'flex'
+              }`}
+            >
+              <div className="flex items-center justify-between px-1">
+                <span className="text-xs uppercase tracking-wider text-[#464555] font-bold">
+                  Linked Requests &amp; Threads
+                </span>
+                <span className="text-xs font-semibold text-[#4D41DF]">Recent Activity</span>
               </div>
 
-              <button
-                type="button"
-                id="detail-close-btn"
-                onClick={() => setSelectedInquiry(null)}
-                className="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-surface-container flex items-center justify-center text-on-surface-variant hover:text-on-surface shrink-0"
-              >
-                <span className="material-symbols-outlined text-[18px] sm:text-[20px]">close</span>
-              </button>
-            </div>
+              {filteredInquiries.length === 0 ? (
+                <div className="p-8 text-center bg-white rounded-2xl shadow-[6px_10px_20px_rgba(108,99,255,0.06)]">
+                  <span className="material-symbols-outlined text-[#777587] text-3xl mb-1">search_off</span>
+                  <p className="text-xs text-[#464555]">No inquiries match your search or filter.</p>
+                </div>
+              ) : (
+                <div className="flex flex-col gap-3">
+                  {filteredInquiries.map((inq) => {
+                    const isSelected = inq.id === selectedInquiryId;
+                    const isResolved = inq.status === 'resolved';
 
-            {/* Mobile Tab Bar (Visible on mobile/tablet < lg) */}
-            <div className="flex lg:hidden items-center justify-center gap-2 p-2 bg-surface-container-low border-b border-surface-container shrink-0">
-              <button
-                type="button"
-                onClick={() => setDrawerMobileTab('chat')}
-                className={`flex-1 py-1.5 px-3 rounded-full text-xs font-bold transition-all flex items-center justify-center gap-1.5 ${
-                  drawerMobileTab === 'chat'
-                    ? 'bg-primary text-white shadow-[2px_4px_8px_rgba(108,99,255,0.25)]'
-                    : 'bg-surface-container text-on-surface-variant hover:text-on-surface'
-                }`}
-              >
-                <span className="material-symbols-outlined text-[16px]">forum</span>
-                <span>Chat ({selectedInquiry.thread?.length || 0})</span>
-              </button>
-              <button
-                type="button"
-                onClick={() => setDrawerMobileTab('details')}
-                className={`flex-1 py-1.5 px-3 rounded-full text-xs font-bold transition-all flex items-center justify-center gap-1.5 ${
-                  drawerMobileTab === 'details'
-                    ? 'bg-primary text-white shadow-[2px_4px_8px_rgba(108,99,255,0.25)]'
-                    : 'bg-surface-container text-on-surface-variant hover:text-on-surface'
-                }`}
-              >
-                <span className="material-symbols-outlined text-[16px]">info</span>
-                <span>Details &amp; Status</span>
-              </button>
-            </div>
+                    return (
+                      <div
+                        key={inq.id}
+                        onClick={() => {
+                          setSelectedInquiryId(inq.id);
+                          setShowMobileChat(true);
+                        }}
+                        className={`group cursor-pointer p-4 rounded-2xl transition-all relative overflow-hidden ${
+                          isSelected
+                            ? 'bg-white shadow-[12px_16px_32px_rgba(108,99,255,0.14),-8px_-8px_24px_rgba(255,255,255,0.95)] ring-2 ring-[#4D41DF]/30'
+                            : 'bg-white/80 hover:bg-white shadow-[6px_10px_22px_rgba(108,99,255,0.06),-4px_-4px_16px_rgba(255,255,255,0.9)] hover:shadow-[12px_16px_32px_rgba(108,99,255,0.12)]'
+                        }`}
+                      >
+                        {/* Active Accent Bar */}
+                        {isSelected && (
+                          <div className="absolute left-0 top-0 bottom-0 w-1.5 bg-[#4D41DF] rounded-r-full shadow-[2px_0_8px_rgba(108,99,255,0.5)]" />
+                        )}
 
-            {/* Main Container */}
-            <div className="flex-1 grid grid-cols-1 lg:grid-cols-12 overflow-hidden">
-              {/* Support Conversation Feed (Left 8 cols) */}
-              <div
-                className={`lg:col-span-8 flex flex-col h-full overflow-hidden ${
-                  drawerMobileTab === 'chat' ? 'flex' : 'hidden lg:flex'
-                }`}
-              >
-                {/* Scrollable message thread */}
-                <div className="flex-1 p-4 sm:p-6 md:p-8 flex flex-col gap-4 sm:gap-6 overflow-y-auto lg:bg-surface-container-lowest/30">
-                  {/* Notice Banner */}
-                  <div className="p-3 sm:p-4 rounded-2xl bg-surface-container-high flex items-start sm:items-center gap-2.5 sm:gap-3 shadow-[inset_1px_1px_2px_rgba(255,255,255,0.8)]">
-                    <span className="material-symbols-outlined text-primary text-[20px] sm:text-[24px] shrink-0 mt-0.5 sm:mt-0">info</span>
-                    <p className="text-xs sm:text-sm text-on-surface-variant font-medium leading-snug">
-                      ⚡ Inquiry assigned to coordinator <span className="font-bold text-on-surface">{selectedInquiry.coordinator}</span>.
-                    </p>
-                  </div>
-
-                  {/* Messages Thread */}
-                  {selectedInquiry.thread?.map(msg => (
-                    <div
-                      key={msg.id}
-                      className={`flex flex-col gap-1.5 sm:gap-2 ${
-                        msg.sender === 'coordinator' ? 'ml-3 sm:ml-8' : ''
-                      }`}
-                    >
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-2">
-                          <div
-                            className={`w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center font-bold text-[10px] sm:text-xs ${
-                              msg.sender === 'coordinator'
-                                ? 'bg-secondary text-white'
-                                : 'bg-primary text-white'
-                            }`}
-                          >
-                            {msg.sender === 'coordinator' ? 'DB' : 'AK'}
-                          </div>
-                          <span className="text-xs font-bold text-on-surface">{msg.senderName}</span>
-                          {msg.badge && (
+                        <div className="flex flex-col gap-2 pl-1">
+                          {/* Header row: Request ID & Status pill */}
+                          <div className="flex items-center justify-between gap-2">
                             <span
-                              className={`px-2 py-0.5 rounded-full text-[9px] sm:text-[10px] font-semibold ${
-                                msg.sender === 'coordinator'
-                                  ? 'bg-primary-fixed text-on-primary-fixed'
-                                  : 'bg-surface-container text-on-surface-variant'
+                              className={`inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-bold shadow-[inset_1px_1px_2px_rgba(255,255,255,0.9)] ${
+                                isSelected
+                                  ? 'bg-[#E3DFFF] text-[#100069]'
+                                  : 'bg-[#EAE5FF] text-[#464555]'
                               }`}
                             >
-                              {msg.badge}
+                              {inq.requestId || inq.id}
                             </span>
-                          )}
-                        </div>
-                        <span className="text-[10px] sm:text-[11px] text-on-surface-variant">{msg.time}</span>
-                      </div>
+                            <div className="flex items-center gap-1.5">
+                              <span
+                                className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-semibold ${
+                                  isResolved
+                                    ? 'bg-emerald-100 text-emerald-800'
+                                    : 'bg-[#E4DFFE] text-[#422DB2]'
+                                }`}
+                              >
+                                <span
+                                  className={`w-1.5 h-1.5 rounded-full ${
+                                    isResolved ? 'bg-emerald-600' : 'bg-[#5846C8] animate-pulse'
+                                  }`}
+                                />
+                                {inq.statusLabel || (isResolved ? 'Resolved' : 'In Progress')}
+                              </span>
+                            </div>
+                          </div>
 
-                      <div
-                        className={`p-3.5 sm:p-5 rounded-2xl text-xs sm:text-sm leading-relaxed ${
-                          msg.sender === 'coordinator'
-                            ? 'bg-surface-container-lowest text-on-surface shadow-[6px_10px_20px_rgba(108,99,255,0.08),inset_1px_1px_2px_rgba(255,255,255,0.9)] flex flex-col gap-2'
-                            : 'bg-surface-container-low text-on-surface shadow-[4px_6px_16px_rgba(108,99,255,0.06),inset_1px_1px_2px_rgba(255,255,255,0.9)] flex flex-col gap-2'
-                        }`}
-                      >
-                        <p>{msg.text}</p>
-                        {msg.attachment && (
-                          <div className="flex items-center gap-2 px-3 py-1.5 sm:py-2 rounded-xl bg-surface-container-lowest w-fit shadow-[2px_3px_8px_rgba(0,0,0,0.04)] text-on-surface text-[11px] sm:text-xs font-semibold">
-                            <span className="material-symbols-outlined text-[16px] sm:text-[18px] text-primary">attach_file</span>
-                            <span>
-                              {msg.attachment.name} ({msg.attachment.size})
+                          {/* Assignment Title */}
+                          <div>
+                            <h2 className="text-sm font-bold text-[#1B192F] line-clamp-1 group-hover:text-[#4D41DF] transition-colors">
+                              {inq.title}
+                            </h2>
+                            <div className="flex items-center gap-1.5 mt-1 text-[#464555] text-xs">
+                              <span className="material-symbols-outlined text-[15px] text-[#7F5300]">
+                                schedule
+                              </span>
+                              <span>Target Due: {formatDate(inq.deadline) || 'Flexible'}</span>
+                            </div>
+                          </div>
+
+                          {/* Inset Message Preview Box */}
+                          <div className="p-2.5 rounded-xl bg-[#F6F1FF] shadow-[inset_1px_1px_3px_rgba(37,35,58,0.06),inset_-1px_-1px_3px_rgba(255,255,255,0.8)]">
+                            <p className="text-xs text-[#464555] line-clamp-2">
+                              <span className="font-semibold text-[#4D41DF]">Latest: </span>
+                              {inq.latestMessage || 'Inquiry channel active.'}
+                            </p>
+                          </div>
+
+                          {/* Footer row */}
+                          <div className="flex items-center justify-between pt-0.5">
+                            <span className="text-[11px] text-[#777587] font-medium">
+                              Course: {inq.subject || 'Academic'}
+                            </span>
+                            <span className="text-[11px] font-semibold text-[#4D41DF]">
+                              {formatTime(inq.latestMessageTime || inq.updatedAt) || 'Active'}
                             </span>
                           </div>
-                        )}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </aside>
+
+            {/* RIGHT COLUMN: Active Request Chat Workspace */}
+            <main
+              className={`lg:col-span-7 xl:col-span-8 flex flex-col rounded-3xl bg-white shadow-[12px_16px_36px_rgba(108,99,255,0.12),-8px_-8px_24px_rgba(255,255,255,0.95)] overflow-hidden ${
+                showMobileChat ? 'flex' : 'hidden lg:flex'
+              }`}
+            >
+              {activeInquiry ? (
+                <>
+                  {/* Sticky Request Context Bar Header */}
+                  <div className="sticky top-0 z-20 px-5 py-4 bg-white/95 backdrop-blur-md shadow-[0_4px_16px_rgba(108,99,255,0.05)] border-b border-[#F0EBFF]">
+                    {/* Mobile Back Button */}
+                    <div className="lg:hidden mb-2">
+                      <button
+                        onClick={() => setShowMobileChat(false)}
+                        className="inline-flex items-center gap-1 text-xs font-bold text-[#4D41DF] hover:underline"
+                      >
+                        <span className="material-symbols-outlined text-[16px]">arrow_back</span>
+                        Back to Inquiries List
+                      </button>
+                    </div>
+
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                      <div className="space-y-1">
+                        <div className="flex items-center flex-wrap gap-2">
+                          <button
+                            type="button"
+                            onClick={() => handleCopyReqId(activeInquiry.requestId || activeInquiry.id)}
+                            className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-[#E3DFFF] text-[#100069] hover:bg-[#C4C0FF] text-xs font-bold shadow-[inset_1px_1px_2px_rgba(255,255,255,0.8)] transition-colors"
+                            title="Click to copy Request ID"
+                          >
+                            <span>{activeInquiry.requestId || activeInquiry.id}</span>
+                            <span className="material-symbols-outlined text-[13px]">
+                              {copiedId === (activeInquiry.requestId || activeInquiry.id) ? 'check' : 'content_copy'}
+                            </span>
+                          </button>
+                          <span className="px-2.5 py-0.5 rounded-full bg-[#EAE5FF] text-[#464555] text-xs font-semibold">
+                            {activeInquiry.subject || 'Coursework'}
+                          </span>
+                          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-[#E4DFFE] text-[#422DB2] text-xs font-bold">
+                            <span className="w-1.5 h-1.5 rounded-full bg-[#5846C8] animate-pulse" />
+                            {activeInquiry.statusLabel || (activeInquiry.status === 'resolved' ? 'Resolved' : 'In Progress')}
+                          </span>
+                        </div>
+                        <h2 className="text-lg sm:text-xl font-bold text-[#1B192F] tracking-tight mt-1 line-clamp-2">
+                          {activeInquiry.title}
+                        </h2>
+                      </div>
+
+                      {/* Deadline Info & Quick Link to Full Request View */}
+                      <div className="flex items-center sm:flex-col sm:items-end gap-2 shrink-0">
+                        <div className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-[#FFDDB3] text-[#291800] text-xs font-semibold shadow-[inset_1px_1px_2px_rgba(255,255,255,0.8)]">
+                          <span className="material-symbols-outlined text-[15px] text-[#7F5300]">timer</span>
+                          <span>Due: {formatDueTime(activeInquiry.deadline)}</span>
+                        </div>
+                        <Link
+                          to={`/my-requests?highlight=${activeInquiry.requestId}`}
+                          className="inline-flex items-center gap-1 text-[#4D41DF] hover:text-[#5846C8] text-xs font-bold transition-colors"
+                        >
+                          <span>View Request Details</span>
+                          <span className="material-symbols-outlined text-[15px]">open_in_new</span>
+                        </Link>
                       </div>
                     </div>
-                  ))}
-                  <div ref={threadEndRef} />
-                </div>
 
-                {/* Sticky Message Composer */}
-                <div className="p-3 sm:p-4 bg-surface border-t border-surface-container shrink-0">
-                  <form
-                    onSubmit={handleSendReply}
-                    className="p-1.5 sm:p-2.5 rounded-xl sm:rounded-2xl bg-surface-container-lowest shadow-[8px_12px_28px_rgba(108,99,255,0.12),inset_1px_1px_2px_rgba(255,255,255,0.95)] flex items-center gap-1.5 sm:gap-2"
-                  >
-                    <label
-                      aria-label="Add file"
-                      className="p-2 sm:p-2.5 rounded-lg sm:rounded-xl text-on-surface-variant hover:text-primary hover:bg-surface-container transition-colors cursor-pointer shrink-0"
-                    >
-                      <input type="file" className="hidden" onChange={() => showToast('File attached', 'info')} />
-                      <span className="material-symbols-outlined text-[20px] sm:text-[22px]">attach_file</span>
-                    </label>
-                    <input
-                      type="text"
-                      id="reply-text"
-                      value={replyText}
-                      onChange={e => setReplyText(e.target.value)}
-                      placeholder="Type your reply or question..."
-                      className="flex-1 min-w-0 bg-transparent px-2 py-1 text-xs sm:text-sm text-on-surface placeholder:text-on-surface-variant focus:outline-none"
-                    />
-                    <button
-                      type="submit"
-                      className="flex items-center gap-1 px-3.5 sm:px-5 py-2 sm:py-2.5 rounded-lg sm:rounded-xl bg-primary text-white text-xs font-bold shadow-[4px_6px_12px_rgba(108,99,255,0.3)] hover:bg-primary-container transition-all shrink-0"
-                    >
-                      <span>Send</span>
-                      <span className="material-symbols-outlined text-[16px] sm:text-[18px]">send</span>
-                    </button>
-                  </form>
-                </div>
-              </div>
-
-              {/* Inquiry Details Sidebar (Right 4 cols) */}
-              <aside
-                className={`lg:col-span-4 p-4 sm:p-6 md:p-8 bg-surface-container-low/60 flex flex-col gap-5 sm:gap-6 border-t lg:border-t-0 lg:border-l border-surface-container overflow-y-auto ${
-                  drawerMobileTab === 'details' ? 'flex' : 'hidden lg:flex'
-                }`}
-              >
-                <h4 className="font-bold text-sm sm:text-base text-on-surface">Inquiry Details</h4>
-
-                <div className="p-4 sm:p-5 rounded-2xl bg-surface-container-lowest shadow-[6px_8px_18px_rgba(108,99,255,0.05)] flex flex-col gap-3.5 sm:gap-4">
-                  <div className="flex flex-col gap-0.5">
-                    <span className="text-[10px] sm:text-[11px] uppercase tracking-wider text-on-surface-variant font-bold">
-                      Status
-                    </span>
-                    <div className="flex items-center gap-2 mt-1">
-                      <span
-                        className={`w-2.5 h-2.5 rounded-full ${
-                          selectedInquiry.status === 'open'
-                            ? 'bg-tertiary'
-                            : selectedInquiry.status === 'awaiting'
-                            ? 'bg-primary animate-pulse'
-                            : 'bg-outline'
-                        }`}
-                      ></span>
-                      <span className="text-xs font-bold text-on-surface">
-                        {selectedInquiry.status === 'open'
-                          ? 'Open — In Discussion'
-                          : selectedInquiry.status === 'awaiting'
-                          ? 'Awaiting Your Input'
-                          : 'Resolved & Archived'}
-                      </span>
+                    {/* Academic Specialist Metadata Strip */}
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mt-3 pt-2 bg-[#F6F1FF] px-3.5 py-2 rounded-xl shadow-[inset_1px_1px_2px_rgba(37,35,58,0.04),inset_-1px_-1px_2px_rgba(255,255,255,0.8)]">
+                      <div className="flex items-center gap-2">
+                        <div className="w-6 h-6 rounded-full bg-[#675DF9] text-white flex items-center justify-center font-bold text-[10px] shadow-[inset_1px_1px_2px_rgba(255,255,255,0.6)]">
+                          AH
+                        </div>
+                        <p className="text-xs text-[#1B192F] font-medium">
+                          Assigned Support: <span className="text-[#4D41DF] font-bold">{activeInquiry.assignedSpecialist || 'Dr. Marcus Vance (Specialist)'}</span>
+                        </p>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-white text-[#464555] text-[11px] font-medium shadow-[1px_1px_3px_rgba(108,99,255,0.06)]">
+                          <span className="material-symbols-outlined text-[13px] text-[#4D41DF]">description</span>
+                          Rubric Verified
+                        </span>
+                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-white text-[#464555] text-[11px] font-medium shadow-[1px_1px_3px_rgba(108,99,255,0.06)]">
+                          <span className="material-symbols-outlined text-[13px] text-[#4D41DF]">lock</span>
+                          Encrypted Channel
+                        </span>
+                      </div>
                     </div>
                   </div>
 
-                  <div className="flex flex-col gap-0.5">
-                    <span className="text-[10px] sm:text-[11px] uppercase tracking-wider text-on-surface-variant font-bold">
-                      Category
-                    </span>
-                    <span className="text-xs text-on-surface font-medium">{selectedInquiry.category}</span>
-                  </div>
+                  {/* Scrollable Message Conversation Stream */}
+                  <div className="flex-1 p-4 sm:p-6 space-y-4 overflow-y-auto max-h-[500px] min-h-[380px] bg-gradient-to-b from-[#FCF8FF] to-white">
+                    {/* System Event Pill */}
+                    <div className="flex justify-center">
+                      <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#F0EBFF] text-[#464555] text-[11px] font-medium shadow-[inset_1px_1px_2px_rgba(255,255,255,0.8)]">
+                        <span className="material-symbols-outlined text-[14px] text-[#4D41DF]">lock_reset</span>
+                        <span>
+                          Inquiry stream connected for {activeInquiry.requestId || activeInquiry.id} • {formatDate(activeInquiry.createdAt)}
+                        </span>
+                      </div>
+                    </div>
 
-                  <div className="flex flex-col gap-0.5">
-                    <span className="text-[10px] sm:text-[11px] uppercase tracking-wider text-on-surface-variant font-bold">
-                      Related Request
-                    </span>
-                    {selectedInquiry.requestNumber !== 'General Inquiry' ? (
-                      <Link
-                        to="/my-requests"
-                        className="text-xs font-bold text-primary hover:underline flex items-center gap-1"
-                      >
-                        <span>{selectedInquiry.requestNumber} (View Order)</span>
-                        <span className="material-symbols-outlined text-[14px]">open_in_new</span>
-                      </Link>
+                    {/* Messages */}
+                    {activeInquiry.messages && activeInquiry.messages.length > 0 ? (
+                      activeInquiry.messages.map((msg, index) => {
+                        const isStudent = msg.senderRole === 'user' || msg.senderRole === 'student' || msg.senderId === user?.id;
+                        return (
+                          <div
+                            key={msg.id || index}
+                            className={`flex gap-2.5 ${isStudent ? 'justify-end' : 'justify-start'}`}
+                          >
+                            {!isStudent && (
+                              <div className="w-8 h-8 rounded-full bg-[#E4DFFE] text-[#170065] flex items-center justify-center shrink-0 font-bold text-xs shadow-[inset_1px_1px_2px_rgba(255,255,255,0.8)]">
+                                <span className="material-symbols-outlined text-[17px] text-[#4D41DF]">school</span>
+                              </div>
+                            )}
+
+                            <div className={`max-w-lg sm:max-w-xl flex flex-col ${isStudent ? 'items-end' : 'items-start'}`}>
+                              <div className="flex items-center gap-1.5 mb-1 px-1">
+                                <span className="text-[11px] font-semibold text-[#1B192F]">
+                                  {isStudent ? 'You' : msg.senderName || 'Academic Team'}
+                                </span>
+                                <span className="text-[10px] text-[#777587]">
+                                  {formatTime(msg.createdAt)}
+                                </span>
+                              </div>
+
+                              <div
+                                className={`p-3.5 rounded-2xl text-sm leading-relaxed ${
+                                  isStudent
+                                    ? 'rounded-tr-xs bg-[#4D41DF] text-white shadow-[6px_10px_20px_rgba(108,99,255,0.28),inset_2px_2px_4px_rgba(255,255,255,0.35),inset_-2px_-2px_4px_rgba(0,0,0,0.1)]'
+                                    : 'rounded-tl-xs bg-[#F6F1FF] text-[#1B192F] shadow-[6px_10px_20px_rgba(108,99,255,0.08),inset_2px_2px_4px_rgba(255,255,255,0.9),inset_-2px_-2px_4px_rgba(108,99,255,0.08)]'
+                                }`}
+                              >
+                                <p className="whitespace-pre-wrap">{msg.content || msg.text}</p>
+                              </div>
+
+                              {isStudent && (
+                                <div className="flex items-center gap-1 mt-0.5 text-[#777587] text-[10px]">
+                                  <span className="material-symbols-outlined text-[13px] text-[#4D41DF]">done_all</span>
+                                  <span>Delivered</span>
+                                </div>
+                              )}
+                            </div>
+
+                            {isStudent && (
+                              <div className="w-8 h-8 rounded-full bg-[#675DF9] text-white flex items-center justify-center shrink-0 font-bold text-xs shadow-[inset_1px_1px_2px_rgba(255,255,255,0.8)]">
+                                {user?.fullName ? user.fullName.charAt(0).toUpperCase() : 'ME'}
+                              </div>
+                            )}
+                          </div>
+                        );
+                      })
                     ) : (
-                      <span className="text-xs text-on-surface font-medium">None (General Inquiry)</span>
+                      <div className="text-center py-10 text-gray-400 text-xs">
+                        No messages yet. Send your first message below!
+                      </div>
                     )}
+                    <div ref={messagesEndRef} />
                   </div>
 
-                  <div className="flex flex-col gap-0.5">
-                    <span className="text-[10px] sm:text-[11px] uppercase tracking-wider text-on-surface-variant font-bold">
-                      Assigned Coordinator
-                    </span>
-                    <span className="text-xs text-on-surface font-medium">{selectedInquiry.coordinator}</span>
-                  </div>
+                  {/* Chat Input Area */}
+                  <div className="p-4 sm:p-5 bg-[#F6F1FF] border-t border-[#EAE5FF] flex flex-col gap-2.5">
+                    {/* Suggested Prompt Chips */}
+                    <div className="flex items-center gap-1.5 overflow-x-auto pb-1 text-xs">
+                      <span className="text-[11px] text-[#464555] font-semibold whitespace-nowrap">Suggested:</span>
+                      <button
+                        type="button"
+                        onClick={() => handleSendMessage(null, 'Can I review the draft citations and structure?')}
+                        className="px-2.5 py-1 rounded-full bg-white hover:bg-[#E3DFFF] text-[#1B192F] text-[11px] font-medium whitespace-nowrap shadow-[inset_1px_1px_2px_rgba(255,255,255,0.9),1px_2px_4px_rgba(108,99,255,0.05)] transition-all"
+                      >
+                        Can I review the draft citations?
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => handleSendMessage(null, 'Could you confirm the expected delivery timeline?')}
+                        className="px-2.5 py-1 rounded-full bg-white hover:bg-[#E3DFFF] text-[#1B192F] text-[11px] font-medium whitespace-nowrap shadow-[inset_1px_1px_2px_rgba(255,255,255,0.9),1px_2px_4px_rgba(108,99,255,0.05)] transition-all"
+                      >
+                        Confirming delivery timeline
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => handleSendMessage(null, 'I have additional rubric guidelines to share.')}
+                        className="px-2.5 py-1 rounded-full bg-white hover:bg-[#E3DFFF] text-[#1B192F] text-[11px] font-medium whitespace-nowrap shadow-[inset_1px_1px_2px_rgba(255,255,255,0.9),1px_2px_4px_rgba(108,99,255,0.05)] transition-all"
+                      >
+                        Additional rubric guidelines
+                      </button>
+                    </div>
 
-                  <div className="flex flex-col gap-0.5">
-                    <span className="text-[10px] sm:text-[11px] uppercase tracking-wider text-on-surface-variant font-bold">
-                      Timestamps
-                    </span>
-                    <span className="text-[11px] text-on-surface-variant">Created: {selectedInquiry.createdAt}</span>
-                    <span className="text-[11px] text-on-surface-variant">Last activity: {selectedInquiry.lastActivity}</span>
-                  </div>
-                </div>
+                    {/* Clay Input Form */}
+                    <form
+                      onSubmit={handleSendMessage}
+                      className="flex items-center gap-2 p-1.5 bg-white rounded-full shadow-[inset_2px_2px_5px_rgba(37,35,58,0.08),inset_-2px_-2px_5px_rgba(255,255,255,0.9),0_6px_16px_rgba(108,99,255,0.06)]"
+                    >
+                      <input
+                        type="text"
+                        value={messageInput}
+                        onChange={(e) => setMessageInput(e.target.value)}
+                        placeholder={`Type your message regarding ${activeInquiry.requestId || activeInquiry.id}...`}
+                        className="flex-1 bg-transparent px-3 py-2 text-xs sm:text-sm text-[#1B192F] placeholder:text-[#777587] focus:outline-none"
+                        disabled={isSending}
+                      />
+                      <button
+                        type="submit"
+                        disabled={!messageInput.trim() || isSending}
+                        className="flex items-center gap-1.5 px-5 py-2 rounded-full bg-[#4D41DF] text-white text-xs sm:text-sm font-bold shadow-[4px_8px_16px_rgba(108,99,255,0.35),inset_2px_2px_4px_rgba(255,255,255,0.45)] hover:-translate-y-0.5 active:translate-y-0 transition-transform disabled:opacity-50 disabled:pointer-events-none shrink-0"
+                      >
+                        <span>{isSending ? 'Sending...' : 'Send'}</span>
+                        <span className="material-symbols-outlined text-[16px]">send</span>
+                      </button>
+                    </form>
 
-                <div className="flex flex-col gap-2.5 sm:gap-3">
-                  <button
-                    type="button"
-                    id="resolve-toggle-btn"
-                    onClick={handleToggleResolve}
-                    className={`w-full py-2.5 sm:py-3 rounded-full text-xs font-bold transition-all flex items-center justify-center gap-2 shadow-[2px_4px_10px_rgba(0,0,0,0.03)] ${
-                      selectedInquiry.status === 'resolved'
-                        ? 'bg-tertiary-fixed text-on-tertiary-fixed hover:bg-tertiary-fixed-dim'
-                        : 'bg-surface-container-high text-on-surface hover:bg-surface-container-highest'
-                    }`}
-                  >
-                    <span className="material-symbols-outlined text-[18px]">
-                      {selectedInquiry.status === 'resolved' ? 'refresh' : 'check_circle'}
-                    </span>
-                    <span>{selectedInquiry.status === 'resolved' ? 'Reopen Inquiry' : 'Mark as Resolved'}</span>
-                  </button>
-                  <p className="text-[10px] sm:text-[11px] text-on-surface-variant text-center">
-                    Closing an inquiry automatically stores it in your resolved archive.
+                    {/* FERPA / Security Microcopy */}
+                    <div className="flex items-center justify-center gap-1 text-center mt-0.5">
+                      <span className="material-symbols-outlined text-[13px] text-[#4D41DF]">verified_user</span>
+                      <p className="text-[11px] text-[#464555]">
+                        Messages are securely transmitted to the assigned academic coordinators for{' '}
+                        <strong className="text-[#1B192F]">{activeInquiry.requestId || activeInquiry.id}</strong>.
+                      </p>
+                    </div>
+                  </div>
+                </>
+              ) : (
+                <div className="flex flex-col items-center justify-center h-full p-12 text-center text-gray-500">
+                  <span className="material-symbols-outlined text-5xl text-[#4D41DF]/40 mb-2">chat_bubble_outline</span>
+                  <p className="text-base font-semibold text-[#1B192F]">Select an inquiry to view conversation</p>
+                  <p className="text-xs text-[#777587] mt-1 max-w-sm">
+                    Select any linked request from the list on the left to review communication updates with your academic specialist.
                   </p>
                 </div>
-              </aside>
-            </div>
+              )}
+            </main>
           </div>
-        </div>
-      )}
+        )}
+      </main>
 
-      {/* ─────────────────────────────────────────────────────────────
-          5. FOOTER
-      ────────────────────────────────────────────────────────────── */}
-      <footer className="w-full bg-surface-container-low py-8 sm:py-10 mt-auto border-t border-surface-container">
-        <div className="w-full px-4 sm:px-8 lg:px-12 max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4 sm:gap-6">
-          <div className="text-center md:text-left">
-            <p className="text-xs sm:text-sm font-bold text-on-surface">Assignment Hub © 2026.</p>
-            <p className="text-[11px] sm:text-xs text-on-surface-variant">You give us your work — we take care of the rest.</p>
-          </div>
-          <nav className="flex flex-wrap items-center justify-center gap-4 sm:gap-6">
-            <Link to="/about" className="text-xs font-semibold text-on-surface-variant hover:text-on-surface transition-colors">
-              About
-            </Link>
-            <Link to="/contact" className="text-xs font-semibold text-on-surface-variant hover:text-on-surface transition-colors">
-              Contact
-            </Link>
-            <Link to="/support" className="text-xs font-semibold text-on-surface-variant hover:text-on-surface transition-colors">
-              Support
-            </Link>
-            <Link to="/privacy-policy" className="text-xs font-semibold text-on-surface-variant hover:text-on-surface transition-colors">
-              Privacy Policy
-            </Link>
-            <Link to="/terms-conditions" className="text-xs font-semibold text-on-surface-variant hover:text-on-surface transition-colors">
-              Terms &amp; Conditions
-            </Link>
-          </nav>
-        </div>
-      </footer>
-
-      {/* ─────────────────────────────────────────────────────────────
-          6. MOBILE BOTTOM NAVIGATION (Visible only on mobile/tablet)
-      ────────────────────────────────────────────────────────────── */}
-      <MobileBottomNav activeTab="inquiries" />
+      <MobileBottomNav />
     </div>
   );
 }

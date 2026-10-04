@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+
+<html lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="web_standard" name="shell-type"/><title>AssignmentHub</title><link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base { html, body { margin: 0; padding: 0; } body { overscroll-behavior: none; } main > :first-child { margin-top: 0 !important; } main > :last-child { margin-bottom: 0 !important; } } ::-webkit-scrollbar { display: none; }</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = { darkMode: "class", theme: { extend: { "colors": { "error": "#ba1a1a", "on-tertiary": "#ffffff", "error-container": "#ffdad6", "on-primary-fixed-variant": "#3622ca", "surface-tint": "#4f44e2", "on-surface": "#1b192f", "on-secondary-container": "#fffbff", "inverse-primary": "#c4c0ff", "surface-container-high": "#eae5ff", "surface-bright": "#fcf8ff", "surface-dim": "#dbd6f5", "primary-fixed": "#e3dfff", "tertiary-fixed": "#ffddb3", "primary-container": "#675df9", "primary-fixed-dim": "#c4c0ff", "secondary-fixed-dim": "#c7bfff", "tertiary-fixed-dim": "#ffb951", "on-secondary-fixed": "#170065", "tertiary": "#7f5300", "on-tertiary-fixed": "#291800", "on-primary-fixed": "#100069", "outline-variant": "#c7c4d8", "on-background": "#1b192f", "secondary": "#5846c8", "background": "#fcf8ff", "primary": "#4d41df", "on-surface-variant": "#464555", "surface-variant": "#e4dffe", "on-secondary-fixed-variant": "#422db2", "surface": "#fcf8ff", "secondary-container": "#7161e3", "tertiary-container": "#a06900", "surface-container-highest": "#e4dffe", "secondary-fixed": "#e4dffe", "on-error-container": "#93000a", "on-primary-container": "#fffbff", "surface-container-low": "#f6f1ff", "on-tertiary-container": "#fffbff", "on-error": "#ffffff", "on-tertiary-fixed-variant": "#633f00", "outline": "#777587", "surface-container-lowest": "#ffffff", "on-primary": "#ffffff", "inverse-surface": "#302e45", "on-secondary": "#ffffff", "inverse-on-surface": "#f3eeff", "surface-container": "#f0ebff" }, "borderRadius": { "DEFAULT": "1rem", "lg": "2rem", "xl": "3rem", "full": "9999px" }, "spacing": { "gutter-mobile": "1rem", "space-xl": "2.5rem", "margin": "3rem", "space-sm": "0.5rem", "gutter": "1.5rem", "space-lg": "1.5rem", "margin-mobile": "1.25rem", "space-md": "1rem", "space-xs": "0.25rem" }, "fontFamily": { "label-md": [ "Plus Jakarta Sans" ], "label-lg": [ "Plus Jakarta Sans" ], "title-md": [ "Plus Jakarta Sans" ], "body-lg": [ "Plus Jakarta Sans" ], "display": [ "Plus Jakarta Sans" ], "headline-lg-mobile": [ "Plus Jakarta Sans" ], "headline-sm": [ "Plus Jakarta Sans" ], "headline-lg": [ "Plus Jakarta Sans" ], "label-sm": [ "Plus Jakarta Sans" ], "body-md": [ "Plus Jakarta Sans" ], "headline-md": [ "Plus Jakarta Sans" ], "display-mobile": [ "Plus Jakarta Sans" ], "body-sm": [ "Plus Jakarta Sans" ] }, "fontSize": { "label-md": [ "12px", { "lineHeight": "16px", "letterSpacing": "0.04em", "fontWeight": "600" } ], "label-lg": [ "14px", { "lineHeight": "20px", "letterSpacing": "0.02em", "fontWeight": "700" } ], "title-md": [ "18px", { "lineHeight": "26px", "letterSpacing": "0em", "fontWeight": "600" } ], "body-lg": [ "18px", { "lineHeight": "28px", "letterSpacing": "0em", "fontWeight": "400" } ], "display": [ "56px", { "lineHeight": "64px", "letterSpacing": "-0.03em", "fontWeight": "800" } ], "headline-lg-mobile": [ "28px", { "lineHeight": "36px", "letterSpacing": "-0.01em", "fontWeight": "700" } ], "headline-sm": [ "22px", { "lineHeight": "30px", "letterSpacing": "0em", "fontWeight": "600" } ], "headline-lg": [ "40px", { "lineHeight": "48px", "letterSpacing": "-0.02em", "fontWeight": "700" } ], "label-sm": [ "10px", { "lineHeight": "14px", "letterSpacing": "0.06em", "fontWeight": "700" } ], "body-md": [ "16px", { "lineHeight": "24px", "letterSpacing": "0em", "fontWeight": "400" } ], "headline-md": [ "28px", { "lineHeight": "36px", "letterSpacing": "-0.01em", "fontWeight": "700" } ], "display-mobile": [ "36px", { "lineHeight": "44px", "letterSpacing": "-0.02em", "fontWeight": "800" } ], "body-sm": [ "14px", { "lineHeight": "20px", "letterSpacing": "0em", "fontWeight": "400" } ] } } } };</script></head><body class="bg-background font-body-md text-on-surface antialiased min-h-screen flex flex-col"><header class="sticky top-0 w-full z-50 bg-surface-bright/90 backdrop-blur-xl shadow-[0_12px_32px_rgba(108,99,255,0.08)]"><div class="h-20 w-full px-gutter flex items-center justify-between gap-gutter"><div class="flex items-center gap-space-md shrink-0"><img alt="A cute premium 3D claymorphic logo icon for Assignment Hub, featuring a stylized puffy clay graduation cap merged with an open book, soft rounded corners, smooth matte clay texture, vibrant primary purple #6C63FF and warm golden yellow #FFB84D accents, isolated on clean background with soft ambient shadows. Design context: - Primary color: #6c63ff
+- Font: plusJakartaSans
+- Mode: light
+- Roundness: rounded-full
+. The logo should be visually consistent with these brand tokens." class="h-8 w-auto object-contain" src="https://lh3.googleusercontent.com/aida/AEtjO1XcuL-TqmbIDeagJ750sc5IziFBwPNKthXu-9guxjotR23t9fnwnGTSUyFtZJSMQaQCtWwhux0191-uA1dY0WZb9Ha5sb6SdcnW7dHRJaFqObenvQqD5sw6Py11R8wsUBMgvsQcuj2yFxdM4mQPfRXDPgUerwRUkb_vTAvWRRx2xqGKJNZP51JPo7poFzBw639IApnz8l_ACrCOC-3CyAK3ydYH6zBxyYCTc-jXcw7ioT1ygmKHPG9AHhlY"/><span class="font-headline-sm text-headline-sm text-primary tracking-tight">AssignmentHub</span><span class="px-space-md py-space-xs rounded-full bg-surface-container-high text-on-surface font-label-sm text-label-sm uppercase tracking-wider shadow-[inset_1px_1px_2px_rgba(255,255,255,0.8),inset_-1px_-1px_2px_rgba(108,99,255,0.15)]">ACADEMIC DESK</span></div><nav class="hidden xl:flex items-center gap-space-xs p-space-xs rounded-full bg-surface-container-low shadow-[inset_2px_2px_5px_rgba(37,35,58,0.06),inset_-2px_-2px_5px_rgba(255,255,255,0.8)]" data-active-classes="bg-primary-container text-on-primary-container shadow-[inset_2px_2px_4px_rgba(255,255,255,0.45),inset_-2px_-2px_4px_rgba(0,0,0,0.1),0_6px_14px_rgba(108,99,255,0.25)] font-bold"><a class="px-space-md py-space-xs rounded-full text-on-surface-variant font-label-md text-label-md hover:bg-surface-container-high hover:text-on-surface transition-all" data-path="home" href="#">Home</a><a class="px-space-md py-space-xs rounded-full text-on-surface-variant font-label-md text-label-md hover:bg-surface-container-high hover:text-on-surface transition-all" data-path="services" href="#">Services</a><a class="px-space-md py-space-xs rounded-full text-on-surface-variant font-label-md text-label-md hover:bg-surface-container-high hover:text-on-surface transition-all" data-path="my-requests" href="#">My Requests</a><a aria-current="page" class="px-space-md py-space-xs rounded-full transition-all bg-primary-container text-on-primary-container shadow-[inset_2px_2px_4px_rgba(255,255,255,0.45),inset_-2px_-2px_4px_rgba(0,0,0,0.1),0_6px_14px_rgba(108,99,255,0.25)] font-bold" data-path="inquiries" href="#">Inquiries</a></nav><div class="flex items-center gap-space-md shrink-0"><button class="flex items-center gap-space-xs px-space-lg py-space-sm rounded-full bg-primary text-on-primary font-label-lg text-label-lg shadow-[6px_10px_20px_rgba(108,99,255,0.35),inset_2px_2px_4px_rgba(255,255,255,0.45),inset_-2px_-2px_4px_rgba(0,0,0,0.1)] hover:-translate-y-0.5 active:translate-y-0 transition-transform" type="button"><span class="material-symbols-outlined text-[20px]">add</span><span>New Request</span></button><button aria-label="Notifications" class="relative w-10 h-10 rounded-full bg-surface-container-lowest flex items-center justify-center text-on-surface shadow-[4px_6px_14px_rgba(108,99,255,0.12),inset_2px_2px_4px_rgba(255,255,255,0.9)] hover:bg-surface-container-high hover:text-on-surface transition-all" type="button"><span class="material-symbols-outlined text-[20px]">notifications</span><span class="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-tertiary-fixed-dim text-on-tertiary-fixed font-label-sm text-label-sm flex items-center justify-center shadow-[0_2px_6px_rgba(255,185,81,0.5)]">2</span></button><div class="flex items-center gap-space-sm pl-space-xs pr-space-md py-space-xs rounded-full bg-surface-container-low shadow-[inset_1px_1px_3px_rgba(255,255,255,0.8),inset_-1px_-1px_3px_rgba(108,99,255,0.08)]"><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div><div class="hidden sm:flex flex-col text-left leading-tight"><span class="font-label-md text-label-md text-on-surface">Aditya K.</span><span class="font-label-sm text-label-sm text-on-surface-variant">Student</span></div></div></div></div></header><main class="w-full flex-1 pt-20 px-gutter bg-background"><div class="flex flex-col w-full pb-space-xl">
+<!-- Interactive Navigation Helper Style for Shell syncing -->
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+      // Highlight the "Inquiries" link in the shell navigation if present
+      const navLinks = document.querySelectorAll('nav a[data-path]');
+      navLinks.forEach(link => {
+        if (link.getAttribute('data-path') === 'inquiries') {
+          link.classList.remove('text-on-surface-variant');
+          link.classList.add('bg-primary-container', 'text-on-primary-container', 'shadow-[inset_2px_2px_4px_rgba(255,255,255,0.45),inset_-2px_-2px_4px_rgba(0,0,0,0.1),0_6px_14px_rgba(108,99,255,0.25)]', 'font-bold');
+        }
+      });
+    });
+  </script>
+<!-- Page Header & Filter Controls -->
+<section class="flex flex-col gap-space-lg mb-space-lg">
+<div class="flex flex-col lg:flex-row lg:items-end justify-between gap-space-md">
+<div class="space-y-space-xs">
+<div class="inline-flex items-center gap-space-xs px-space-md py-space-xs rounded-full bg-primary-fixed text-on-primary-fixed font-label-sm text-label-sm shadow-[inset_1px_1px_2px_rgba(255,255,255,0.8),inset_-1px_-1px_2px_rgba(108,99,255,0.15)] uppercase tracking-wider">
+<span class="material-symbols-outlined text-[14px]">forum</span>
+          Direct Academic Workspace
+        </div>
+<h1 class="font-headline-lg text-headline-lg text-on-surface tracking-tight">Inquiries</h1>
+<p class="font-body-md text-body-md text-on-surface-variant max-w-2xl">
+          Direct academic support and updates for your submitted requests. Every inquiry is linked to your active or past requests.
+        </p>
+</div>
+<!-- Quick Request Stats Pills -->
+<div class="flex items-center gap-space-sm">
+<div class="flex items-center gap-space-sm px-space-md py-space-sm rounded-full bg-surface-container-lowest shadow-[8px_12px_24px_rgba(108,99,255,0.08),inset_2px_2px_4px_rgba(255,255,255,0.9)]">
+<span class="w-2.5 h-2.5 rounded-full bg-primary animate-pulse"></span>
+<span class="font-label-md text-label-md text-on-surface">3 Active Streams</span>
+</div>
+<div class="flex items-center gap-space-sm px-space-md py-space-sm rounded-full bg-surface-container-lowest shadow-[8px_12px_24px_rgba(108,99,255,0.08),inset_2px_2px_4px_rgba(255,255,255,0.9)]">
+<span class="material-symbols-outlined text-primary text-[18px]">verified</span>
+<span class="font-label-md text-label-md text-on-surface-variant">FERPA Verified Channel</span>
+</div>
+</div>
+</div>
+<!-- Search and Categorization Toolbar -->
+<div class="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-space-md bg-surface-container-low p-space-xs rounded-2xl shadow-[inset_2px_2px_5px_rgba(37,35,58,0.05),inset_-2px_-2px_5px_rgba(255,255,255,0.8)]">
+<!-- Clay Search Bar -->
+<div class="relative flex-1 max-w-md">
+<span class="material-symbols-outlined absolute left-space-md top-1/2 -translate-y-1/2 text-outline-variant text-[20px]">search</span>
+<input class="w-full pl-11 pr-space-md py-2.5 bg-surface-container-lowest rounded-full font-body-sm text-body-sm text-on-surface placeholder:text-outline shadow-[inset_2px_2px_4px_rgba(37,35,58,0.06),inset_-2px_-2px_4px_rgba(255,255,255,0.9)] focus:outline-none focus:ring-2 focus:ring-primary/40 transition-all" id="inquiry-search-input" placeholder="Search by Request ID or Assignment..." type="text"/>
+</div>
+<!-- Segmented Category Filter Tabs -->
+<div class="flex items-center gap-space-xs p-1 bg-surface-container rounded-full overflow-x-auto">
+<button class="filter-tab active-tab px-space-md py-1.5 rounded-full font-label-md text-label-md bg-surface-container-lowest text-primary shadow-[2px_4px_10px_rgba(108,99,255,0.12),inset_1px_1px_2px_rgba(255,255,255,0.9)] transition-all" type="button">
+          All Inquiries <span class="ml-1 opacity-70">(4)</span>
+</button>
+<button class="filter-tab px-space-md py-1.5 rounded-full font-label-md text-label-md text-on-surface-variant hover:text-on-surface transition-all" type="button">
+          Active Requests <span class="ml-1 opacity-70">(3)</span>
+</button>
+<button class="filter-tab px-space-md py-1.5 rounded-full font-label-md text-label-md text-on-surface-variant hover:text-on-surface transition-all" type="button">
+          Resolved <span class="ml-1 opacity-70">(1)</span>
+</button>
+</div>
+</div>
+</section>
+<!-- Main 2-Column Claymorphic Workspace Interface -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-space-lg items-start min-h-[720px]">
+<!-- LEFT COLUMN: Inquiry List (Tied to Specific Requests) -->
+<aside class="lg:col-span-5 xl:col-span-4 flex flex-col gap-space-md">
+<div class="flex items-center justify-between px-space-xs">
+<span class="font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant font-bold">Linked Requests &amp; Threads</span>
+<span class="font-label-sm text-label-sm text-primary">Sort: Recent Activity</span>
+</div>
+<div class="flex flex-col gap-space-md" id="inquiry-card-list">
+<!-- CARD 1 (Selected & Active Request) -->
+<div class="inquiry-item group cursor-pointer p-space-lg rounded-2xl bg-surface-container-lowest shadow-[12px_16px_32px_rgba(108,99,255,0.14),-8px_-8px_24px_rgba(255,255,255,0.95)] transition-all relative overflow-hidden ring-2 ring-primary/25" data-request-id="REQ-20261004-001">
+<!-- Active accent indicator bar -->
+<div class="absolute left-0 top-0 bottom-0 w-1.5 bg-primary rounded-r-full shadow-[2px_0_8px_rgba(108,99,255,0.5)]"></div>
+<div class="flex flex-col gap-space-sm pl-space-xs">
+<div class="flex items-center justify-between gap-space-xs">
+<span class="inline-flex items-center px-space-sm py-0.5 rounded-full bg-primary-fixed text-on-primary-fixed font-label-sm text-label-sm font-bold shadow-[inset_1px_1px_2px_rgba(255,255,255,0.9)]">
+                REQ-20261004-001
+              </span>
+<div class="flex items-center gap-space-xs">
+<span class="inline-flex items-center gap-1 px-space-sm py-0.5 rounded-full bg-secondary-fixed text-on-secondary-fixed font-label-sm text-label-sm">
+<span class="w-1.5 h-1.5 rounded-full bg-secondary animate-pulse"></span>
+                  In Progress
+                </span>
+<span class="w-5 h-5 rounded-full bg-primary text-on-primary text-[10px] font-bold flex items-center justify-center shadow-[0_2px_6px_rgba(108,99,255,0.4)]">1</span>
+</div>
+</div>
+<div>
+<h2 class="font-title-md text-title-md text-on-surface line-clamp-1 group-hover:text-primary transition-colors">
+                Distributed Database Architectures &amp; Replication Schemes
+              </h2>
+<div class="flex items-center gap-1.5 mt-1 text-on-surface-variant font-label-sm text-label-sm">
+<span class="material-symbols-outlined text-[16px] text-tertiary">schedule</span>
+<span>Target Due: 30 Oct 2026, 11:59 PM</span>
+</div>
+</div>
+<!-- Inset Clay Message Preview Box -->
+<div class="p-space-sm rounded-xl bg-surface-container-low shadow-[inset_1px_1px_3px_rgba(37,35,58,0.06),inset_-1px_-1px_3px_rgba(255,255,255,0.8)]">
+<p class="font-body-sm text-body-sm text-on-surface-variant line-clamp-2">
+<span class="font-semibold text-primary">AssignmentHub Team:</span> They will be provided inline with syntax highlighting as well as compiled in Appendix B...
+              </p>
+</div>
+<div class="flex items-center justify-between pt-1">
+<span class="font-label-sm text-label-sm text-outline">Course: CS402</span>
+<span class="font-label-sm text-label-sm font-semibold text-primary">10:42 AM</span>
+</div>
+</div>
+</div>
+<!-- CARD 2 (Unselected, In Review) -->
+<div class="inquiry-item group cursor-pointer p-space-lg rounded-2xl bg-surface-container-lowest/80 hover:bg-surface-container-lowest shadow-[6px_10px_22px_rgba(108,99,255,0.06),-4px_-4px_16px_rgba(255,255,255,0.9)] hover:shadow-[12px_16px_32px_rgba(108,99,255,0.12),-8px_-8px_24px_rgba(255,255,255,0.95)] transition-all" data-request-id="REQ-20261002-089">
+<div class="flex flex-col gap-space-sm">
+<div class="flex items-center justify-between gap-space-xs">
+<span class="inline-flex items-center px-space-sm py-0.5 rounded-full bg-surface-container-high text-on-surface-variant font-label-sm text-label-sm font-bold shadow-[inset_1px_1px_2px_rgba(255,255,255,0.9)]">
+                REQ-20261002-089
+              </span>
+<span class="inline-flex items-center gap-1 px-space-sm py-0.5 rounded-full bg-tertiary-fixed text-on-tertiary-fixed font-label-sm text-label-sm">
+<span class="w-1.5 h-1.5 rounded-full bg-tertiary"></span>
+                In Review
+              </span>
+</div>
+<div>
+<h2 class="font-title-md text-title-md text-on-surface line-clamp-1 group-hover:text-primary transition-colors">
+                Computational Fluid Dynamics Simulation &amp; Case Analysis
+              </h2>
+<div class="flex items-center gap-1.5 mt-1 text-on-surface-variant font-label-sm text-label-sm">
+<span class="material-symbols-outlined text-[16px] text-outline">schedule</span>
+<span>Target Due: 05 Nov 2026, 11:59 PM</span>
+</div>
+</div>
+<div class="p-space-sm rounded-xl bg-surface-container-low shadow-[inset_1px_1px_3px_rgba(37,35,58,0.04),inset_-1px_-1px_3px_rgba(255,255,255,0.8)]">
+<p class="font-body-sm text-body-sm text-on-surface-variant line-clamp-2">
+<span class="font-medium text-on-surface">You:</span> Uploaded the supplementary MATLAB 2023b script.
+              </p>
+</div>
+<div class="flex items-center justify-between pt-1">
+<span class="font-label-sm text-label-sm text-outline">Course: ME320</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">Yesterday</span>
+</div>
+</div>
+</div>
+<!-- CARD 3 (Unselected, Specialist Matching) -->
+<div class="inquiry-item group cursor-pointer p-space-lg rounded-2xl bg-surface-container-lowest/80 hover:bg-surface-container-lowest shadow-[6px_10px_22px_rgba(108,99,255,0.06),-4px_-4px_16px_rgba(255,255,255,0.9)] hover:shadow-[12px_16px_32px_rgba(108,99,255,0.12),-8px_-8px_24px_rgba(255,255,255,0.95)] transition-all" data-request-id="REQ-20260928-112">
+<div class="flex flex-col gap-space-sm">
+<div class="flex items-center justify-between gap-space-xs">
+<span class="inline-flex items-center px-space-sm py-0.5 rounded-full bg-surface-container-high text-on-surface-variant font-label-sm text-label-sm font-bold shadow-[inset_1px_1px_2px_rgba(255,255,255,0.9)]">
+                REQ-20260928-112
+              </span>
+<span class="inline-flex items-center gap-1 px-space-sm py-0.5 rounded-full bg-secondary-fixed-dim text-on-secondary-fixed font-label-sm text-label-sm">
+<span class="w-1.5 h-1.5 rounded-full bg-secondary"></span>
+                Specialist Matching
+              </span>
+</div>
+<div>
+<h2 class="font-title-md text-title-md text-on-surface line-clamp-1 group-hover:text-primary transition-colors">
+                Systematic Meta-Analysis on Transformer Models
+              </h2>
+<div class="flex items-center gap-1.5 mt-1 text-on-surface-variant font-label-sm text-label-sm">
+<span class="material-symbols-outlined text-[16px] text-outline">schedule</span>
+<span>Target Due: 12 Nov 2026, 06:00 PM</span>
+</div>
+</div>
+<div class="p-space-sm rounded-xl bg-surface-container-low shadow-[inset_1px_1px_3px_rgba(37,35,58,0.04),inset_-1px_-1px_3px_rgba(255,255,255,0.8)]">
+<p class="font-body-sm text-body-sm text-on-surface-variant line-clamp-2">
+<span class="font-medium text-primary">AssignmentHub Team:</span> Matching with biomedical informatics specialist...
+              </p>
+</div>
+<div class="flex items-center justify-between pt-1">
+<span class="font-label-sm text-label-sm text-outline">Course: AI501</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">2 days ago</span>
+</div>
+</div>
+</div>
+<!-- CARD 4 (Unselected, Delivered/Resolved) -->
+<div class="inquiry-item group cursor-pointer p-space-lg rounded-2xl bg-surface-container-lowest/80 hover:bg-surface-container-lowest shadow-[6px_10px_22px_rgba(108,99,255,0.06),-4px_-4px_16px_rgba(255,255,255,0.9)] hover:shadow-[12px_16px_32px_rgba(108,99,255,0.12),-8px_-8px_24px_rgba(255,255,255,0.95)] transition-all" data-request-id="REQ-20260918-044">
+<div class="flex flex-col gap-space-sm">
+<div class="flex items-center justify-between gap-space-xs">
+<span class="inline-flex items-center px-space-sm py-0.5 rounded-full bg-surface-container-high text-on-surface-variant font-label-sm text-label-sm font-bold shadow-[inset_1px_1px_2px_rgba(255,255,255,0.9)]">
+                REQ-20260918-044
+              </span>
+<span class="inline-flex items-center gap-1 px-space-sm py-0.5 rounded-full bg-surface-container-high text-on-surface font-label-sm text-label-sm">
+<span class="material-symbols-outlined text-[14px] text-primary">task_alt</span>
+                Delivered
+              </span>
+</div>
+<div>
+<h2 class="font-title-md text-title-md text-on-surface line-clamp-1 group-hover:text-primary transition-colors">
+                Full-Stack Microservices Architecture &amp; Containerization
+              </h2>
+<div class="flex items-center gap-1.5 mt-1 text-on-surface-variant font-label-sm text-label-sm">
+<span class="material-symbols-outlined text-[16px] text-outline">check_circle</span>
+<span>Delivered: 26 Sep 2026</span>
+</div>
+</div>
+<div class="p-space-sm rounded-xl bg-surface-container-low shadow-[inset_1px_1px_3px_rgba(37,35,58,0.04),inset_-1px_-1px_3px_rgba(255,255,255,0.8)]">
+<p class="font-body-sm text-body-sm text-on-surface-variant line-clamp-2">
+<span class="font-medium text-on-surface">You:</span> Thank you! The architecture specification was approved.
+              </p>
+</div>
+<div class="flex items-center justify-between pt-1">
+<span class="font-label-sm text-label-sm text-outline">Course: SE441</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">Sep 28</span>
+</div>
+</div>
+</div>
+</div>
+</aside>
+<!-- RIGHT COLUMN: Active Request Chat Workspace -->
+<main class="lg:col-span-7 xl:col-span-8 flex flex-col rounded-3xl bg-surface-container-lowest shadow-[12px_16px_36px_rgba(108,99,255,0.12),-8px_-8px_24px_rgba(255,255,255,0.95)] overflow-hidden">
+<!-- Sticky Request Context Bar Header -->
+<div class="sticky top-0 z-20 px-space-lg py-space-md bg-surface-container-lowest/95 backdrop-blur-md shadow-[0_4px_16px_rgba(108,99,255,0.05)]">
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-space-md">
+<div class="space-y-1">
+<div class="flex items-center flex-wrap gap-space-xs">
+<button class="inline-flex items-center gap-1 px-space-sm py-0.5 rounded-full bg-primary-fixed text-on-primary-fixed hover:bg-primary-fixed-dim font-label-sm text-label-sm font-bold shadow-[inset_1px_1px_2px_rgba(255,255,255,0.8)] transition-colors" id="copy-req-btn" title="Click to copy Request ID">
+<span>REQ-20261004-001</span>
+<span class="material-symbols-outlined text-[14px]">content_copy</span>
+</button>
+<span class="px-space-sm py-0.5 rounded-full bg-surface-container-high text-on-surface-variant font-label-sm text-label-sm font-semibold">
+                CS402 Database Systems
+              </span>
+<span class="inline-flex items-center gap-1 px-space-sm py-0.5 rounded-full bg-secondary-fixed text-on-secondary-fixed font-label-sm text-label-sm">
+<span class="w-1.5 h-1.5 rounded-full bg-secondary animate-pulse"></span>
+                In Progress
+              </span>
+</div>
+<h2 class="font-headline-sm text-headline-sm text-on-surface tracking-tight mt-1">
+              Distributed Database Architectures &amp; Replication Schemes
+            </h2>
+</div>
+<!-- Deadline Info & Quick Link to Full Request View -->
+<div class="flex items-center flex-wrap sm:flex-col sm:items-end gap-space-xs shrink-0">
+<div class="inline-flex items-center gap-1.5 px-space-md py-1 rounded-full bg-tertiary-fixed text-on-tertiary-fixed font-label-sm text-label-sm font-semibold shadow-[inset_1px_1px_2px_rgba(255,255,255,0.8)]">
+<span class="material-symbols-outlined text-[16px] text-tertiary">timer</span>
+<span>Due: 30 Oct 2026, 11:59 PM (4 days left)</span>
+</div>
+<a class="inline-flex items-center gap-1 text-primary hover:text-secondary font-label-md text-label-md transition-colors" data-path="my-requests" href="#">
+<span>View Request Details</span>
+<span class="material-symbols-outlined text-[16px]">open_in_new</span>
+</a>
+</div>
+</div>
+<!-- Academic Advisor Metadata Strip -->
+<div class="flex items-center justify-between mt-space-md pt-space-xs bg-surface-container-low px-space-md py-space-xs rounded-xl shadow-[inset_1px_1px_2px_rgba(37,35,58,0.04),inset_-1px_-1px_2px_rgba(255,255,255,0.8)]">
+<div class="flex items-center gap-space-sm">
+<div class="w-7 h-7 rounded-full bg-primary-container text-on-primary-container flex items-center justify-center font-bold text-label-sm shadow-[inset_1px_1px_2px_rgba(255,255,255,0.6)]">
+              MV
+            </div>
+<div class="text-left">
+<p class="font-label-sm text-label-sm text-on-surface font-semibold">Assigned Specialist: <span class="text-primary">Dr. Marcus Vance</span> (Distributed Systems)</p>
+</div>
+</div>
+<div class="flex items-center gap-2">
+<span class="inline-flex items-center gap-1 px-space-sm py-0.5 rounded-full bg-surface-container-lowest text-on-surface-variant font-label-sm text-label-sm shadow-[1px_1px_3px_rgba(108,99,255,0.06)]">
+<span class="material-symbols-outlined text-[14px] text-primary">description</span>
+              Rubric Verified
+            </span>
+<span class="inline-flex items-center gap-1 px-space-sm py-0.5 rounded-full bg-surface-container-lowest text-on-surface-variant font-label-sm text-label-sm shadow-[1px_1px_3px_rgba(108,99,255,0.06)]">
+<span class="material-symbols-outlined text-[14px] text-primary">format_quote</span>
+              IEEE Format
+            </span>
+</div>
+</div>
+</div>
+<!-- Scrollable Message Conversation Stream -->
+<div class="flex-1 p-space-lg space-y-space-lg overflow-y-auto max-h-[640px] bg-gradient-to-b from-surface-bright to-surface-container-lowest" id="chat-messages-container">
+<!-- System Event Pill -->
+<div class="flex justify-center">
+<div class="inline-flex items-center gap-space-xs px-space-md py-1 rounded-full bg-surface-container text-on-surface-variant font-label-sm text-label-sm shadow-[inset_1px_1px_2px_rgba(255,255,255,0.8),inset_-1px_-1px_2px_rgba(108,99,255,0.08)]">
+<span class="material-symbols-outlined text-[16px] text-primary">lock_reset</span>
+<span>Inquiry channel opened for REQ-20261004-001 • Oct 24, 2026, 09:15 AM</span>
+</div>
+</div>
+<!-- Student Message (Aditya K.) -->
+<div class="flex justify-end gap-space-sm">
+<div class="max-w-xl flex flex-col items-end">
+<div class="flex items-center gap-space-xs mb-1">
+<span class="font-label-sm text-label-sm text-on-surface-variant">You (Aditya K.)</span>
+<span class="font-label-sm text-label-sm text-outline">Oct 24, 09:20 AM</span>
+</div>
+<div class="p-space-md rounded-2xl rounded-tr-sm bg-primary text-on-primary shadow-[6px_10px_20px_rgba(108,99,255,0.28),inset_2px_2px_4px_rgba(255,255,255,0.35),inset_-2px_-2px_4px_rgba(0,0,0,0.1)]">
+<p class="font-body-md text-body-md leading-relaxed">
+                Hi team, I've just submitted my brief for CS402 Distributed Database Architectures. Please make sure Section 3 emphasizes the CAP theorem trade-offs between Raft and Paxos as highlighted in my uploaded rubric.
+              </p>
+</div>
+<div class="flex items-center gap-1 mt-1 text-on-surface-variant font-label-sm text-label-sm">
+<span class="material-symbols-outlined text-[14px] text-primary">done_all</span>
+<span>Delivered</span>
+</div>
+</div>
+<div class="w-8 h-8 rounded-full bg-primary-container text-on-primary-container flex items-center justify-center shrink-0 font-bold font-label-sm text-label-sm shadow-[inset_1px_1px_2px_rgba(255,255,255,0.8)]">
+            AK
+          </div>
+</div>
+<!-- Team Message 1 -->
+<div class="flex justify-start gap-space-sm">
+<div class="w-8 h-8 rounded-full bg-secondary-fixed text-on-secondary-fixed flex items-center justify-center shrink-0 font-bold font-label-sm text-label-sm shadow-[inset_1px_1px_2px_rgba(255,255,255,0.8)]">
+<span class="material-symbols-outlined text-[18px] text-primary">school</span>
+</div>
+<div class="max-w-xl flex flex-col items-start">
+<div class="flex items-center gap-space-xs mb-1">
+<span class="font-label-sm text-label-sm font-semibold text-primary">AssignmentHub Academic Team</span>
+<span class="font-label-sm text-label-sm text-outline">Oct 24, 11:30 AM</span>
+</div>
+<div class="p-space-md rounded-2xl rounded-tl-sm bg-surface-container-low text-on-surface shadow-[6px_10px_20px_rgba(108,99,255,0.08),inset_2px_2px_4px_rgba(255,255,255,0.9),inset_-2px_-2px_4px_rgba(108,99,255,0.08)]">
+<p class="font-body-md text-body-md leading-relaxed">
+                Hello Aditya, we received your brief and reference documents (<span class="font-mono text-xs px-1.5 py-0.5 rounded bg-surface-container-highest text-on-surface">Database_Assignment_Rubric_2026.pdf</span>). Our academic coordinator has verified your requirements and assigned Dr. Marcus Vance (Specialist in Distributed Systems) to guide your deliverable.
+              </p>
+</div>
+</div>
+</div>
+<!-- Team Message 2 -->
+<div class="flex justify-start gap-space-sm">
+<div class="w-8 h-8 rounded-full bg-secondary-fixed text-on-secondary-fixed flex items-center justify-center shrink-0 font-bold font-label-sm text-label-sm shadow-[inset_1px_1px_2px_rgba(255,255,255,0.8)]">
+<span class="material-symbols-outlined text-[18px] text-primary">school</span>
+</div>
+<div class="max-w-xl flex flex-col items-start">
+<div class="flex items-center gap-space-xs mb-1">
+<span class="font-label-sm text-label-sm font-semibold text-primary">Dr. Marcus Vance (Specialist)</span>
+<span class="font-label-sm text-label-sm text-outline">Yesterday, 04:15 PM</span>
+</div>
+<div class="p-space-md rounded-2xl rounded-tl-sm bg-surface-container-low text-on-surface shadow-[6px_10px_20px_rgba(108,99,255,0.08),inset_2px_2px_4px_rgba(255,255,255,0.9),inset_-2px_-2px_4px_rgba(108,99,255,0.08)]">
+<p class="font-body-md text-body-md leading-relaxed">
+                Dr. Vance has confirmed the IEEE citation standard and has outlined the architectural comparison tables. The initial draft will be prepared well ahead of your Oct 30 deadline.
+              </p>
+<!-- Attachment / Reference Artifact Clay Card -->
+<div class="mt-space-sm flex items-center gap-space-sm p-space-sm rounded-xl bg-surface-container-lowest shadow-[inset_1px_1px_2px_rgba(255,255,255,0.8),2px_3px_8px_rgba(108,99,255,0.06)]">
+<div class="w-9 h-9 rounded-lg bg-primary-fixed flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-[20px]">table_chart</span>
+</div>
+<div class="flex-1 min-w-0">
+<p class="font-label-md text-label-md text-on-surface truncate">Raft_vs_Paxos_Matrix_Outline.docx</p>
+<p class="font-label-sm text-label-sm text-on-surface-variant">Prepared Draft Skeleton • 142 KB</p>
+</div>
+<button class="w-8 h-8 rounded-full bg-surface-container-high flex items-center justify-center text-primary hover:bg-primary hover:text-on-primary transition-all" type="button">
+<span class="material-symbols-outlined text-[18px]">download</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+<!-- Student Message 2 -->
+<div class="flex justify-end gap-space-sm">
+<div class="max-w-xl flex flex-col items-end">
+<div class="flex items-center gap-space-xs mb-1">
+<span class="font-label-sm text-label-sm text-on-surface-variant">You (Aditya K.)</span>
+<span class="font-label-sm text-label-sm text-outline">Today, 10:15 AM</span>
+</div>
+<div class="p-space-md rounded-2xl rounded-tr-sm bg-primary text-on-primary shadow-[6px_10px_20px_rgba(108,99,255,0.28),inset_2px_2px_4px_rgba(255,255,255,0.35),inset_-2px_-2px_4px_rgba(0,0,0,0.1)]">
+<p class="font-body-md text-body-md leading-relaxed">
+                Awesome, thank you! Will the SQL queries be included in an appendix or inline?
+              </p>
+</div>
+<div class="flex items-center gap-1 mt-1 text-on-surface-variant font-label-sm text-label-sm">
+<span class="material-symbols-outlined text-[14px] text-primary">done_all</span>
+<span>Read</span>
+</div>
+</div>
+<div class="w-8 h-8 rounded-full bg-primary-container text-on-primary-container flex items-center justify-center shrink-0 font-bold font-label-sm text-label-sm shadow-[inset_1px_1px_2px_rgba(255,255,255,0.8)]">
+            AK
+          </div>
+</div>
+<!-- Team Message 3 (Most recent) -->
+<div class="flex justify-start gap-space-sm">
+<div class="w-8 h-8 rounded-full bg-secondary-fixed text-on-secondary-fixed flex items-center justify-center shrink-0 font-bold font-label-sm text-label-sm shadow-[inset_1px_1px_2px_rgba(255,255,255,0.8)]">
+<span class="material-symbols-outlined text-[18px] text-primary">school</span>
+</div>
+<div class="max-w-xl flex flex-col items-start">
+<div class="flex items-center gap-space-xs mb-1">
+<span class="font-label-sm text-label-sm font-semibold text-primary">AssignmentHub Academic Team</span>
+<span class="font-label-sm text-label-sm text-outline">Today, 10:42 AM</span>
+</div>
+<div class="p-space-md rounded-2xl rounded-tl-sm bg-surface-container-low text-on-surface shadow-[6px_10px_20px_rgba(108,99,255,0.08),inset_2px_2px_4px_rgba(255,255,255,0.9),inset_-2px_-2px_4px_rgba(108,99,255,0.08)]">
+<p class="font-body-md text-body-md leading-relaxed">
+                They will be provided inline with syntax highlighting as well as compiled in Appendix B with reproducible schema creation scripts. Let us know if you need anything else added!
+              </p>
+</div>
+</div>
+</div>
+</div>
+<!-- Chat Input Area (Fixed to Request Channel) -->
+<div class="p-space-lg bg-surface-container-low shadow-[0_-6px_20px_rgba(108,99,255,0.06)] flex flex-col gap-space-xs">
+<!-- Quick Question Chips -->
+<div class="flex items-center gap-space-xs overflow-x-auto pb-1">
+<span class="font-label-sm text-label-sm text-on-surface-variant whitespace-nowrap">Suggested prompts:</span>
+<button class="quick-prompt-btn px-space-sm py-1 rounded-full bg-surface-container-lowest hover:bg-primary-fixed text-on-surface hover:text-on-primary-fixed font-label-sm text-label-sm whitespace-nowrap shadow-[inset_1px_1px_2px_rgba(255,255,255,0.9),1px_2px_4px_rgba(108,99,255,0.05)] transition-all" type="button">
+            Can I review the draft citations?
+          </button>
+<button class="quick-prompt-btn px-space-sm py-1 rounded-full bg-surface-container-lowest hover:bg-primary-fixed text-on-surface hover:text-on-primary-fixed font-label-sm text-label-sm whitespace-nowrap shadow-[inset_1px_1px_2px_rgba(255,255,255,0.9),1px_2px_4px_rgba(108,99,255,0.05)] transition-all" type="button">
+            Confirming delivery timeline
+          </button>
+<button class="quick-prompt-btn px-space-sm py-1 rounded-full bg-surface-container-lowest hover:bg-primary-fixed text-on-surface hover:text-on-primary-fixed font-label-sm text-label-sm whitespace-nowrap shadow-[inset_1px_1px_2px_rgba(255,255,255,0.9),1px_2px_4px_rgba(108,99,255,0.05)] transition-all" type="button">
+            Additional rubric guidelines
+          </button>
+</div>
+<!-- Clay Input Form Container -->
+<form class="flex items-center gap-space-sm p-1.5 bg-surface-container-lowest rounded-full shadow-[inset_2px_2px_5px_rgba(37,35,58,0.08),inset_-2px_-2px_5px_rgba(255,255,255,0.9),0_6px_16px_rgba(108,99,255,0.06)]" id="chat-input-form">
+<!-- Attachment Button -->
+<button class="w-10 h-10 rounded-full bg-surface-container flex items-center justify-center text-on-surface-variant hover:text-primary hover:bg-surface-container-high transition-all shrink-0 shadow-[inset_1px_1px_2px_rgba(255,255,255,0.8)]" title="Attach supplementary file" type="button">
+<span class="material-symbols-outlined text-[20px]">attach_file</span>
+</button>
+<!-- Input Field -->
+<input autocomplete="off" class="flex-1 bg-transparent px-space-xs py-2 font-body-md text-body-md text-on-surface placeholder:text-outline focus:outline-none" id="message-text-input" placeholder="Type your message regarding REQ-20261004-001..." type="text"/>
+<!-- Send Action Button -->
+<button class="flex items-center gap-space-xs px-space-lg py-2.5 rounded-full bg-primary text-on-primary font-label-lg text-label-lg shadow-[4px_8px_16px_rgba(108,99,255,0.35),inset_2px_2px_4px_rgba(255,255,255,0.45),inset_-2px_-2px_4px_rgba(0,0,0,0.1)] hover:-translate-y-0.5 active:translate-y-0 transition-transform shrink-0" type="submit">
+<span>Send</span>
+<span class="material-symbols-outlined text-[18px]">send</span>
+</button>
+</form>
+<!-- FERPA / Channel Security Microcopy -->
+<div class="flex items-center justify-center gap-space-xs text-center mt-1">
+<span class="material-symbols-outlined text-[14px] text-primary">verified_user</span>
+<p class="font-label-sm text-label-sm text-on-surface-variant">
+            Messages are securely transmitted to the assigned AssignmentHub academic team for <strong class="text-on-surface">REQ-20261004-001</strong>.
+          </p>
+</div>
+</div>
+</main>
+</div>
+<!-- Interactive Client-side Script for Inquiries Workspace -->
+<script>
+    (function initInquiryWorkspace() {
+      // Copy Request ID to Clipboard interaction
+      const copyBtn = document.getElementById('copy-req-btn');
+      if (copyBtn) {
+        copyBtn.addEventListener('click', () => {
+          const reqId = "REQ-20261004-001";
+          navigator.clipboard.writeText(reqId).then(() => {
+            const originalContent = copyBtn.innerHTML;
+            copyBtn.innerHTML = '<span>Copied!</span><span class="material-symbols-outlined text-[14px]">check</span>';
+            copyBtn.classList.add('bg-tertiary-fixed', 'text-on-tertiary-fixed');
+            setTimeout(() => {
+              copyBtn.innerHTML = originalContent;
+              copyBtn.classList.remove('bg-tertiary-fixed', 'text-on-tertiary-fixed');
+            }, 1800);
+          });
+        });
+      }
+
+      // Filter tabs switching
+      const filterTabs = document.querySelectorAll('.filter-tab');
+      filterTabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+          filterTabs.forEach(t => {
+            t.classList.remove('active-tab', 'bg-surface-container-lowest', 'text-primary', 'shadow-[2px_4px_10px_rgba(108,99,255,0.12),inset_1px_1px_2px_rgba(255,255,255,0.9)]');
+            t.classList.add('text-on-surface-variant');
+          });
+          tab.classList.add('active-tab', 'bg-surface-container-lowest', 'text-primary', 'shadow-[2px_4px_10px_rgba(108,99,255,0.12),inset_1px_1px_2px_rgba(255,255,255,0.9)]');
+          tab.classList.remove('text-on-surface-variant');
+        });
+      });
+
+      // Quick prompt pre-fill into chat input
+      const promptButtons = document.querySelectorAll('.quick-prompt-btn');
+      const inputField = document.getElementById('message-text-input');
+      promptButtons.forEach(btn => {
+        btn.addEventListener('click', () => {
+          if (inputField) {
+            inputField.value = btn.innerText.trim();
+            inputField.focus();
+          }
+        });
+      });
+
+      // Chat Message Submission Handler (Simulated interactive append)
+      const chatForm = document.getElementById('chat-input-form');
+      const messagesContainer = document.getElementById('chat-messages-container');
+      
+      if (chatForm && messagesContainer && inputField) {
+        chatForm.addEventListener('submit', (e) => {
+          e.preventDefault();
+          const userText = inputField.value.trim();
+          if (!userText) return;
+
+          // Create User Message Bubble
+          const messageWrapper = document.createElement('div');
+          messageWrapper.className = 'flex justify-end gap-space-sm';
+          messageWrapper.innerHTML = `
+            <div class="max-w-xl flex flex-col items-end">
+              <div class="flex items-center gap-space-xs mb-1">
+                <span class="font-label-sm text-label-sm text-on-surface-variant">You (Aditya K.)</span>
+                <span class="font-label-sm text-label-sm text-outline">Just now</span>
+              </div>
+              <div class="p-space-md rounded-2xl rounded-tr-sm bg-primary text-on-primary shadow-[6px_10px_20px_rgba(108,99,255,0.28),inset_2px_2px_4px_rgba(255,255,255,0.35),inset_-2px_-2px_4px_rgba(0,0,0,0.1)]">
+                <p class="font-body-md text-body-md leading-relaxed">${userText}</p>
+              </div>
+              <div class="flex items-center gap-1 mt-1 text-on-surface-variant font-label-sm text-label-sm">
+                <span class="material-symbols-outlined text-[14px] text-primary">done</span>
+                <span>Sent</span>
+              </div>
+            </div>
+            <div class="w-8 h-8 rounded-full bg-primary-container text-on-primary-container flex items-center justify-center shrink-0 font-bold font-label-sm text-label-sm shadow-[inset_1px_1px_2px_rgba(255,255,255,0.8)]">
+              AK
+            </div>
+          `;
+
+          messagesContainer.appendChild(messageWrapper);
+          inputField.value = '';
+          messagesContainer.scrollTop = messagesContainer.scrollHeight;
+
+          // Simulated brief coordinator response acknowledgement
+          setTimeout(() => {
+            const replyWrapper = document.createElement('div');
+            replyWrapper.className = 'flex justify-start gap-space-sm';
+            replyWrapper.innerHTML = `
+              <div class="w-8 h-8 rounded-full bg-secondary-fixed text-on-secondary-fixed flex items-center justify-center shrink-0 font-bold font-label-sm text-label-sm shadow-[inset_1px_1px_2px_rgba(255,255,255,0.8)]">
+                <span class="material-symbols-outlined text-[18px] text-primary">school</span>
+              </div>
+              <div class="max-w-xl flex flex-col items-start">
+                <div class="flex items-center gap-space-xs mb-1">
+                  <span class="font-label-sm text-label-sm font-semibold text-primary">AssignmentHub Academic Team</span>
+                  <span class="font-label-sm text-label-sm text-outline">Just now</span>
+                </div>
+                <div class="p-space-md rounded-2xl rounded-tl-sm bg-surface-container-low text-on-surface shadow-[6px_10px_20px_rgba(108,99,255,0.08),inset_2px_2px_4px_rgba(255,255,255,0.9),inset_-2px_-2px_4px_rgba(108,99,255,0.08)]">
+                  <p class="font-body-md text-body-md leading-relaxed">
+                    Message logged for <strong>Dr. Marcus Vance</strong> regarding REQ-20261004-001. A specialist update will follow shortly.
+                  </p>
+                </div>
+              </div>
+            `;
+            messagesContainer.appendChild(replyWrapper);
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+          }, 1000);
+        });
+      }
+
+      // Search filter interaction across inquiries list
+      const searchInput = document.getElementById('inquiry-search-input');
+      const cards = document.querySelectorAll('.inquiry-item');
+      if (searchInput) {
+        searchInput.addEventListener('input', (e) => {
+          const val = e.target.value.toLowerCase().trim();
+          cards.forEach(card => {
+            const text = card.textContent.toLowerCase();
+            if (text.includes(val)) {
+              card.style.display = 'block';
+            } else {
+              card.style.display = 'none';
+            }
+          });
+        });
+      }
+    })();
+  </script>
+</div></main><footer class="w-full bg-surface-container-low shadow-[0_-8px_24px_rgba(108,99,255,0.05)] mt-space-xl py-space-lg"><div class="w-full px-gutter flex flex-col md:flex-row items-center justify-between gap-space-md"><div class="flex items-center gap-space-md"><div class="inline-flex items-center gap-space-xs px-space-md py-space-xs rounded-full bg-surface-container-lowest text-on-surface font-label-sm text-label-sm shadow-[inset_1px_1px_2px_rgba(255,255,255,0.9),2px_3px_8px_rgba(108,99,255,0.08)]"><span class="material-symbols-outlined text-primary text-[16px]">verified_user</span><span>FERPA Encrypted</span></div><p class="font-body-sm text-body-sm text-on-surface-variant">© 2024 AssignmentHub. Academic Support Services. All rights reserved.</p></div><div class="flex items-center flex-wrap gap-space-lg"><a class="font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors" data-path="about" href="#">About</a><a class="font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors" data-path="terms" href="#">Terms</a><a class="font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors" data-path="privacy-policy" href="#">Privacy Policy</a><a class="font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors" data-path="academic-integrity" href="#">Academic Integrity</a></div></div></footer></body></html>

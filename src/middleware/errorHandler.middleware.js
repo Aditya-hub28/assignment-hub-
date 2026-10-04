@@ -18,7 +18,7 @@ const notFoundHandler = (req, res, next) => {
  * Centralized Error Handler Middleware
  */
 const errorHandler = (err, req, res, next) => {
-  const statusCode = err.statusCode || 500;
+  const statusCode = err.statusCode || err.status || 500;
   const errorCode = err.code || (statusCode === 500 ? 'INTERNAL_SERVER_ERROR' : 'BAD_REQUEST');
   const message = err.message || errorMessages.SERVER.INTERNAL_ERROR;
 

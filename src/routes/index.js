@@ -3,6 +3,7 @@ const router = express.Router();
 const authRoutes = require('./auth.routes');
 const userRoutes = require('./user.routes');
 const serviceRequestRoutes = require('./serviceRequest.routes');
+const inquiryRoutes = require('./inquiry.routes');
 
 // Health check endpoint
 router.get('/health', (req, res) => {
@@ -23,5 +24,8 @@ router.use('/user', userRoutes);
 // Service Request routes
 router.use('/services', serviceRequestRoutes);
 router.use('/requests', serviceRequestRoutes);
+
+// Inquiries routes (Chat & Request inquiries)
+router.use('/inquiries', inquiryRoutes);
 
 module.exports = router;
