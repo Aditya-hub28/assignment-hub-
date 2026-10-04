@@ -63,7 +63,7 @@ const requireAuth = async (req, res, next) => {
 
     // Fetch user's profile and role
     try {
-      const profile = await profileService.getProfile(user.id, req.scopedClient);
+      const profile = await profileService.getProfile(user.id, supabaseAdmin);
       req.profile = profile;
       if (profile && profile.role) {
         req.user.role = profile.role;

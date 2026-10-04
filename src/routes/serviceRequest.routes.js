@@ -37,7 +37,7 @@ const optionalAuth = async (req, res, next) => {
       req.accessToken = token;
       req.scopedClient = createScopedClient(token);
       try {
-        req.profile = await profileService.getProfile(user.id, req.scopedClient);
+        req.profile = await profileService.getProfile(user.id, supabaseAdmin);
       } catch {
         req.profile = { id: user.id, email: user.email };
       }

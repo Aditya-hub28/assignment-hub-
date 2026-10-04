@@ -183,10 +183,11 @@ function showToast(message, type = 'info') {
   
   toast.innerHTML = `
     <div class="flex items-center space-x-2">
-      <span>${message}</span>
+      <span class="toast-msg"></span>
     </div>
     <button class="ml-3 text-white/80 hover:text-white font-bold">&times;</button>
   `;
+  toast.querySelector('.toast-msg').textContent = message;
 
   const closeBtn = toast.querySelector('button');
   closeBtn.addEventListener('click', () => {

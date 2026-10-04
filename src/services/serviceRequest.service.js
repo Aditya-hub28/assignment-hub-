@@ -270,6 +270,25 @@ class ServiceRequestService {
       }
     }
 
+    if (Array.isArray(req.files) && req.files.length > 0) {
+      req.files = await Promise.all(
+        req.files.map(async (file) => {
+          let signedUrl = file.signedUrl || null;
+          if (file.storagePath) {
+            try {
+              const res = await storageService.getSignedUrl(file.storagePath, 86400);
+              signedUrl = res.signedUrl;
+            } catch {}
+          }
+          return {
+            ...file,
+            signedUrl: signedUrl || file.url,
+            url: signedUrl || file.url
+          };
+        })
+      );
+    }
+
     return req;
   }
 

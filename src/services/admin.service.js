@@ -1,5 +1,28 @@
 const { supabaseAdmin } = require('../config/supabase');
 const profileService = require('./profile.service');
+const storageService = require('./storage.service');
+
+const resolveFilesWithSignedUrls = async (files) => {
+  if (!Array.isArray(files) || files.length === 0) return [];
+  return Promise.all(
+    files.map(async (file) => {
+      let signedUrl = file.signedUrl || null;
+      if (file.storagePath) {
+        try {
+          const res = await storageService.getSignedUrl(file.storagePath, 86400); // 24 hours
+          signedUrl = res.signedUrl;
+        } catch (signErr) {
+          console.warn('[STORAGE] Could not generate signed URL for', file.name, signErr.message);
+        }
+      }
+      return {
+        ...file,
+        signedUrl: signedUrl || file.url,
+        url: signedUrl || file.url
+      };
+    })
+  );
+};
 
 /**
  * Standard Status to Label and Progress Mapping
@@ -59,7 +82,7 @@ const mapDbToInquiry = (inq, messages = []) => {
     deadline: inq.deadline,
     status: inq.status,
     statusLabel: inq.status_label,
-    assignedSpecialist: inq.assigned_specialist || 'Admin Desk',
+    assignedSpecialist: inq.assigned_specialist || 'ADMIN',
     latestMessage: inq.latest_message || null,
     latestMessageTime: inq.latest_message_time || inq.updated_at || inq.created_at,
     unreadCount: typeof inq.unread_count === 'number' ? inq.unread_count : 0,
@@ -227,6 +250,11 @@ class AdminService {
 
     const request = mapDbToRequest(row);
 
+    // Resolve direct, secure cloud signed URLs for all attached files
+    if (request.files && request.files.length > 0) {
+      request.files = await resolveFilesWithSignedUrls(request.files);
+    }
+
     // Fetch linked inquiry preview if present
     let inquiry = null;
     const inquiryLookupId = request.inquiryId || `INQ-${request.id.replace('REQ-', '')}`;
@@ -295,9 +323,16 @@ class AdminService {
     // 3. Keep linked inquiry updated consistently
     try {
       const inqId = existing.inquiryId || `INQ-${requestId.replace('REQ-', '')}`;
+      const inqStatus = targetStatus === 'completed' || targetStatus === 'delivered'
+        ? 'resolved'
+        : targetStatus === 'cancelled'
+        ? 'closed'
+        : 'in_progress';
+
       await supabaseAdmin
         .from('inquiries')
         .update({
+          status: inqStatus,
           status_label: finalStatusLabel,
           updated_at: nowIso
         })
@@ -431,7 +466,7 @@ class AdminService {
 
     const nowIso = new Date().toISOString();
     const messageId = `MSG-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
-    const senderName = adminProfile?.fullName || adminUser?.user_metadata?.full_name || 'Admin Desk';
+    const senderName = 'ADMIN';
 
     const newMessageRecord = {
       id: messageId,
@@ -511,7 +546,8 @@ class AdminService {
           name,
           code
         )
-      `, { count: 'exact' });
+      `, { count: 'exact' })
+      .eq('role', 'student');
 
     if (search && search.trim()) {
       const s = search.trim();

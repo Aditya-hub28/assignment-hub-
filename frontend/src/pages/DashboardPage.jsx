@@ -1,9 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
 import { MobileBottomNav } from '../components/MobileBottomNav';
 import { Navbar } from '../components/Navbar';
+import { api } from '../services/api';
 
 export function DashboardPage() {
   const { user, profile, logout, updateProfile } = useAuth();
@@ -12,6 +13,47 @@ export function DashboardPage() {
 
   const [profileModalOpen, setProfileModalOpen] = useState(false);
   const [requestModalOpen, setRequestModalOpen] = useState(false);
+
+  // Live real-time requests state
+  const [requests, setRequests] = useState([]);
+  const [isLoadingRequests, setIsLoadingRequests] = useState(true);
+
+  const fetchDashboardData = async (silent = false) => {
+    if (!silent) setIsLoadingRequests(true);
+    try {
+      const res = await api.services.getRequests();
+      setRequests(Array.isArray(res?.data) ? res.data : []);
+    } catch (err) {
+      console.warn('Dashboard fetch error:', err.message);
+    } finally {
+      if (!silent) setIsLoadingRequests(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchDashboardData(false);
+
+    // Auto-refresh every 2s so page reflects updates without manual refresh
+    const interval = setInterval(() => {
+      fetchDashboardData(true);
+    }, 2000);
+
+    const handleFocus = () => {
+      fetchDashboardData(true);
+    };
+    window.addEventListener('focus', handleFocus);
+
+    return () => {
+      clearInterval(interval);
+      window.removeEventListener('focus', handleFocus);
+    };
+  }, []);
+
+  const activeRequests = useMemo(() => {
+    return requests.filter(
+      (r) => !['completed', 'delivered', 'cancelled'].includes((r.status || '').toLowerCase())
+    );
+  }, [requests]);
 
   // Profile modal edit state
   const [editName, setEditName] = useState('');
@@ -137,62 +179,148 @@ export function DashboardPage() {
             </div>
           </section>
 
-          {/* Zero Active Submissions / Empty State Section */}
-          <section
-            id="my-requests-section"
-            className="scroll-mt-28 flex flex-col items-center justify-center text-center p-8 sm:p-12 md:p-16 rounded-3xl bg-white clay-card w-full relative overflow-hidden"
-          >
-            <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-3xl bg-[#EDE8FA] flex items-center justify-center clay-card text-[#6C63FF] mb-6 shadow-md">
-              <span className="material-symbols-outlined text-[42px] sm:text-[48px]">library_books</span>
-            </div>
+          {/* Active Submissions & Real-Time Tracking Section */}
+          {activeRequests.length > 0 ? (
+            <section
+              id="my-requests-section"
+              className="scroll-mt-28 flex flex-col p-6 sm:p-8 rounded-3xl bg-white clay-card w-full gap-5 border border-white"
+            >
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[#F0EBFF] pb-4">
+                <div className="flex items-center gap-2.5">
+                  <div className="w-10 h-10 rounded-2xl bg-[#EDE8FA] flex items-center justify-center text-[#4D41DF] clay-pill">
+                    <span className="material-symbols-outlined text-[22px]">pending_actions</span>
+                  </div>
+                  <div>
+                    <h2 className="text-xl sm:text-2xl font-extrabold text-[#25233A] tracking-tight">
+                      Active Submissions ({activeRequests.length})
+                    </h2>
+                    <p className="text-xs text-[#6E6A8A]">Live status updates from your assigned academic coordinator</p>
+                  </div>
+                </div>
 
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#EDE8FA] text-[#6E6A8A] text-xs font-bold mb-3 clay-pill-inset">
-              Zero Active Submissions
-            </div>
-
-            <h2 className="text-2xl sm:text-3xl font-extrabold text-[#25233A] tracking-tight">
-              No requests yet
-            </h2>
-
-            <p className="text-sm sm:text-base text-[#6E6A8A] max-w-lg mt-2 leading-relaxed font-medium">
-              Send us your work and our team will take care of it. Sit back, relax, and let our academic specialists handle your deadlines.
-            </p>
-
-            {/* 3-Step Trust Highlights */}
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 w-full max-w-2xl my-8">
-              <div className="p-4 rounded-2xl bg-[#FAF8FF] clay-pill-inset flex flex-col items-center text-center gap-1.5">
-                <span className="material-symbols-outlined text-[#6C63FF] text-[26px]">task</span>
-                <span className="text-sm font-bold text-[#25233A]">1. Submit Work</span>
-                <span className="text-xs text-[#6E6A8A]">Upload prompt or files</span>
+                <Link
+                  to="/my-requests"
+                  className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-[#4D41DF] text-white text-xs font-bold shadow-md hover:bg-[#675DF9] transition-transform active:scale-95 self-start sm:self-auto cursor-pointer"
+                >
+                  <span>View Full Workspace</span>
+                  <span className="material-symbols-outlined text-[16px]">arrow_forward</span>
+                </Link>
               </div>
-              <div className="p-4 rounded-2xl bg-[#FAF8FF] clay-pill-inset flex flex-col items-center text-center gap-1.5">
-                <span className="material-symbols-outlined text-[#FFB84D] text-[26px]">engineering</span>
-                <span className="text-sm font-bold text-[#25233A]">2. We Execute</span>
-                <span className="text-xs text-[#6E6A8A]">Specialists craft solutions</span>
-              </div>
-              <div className="p-4 rounded-2xl bg-[#FAF8FF] clay-pill-inset flex flex-col items-center text-center gap-1.5">
-                <span className="material-symbols-outlined text-[#55C595] text-[26px]">cloud_done</span>
-                <span className="text-sm font-bold text-[#25233A]">3. Download</span>
-                <span className="text-xs text-[#6E6A8A]">On-time guaranteed delivery</span>
-              </div>
-            </div>
 
-            {/* Action Buttons */}
-            <div className="flex flex-col sm:flex-row items-center gap-3 sm:gap-4 w-full sm:w-auto">
-              <button
-                onClick={() => handleOpenRequestModal()}
-                className="w-full sm:w-auto px-8 py-3.5 rounded-full bg-[#6C63FF] text-white text-sm font-bold clay-btn-primary hover:scale-105 active:scale-95 transition-all text-center cursor-pointer shadow-lg"
-              >
-                + New Request
-              </button>
-              <Link
-                to="/services"
-                className="w-full sm:w-auto px-7 py-3.5 rounded-full bg-[#EDE8FA] text-[#6C63FF] text-sm font-bold clay-card hover:bg-[#E2DCFF] transition-all text-center cursor-pointer"
-              >
-                Explore Services
-              </Link>
-            </div>
-          </section>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {activeRequests.slice(0, 4).map((req) => {
+                  const status = (req.status || 'pending').toLowerCase();
+                  const isDone = status === 'completed' || status === 'delivered';
+                  const isWorking = status === 'in_progress';
+                  const isReview = status.includes('review');
+                  const progress = typeof req.progress === 'number' && (req.progress > 0 || status === 'cancelled')
+                    ? req.progress
+                    : (isDone ? 100 : isWorking ? 75 : isReview ? 50 : 25);
+                  const statusLabel = req.statusLabel || (isDone ? 'Delivered' : isWorking ? 'In Progress' : isReview ? 'In Review' : 'Pending Review');
+
+                  return (
+                    <div
+                      key={req.id}
+                      onClick={() => navigate('/my-requests')}
+                      className="p-5 rounded-2xl bg-[#FAF8FF] clay-card hover:bg-white transition-all cursor-pointer border border-[#EAE5FF] flex flex-col justify-between gap-3 group"
+                    >
+                      <div className="flex items-center justify-between gap-2">
+                        <span className="px-2.5 py-0.5 rounded-full bg-[#EDE8FA] text-[#5846C8] font-bold text-[11px] clay-pill">
+                          {req.id}
+                        </span>
+                        <span className={`px-2.5 py-0.5 rounded-full text-xs font-bold border ${
+                          isWorking
+                            ? 'bg-[#E4DFFE] text-[#4D41DF] border-purple-200'
+                            : isReview
+                            ? 'bg-[#FFDDB3] text-[#7F5300] border-amber-300'
+                            : 'bg-sky-50 text-sky-700 border-sky-200'
+                        }`}>
+                          {statusLabel}
+                        </span>
+                      </div>
+
+                      <div>
+                        <span className="text-[11px] text-[#777587] font-semibold">{req.service || 'Assignment'}</span>
+                        <h3 className="text-base font-bold text-[#1B192F] truncate group-hover:text-[#4D41DF] transition-colors">
+                          {req.title || 'Untitled Request'}
+                        </h3>
+                      </div>
+
+                      <div>
+                        <div className="flex items-center justify-between text-[11px] text-[#6E6A8A] font-bold mb-1">
+                          <span>Workflow Progress</span>
+                          <span className="text-[#4D41DF]">{progress}%</span>
+                        </div>
+                        <div className="w-full bg-[#EAE5FF] h-2 rounded-full overflow-hidden">
+                          <div
+                            className="bg-gradient-to-r from-[#4D41DF] to-[#7B73F8] h-full rounded-full transition-all duration-500"
+                            style={{ width: `${progress}%` }}
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </section>
+          ) : (
+            /* Zero Active Submissions / Empty State Section */
+            <section
+              id="my-requests-section"
+              className="scroll-mt-28 flex flex-col items-center justify-center text-center p-8 sm:p-12 md:p-16 rounded-3xl bg-white clay-card w-full relative overflow-hidden"
+            >
+              <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-3xl bg-[#EDE8FA] flex items-center justify-center clay-card text-[#6C63FF] mb-6 shadow-md">
+                <span className="material-symbols-outlined text-[42px] sm:text-[48px]">library_books</span>
+              </div>
+
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#EDE8FA] text-[#6E6A8A] text-xs font-bold mb-3 clay-pill-inset">
+                Zero Active Submissions
+              </div>
+
+              <h2 className="text-2xl sm:text-3xl font-extrabold text-[#25233A] tracking-tight">
+                No requests yet
+              </h2>
+
+              <p className="text-sm sm:text-base text-[#6E6A8A] max-w-lg mt-2 leading-relaxed font-medium">
+                Send us your work and our team will take care of it. Sit back, relax, and let our academic specialists handle your deadlines.
+              </p>
+
+              {/* 3-Step Trust Highlights */}
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 w-full max-w-2xl my-8">
+                <div className="p-4 rounded-2xl bg-[#FAF8FF] clay-pill-inset flex flex-col items-center text-center gap-1.5">
+                  <span className="material-symbols-outlined text-[#6C63FF] text-[26px]">task</span>
+                  <span className="text-sm font-bold text-[#25233A]">1. Submit Work</span>
+                  <span className="text-xs text-[#6E6A8A]">Upload prompt or files</span>
+                </div>
+                <div className="p-4 rounded-2xl bg-[#FAF8FF] clay-pill-inset flex flex-col items-center text-center gap-1.5">
+                  <span className="material-symbols-outlined text-[#FFB84D] text-[26px]">engineering</span>
+                  <span className="text-sm font-bold text-[#25233A]">2. We Execute</span>
+                  <span className="text-xs text-[#6E6A8A]">Specialists craft solutions</span>
+                </div>
+                <div className="p-4 rounded-2xl bg-[#FAF8FF] clay-pill-inset flex flex-col items-center text-center gap-1.5">
+                  <span className="material-symbols-outlined text-[#55C595] text-[26px]">cloud_done</span>
+                  <span className="text-sm font-bold text-[#25233A]">3. Download</span>
+                  <span className="text-xs text-[#6E6A8A]">On-time guaranteed delivery</span>
+                </div>
+              </div>
+
+              {/* Action Buttons */}
+              <div className="flex flex-col sm:flex-row items-center gap-3 sm:gap-4 w-full sm:w-auto">
+                <button
+                  onClick={() => handleOpenRequestModal()}
+                  className="w-full sm:w-auto px-8 py-3.5 rounded-full bg-[#6C63FF] text-white text-sm font-bold clay-btn-primary hover:scale-105 active:scale-95 transition-all text-center cursor-pointer shadow-lg"
+                >
+                  + New Request
+                </button>
+                <Link
+                  to="/services"
+                  className="w-full sm:w-auto px-7 py-3.5 rounded-full bg-[#EDE8FA] text-[#6C63FF] text-sm font-bold clay-card hover:bg-[#E2DCFF] transition-all text-center cursor-pointer"
+                >
+                  Explore Services
+                </Link>
+              </div>
+            </section>
+          )}
 
           {/* Refined Single CTA Banner ("Unburden Your Schedule") */}
           <section className="w-full rounded-3xl bg-gradient-to-br from-[#EBE5FF] to-[#E2DCFF] p-8 md:p-10 clay-card relative overflow-hidden">

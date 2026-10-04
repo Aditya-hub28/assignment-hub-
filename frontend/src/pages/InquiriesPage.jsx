@@ -122,11 +122,20 @@ export function InquiriesPage() {
 
   useEffect(() => {
     fetchInquiries(false);
-    // Background polling every 5s for live chat updates
+    // Realtime polling every 3s for live chat updates
     const pollInterval = setInterval(() => {
       fetchInquiries(true);
-    }, 5000);
-    return () => clearInterval(pollInterval);
+    }, 3000);
+
+    const handleFocus = () => {
+      fetchInquiries(true);
+    };
+    window.addEventListener('focus', handleFocus);
+
+    return () => {
+      clearInterval(pollInterval);
+      window.removeEventListener('focus', handleFocus);
+    };
   }, [user]);
 
   // When queryRequestId in URL changes externally (e.g., clicking a request in My Requests)
@@ -350,7 +359,7 @@ export function InquiriesPage() {
               <div className="min-w-0">
                 <div className="flex items-center gap-1">
                   <h2 className="text-sm font-bold text-[#1B192F] truncate">
-                    {activeInquiry.assignedSpecialist || 'Admin'}
+                    {(activeInquiry.assignedSpecialist && !activeInquiry.assignedSpecialist.toLowerCase().includes('aditya')) ? activeInquiry.assignedSpecialist : 'ADMIN'}
                   </h2>
                   <span className="material-symbols-outlined text-[15px] text-[#4D41DF] shrink-0">verified</span>
                 </div>
@@ -409,7 +418,7 @@ export function InquiriesPage() {
                   : 'A'}
               </div>
               <h3 className="text-sm font-extrabold text-[#1B192F]">
-                {activeInquiry.assignedSpecialist || 'Admin'}
+                {(activeInquiry.assignedSpecialist && !activeInquiry.assignedSpecialist.toLowerCase().includes('aditya')) ? activeInquiry.assignedSpecialist : 'ADMIN'}
               </h3>
               <p className="text-xs text-[#777587] mt-0.5 max-w-xs line-clamp-1">{activeInquiry.title}</p>
               <div className="inline-flex items-center gap-1 mt-2 px-2.5 py-0.5 rounded-full bg-[#F0EBFF] text-[#464555] text-[10px] font-medium">
@@ -848,7 +857,7 @@ export function InquiriesPage() {
                             <div className={`max-w-lg sm:max-w-xl flex flex-col ${isStudent ? 'items-end' : 'items-start'}`}>
                               <div className="flex items-center gap-2 mb-1 px-1">
                                 <span className="text-xs font-bold text-[#1B192F]">
-                                  {isStudent ? 'You' : msg.senderName || 'Admin'}
+                                  {isStudent ? 'You' : 'ADMIN'}
                                 </span>
                                 <span className="text-[11px] text-[#777587]">
                                   {formatTime(msg.createdAt)}

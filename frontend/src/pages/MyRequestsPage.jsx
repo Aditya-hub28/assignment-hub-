@@ -24,23 +24,45 @@ export function MyRequestsPage() {
   const [selectedRequest, setSelectedRequest] = useState(null);
   const [copiedId, setCopiedId] = useState(null);
 
-  const fetchUserRequests = async () => {
-    setIsLoading(true);
+  const fetchUserRequests = async (silent = false) => {
+    if (!silent) setIsLoading(true);
     setError(null);
     try {
       const res = await api.services.getRequests();
       const list = Array.isArray(res?.data) ? res.data : [];
       setRequests(list);
+      setSelectedRequest((prev) => {
+        if (!prev) return null;
+        const updated = list.find((item) => item.id === prev.id);
+        return updated || prev;
+      });
     } catch (err) {
       console.error('[MY_REQUESTS_FETCH_ERROR]', err);
-      setError(err.message || 'Unable to retrieve requests. Please check your connection.');
+      if (!silent) {
+        setError(err.message || 'Unable to retrieve requests. Please check your connection.');
+      }
     } finally {
-      setIsLoading(false);
+      if (!silent) setIsLoading(false);
     }
   };
 
   useEffect(() => {
     fetchUserRequests();
+
+    // Auto-refresh periodically so updates from Admin App reflect live without manual reload
+    const interval = setInterval(() => {
+      fetchUserRequests(true);
+    }, 2000);
+
+    const handleFocus = () => {
+      fetchUserRequests(true);
+    };
+    window.addEventListener('focus', handleFocus);
+
+    return () => {
+      clearInterval(interval);
+      window.removeEventListener('focus', handleFocus);
+    };
   }, []);
 
   // Compute live dashboard metrics directly from real backend data
@@ -168,26 +190,144 @@ export function MyRequestsPage() {
     }
   };
 
-  const getStatusBadge = (status) => {
+  const getStatusBadge = (status, statusLabel) => {
     const s = (status || 'pending').toLowerCase();
     if (s === 'completed' || s === 'delivered') {
       return {
-        label: 'Delivered',
+        label: statusLabel || 'Delivered',
         dotClass: 'bg-emerald-500',
         badgeClass: 'bg-emerald-50 text-emerald-700 border-emerald-200'
       };
     }
+    if (s === 'in_progress') {
+      return {
+        label: statusLabel || 'In Progress',
+        dotClass: 'bg-[#4D41DF] animate-ping',
+        badgeClass: 'bg-[#E4DFFE] text-[#4D41DF] border-purple-200'
+      };
+    }
     if (s.includes('review')) {
       return {
-        label: 'In Review',
+        label: statusLabel || 'In Review',
         dotClass: 'bg-amber-500 animate-pulse',
         badgeClass: 'bg-[#FFDDB3] text-[#7F5300] border-amber-300'
       };
     }
+    if (s === 'cancelled') {
+      return {
+        label: statusLabel || 'Cancelled',
+        dotClass: 'bg-red-500',
+        badgeClass: 'bg-red-50 text-red-700 border-red-200'
+      };
+    }
     return {
-      label: 'In Progress',
-      dotClass: 'bg-[#4D41DF] animate-ping',
-      badgeClass: 'bg-[#E4DFFE] text-[#4D41DF] border-purple-200'
+      label: statusLabel || 'Pending Review',
+      dotClass: 'bg-sky-500 animate-pulse',
+      badgeClass: 'bg-sky-50 text-sky-700 border-sky-200'
+    };
+  };
+
+  const getMilestoneConfig = (req) => {
+    if (!req) {
+      return {
+        progress: 25,
+        badgeLabel: 'Pending Review',
+        badgeClass: 'bg-sky-50 text-sky-700 border-sky-200',
+        dotClass: 'bg-sky-500 animate-pulse',
+        steps: [
+          { key: 'submitted', label: 'Submitted', state: 'done', icon: 'check' },
+          { key: 'review', label: 'In Review', state: 'upcoming', icon: 'hourglass_top' },
+          { key: 'working', label: 'Working', state: 'upcoming', icon: 'pending' },
+          { key: 'delivered', label: 'Delivered', state: 'upcoming', icon: 'done_all' }
+        ]
+      };
+    }
+
+    const rawStatus = (req.status || 'pending').toLowerCase();
+    const statusLabel = req.statusLabel || '';
+    
+    // Strict admin synchronization: use exact progress value set by admin, or canonical default for status
+    let progress = typeof req.progress === 'number' && (req.progress > 0 || rawStatus === 'cancelled')
+      ? req.progress
+      : (
+        rawStatus === 'completed' || rawStatus === 'delivered' ? 100 :
+        rawStatus === 'in_progress' ? 75 :
+        rawStatus === 'in_review' ? 50 :
+        rawStatus === 'cancelled' ? 0 : 25
+      );
+
+    if (rawStatus === 'cancelled') {
+      return {
+        progress: 0,
+        badgeLabel: statusLabel || 'Cancelled',
+        badgeClass: 'bg-red-50 text-red-700 border-red-200',
+        dotClass: 'bg-red-500',
+        steps: [
+          { key: 'submitted', label: 'Submitted', state: 'done', icon: 'check' },
+          { key: 'review', label: 'Cancelled', state: 'cancelled', icon: 'block' },
+          { key: 'working', label: 'Cancelled', state: 'cancelled', icon: 'block' },
+          { key: 'delivered', label: 'Cancelled', state: 'cancelled', icon: 'block' }
+        ]
+      };
+    }
+
+    if (rawStatus === 'completed' || rawStatus === 'delivered' || progress >= 100) {
+      return {
+        progress: Math.max(progress, 100),
+        badgeLabel: statusLabel || 'Delivered',
+        badgeClass: 'bg-emerald-50 text-emerald-700 border-emerald-200',
+        dotClass: 'bg-emerald-500',
+        steps: [
+          { key: 'submitted', label: 'Submitted', state: 'done', icon: 'check' },
+          { key: 'review', label: 'In Review', state: 'done', icon: 'check' },
+          { key: 'working', label: 'Working', state: 'done', icon: 'check' },
+          { key: 'delivered', label: 'Delivered', state: 'delivered_done', icon: 'done_all' }
+        ]
+      };
+    }
+
+    if (rawStatus === 'in_progress' || progress >= 60) {
+      return {
+        progress,
+        badgeLabel: statusLabel || 'In Progress',
+        badgeClass: 'bg-[#E4DFFE] text-[#4D41DF] border-purple-200',
+        dotClass: 'bg-[#4D41DF] animate-ping',
+        steps: [
+          { key: 'submitted', label: 'Submitted', state: 'done', icon: 'check' },
+          { key: 'review', label: 'In Review', state: 'done', icon: 'check' },
+          { key: 'working', label: 'Working', state: 'active', icon: 'pending' },
+          { key: 'delivered', label: 'Delivered', state: 'upcoming', icon: 'done_all' }
+        ]
+      };
+    }
+
+    if (rawStatus === 'in_review' || progress >= 35) {
+      return {
+        progress,
+        badgeLabel: statusLabel || 'In Review',
+        badgeClass: 'bg-[#FFDDB3] text-[#7F5300] border-amber-300',
+        dotClass: 'bg-amber-500 animate-pulse',
+        steps: [
+          { key: 'submitted', label: 'Submitted', state: 'done', icon: 'check' },
+          { key: 'review', label: 'In Review', state: 'active', icon: 'hourglass_top' },
+          { key: 'working', label: 'Working', state: 'upcoming', icon: 'pending' },
+          { key: 'delivered', label: 'Delivered', state: 'upcoming', icon: 'done_all' }
+        ]
+      };
+    }
+
+    // Default: Pending / Submitted
+    return {
+      progress: Math.max(progress, 25),
+      badgeLabel: statusLabel || 'Pending Review',
+      badgeClass: 'bg-sky-50 text-sky-700 border-sky-200',
+      dotClass: 'bg-sky-500 animate-pulse',
+      steps: [
+        { key: 'submitted', label: 'Submitted', state: 'done', icon: 'check' },
+        { key: 'review', label: 'In Review', state: 'upcoming', icon: 'hourglass_top' },
+        { key: 'working', label: 'Working', state: 'upcoming', icon: 'pending' },
+        { key: 'delivered', label: 'Delivered', state: 'upcoming', icon: 'done_all' }
+      ]
     };
   };
 
@@ -425,7 +565,7 @@ export function MyRequestsPage() {
             {/* Compact Rows */}
             {!isLoading && !error && filteredRequests.length > 0 && (
               filteredRequests.map((req) => {
-                const statusBadge = getStatusBadge(req.status);
+                const statusBadge = getStatusBadge(req.status, req.statusLabel);
                 return (
                   <article
                     key={req.id}
@@ -523,20 +663,35 @@ export function MyRequestsPage() {
                   </span>
                 </button>
 
-                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#E4DFFE] text-[#4D41DF] text-xs font-bold clay-pill">
-                  <span className="w-2 h-2 rounded-full bg-[#4D41DF] animate-ping"></span>
-                  <span>{selectedRequest.statusLabel || 'In Progress'}</span>
-                </div>
+                {(() => {
+                  const milestone = getMilestoneConfig(selectedRequest);
+                  return (
+                    <div className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold border ${milestone.badgeClass}`}>
+                      <span className={`w-2 h-2 rounded-full ${milestone.dotClass}`}></span>
+                      <span>{selectedRequest.statusLabel || milestone.badgeLabel}</span>
+                    </div>
+                  );
+                })()}
               </div>
 
-              <button
-                type="button"
-                aria-label="Close Drawer"
-                onClick={() => setSelectedRequest(null)}
-                className="w-9 h-9 rounded-full bg-[#F6F1FF] text-[#464555] hover:text-[#1B192F] flex items-center justify-center transition-colors cursor-pointer"
-              >
-                <span className="material-symbols-outlined text-[20px]">close</span>
-              </button>
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => fetchUserRequests(false)}
+                  title="Refresh Request Status"
+                  className="w-9 h-9 rounded-full bg-[#F6F1FF] text-[#464555] hover:text-[#4D41DF] flex items-center justify-center transition-colors cursor-pointer"
+                >
+                  <span className="material-symbols-outlined text-[18px]">refresh</span>
+                </button>
+                <button
+                  type="button"
+                  aria-label="Close Drawer"
+                  onClick={() => setSelectedRequest(null)}
+                  className="w-9 h-9 rounded-full bg-[#F6F1FF] text-[#464555] hover:text-[#1B192F] flex items-center justify-center transition-colors cursor-pointer"
+                >
+                  <span className="material-symbols-outlined text-[20px]">close</span>
+                </button>
+              </div>
             </div>
 
             {/* Drawer Body Content */}
@@ -553,39 +708,72 @@ export function MyRequestsPage() {
               </div>
 
               {/* Status Stepper Progression */}
-              <div className="p-5 rounded-3xl bg-[#F6F1FF] clay-pill-inset flex flex-col gap-4">
-                <div className="flex items-center justify-between text-xs font-bold">
-                  <span className="text-[#464555] uppercase tracking-wider">Milestone Progress</span>
-                  <span className="text-[#4D41DF]">Active Intake</span>
-                </div>
+              {(() => {
+                const milestone = getMilestoneConfig(selectedRequest);
+                return (
+                  <div className="p-5 rounded-3xl bg-[#F6F1FF] clay-pill-inset flex flex-col gap-4">
+                    <div className="flex items-center justify-between text-xs font-bold">
+                      <span className="text-[#464555] uppercase tracking-wider">Milestone Progress</span>
+                      <div className="flex items-center gap-2">
+                        <span className={`px-2.5 py-0.5 rounded-full text-xs font-bold border ${milestone.badgeClass}`}>
+                          {selectedRequest.statusLabel || milestone.badgeLabel}
+                        </span>
+                        <span className="text-[#4D41DF] font-bold text-xs">
+                          {milestone.progress}%
+                        </span>
+                      </div>
+                    </div>
 
-                <div className="grid grid-cols-4 gap-2 text-center text-xs">
-                  <div className="flex flex-col items-center gap-1">
-                    <div className="w-8 h-8 rounded-full bg-[#4D41DF] text-white flex items-center justify-center font-bold text-xs shadow-sm">
-                      <span className="material-symbols-outlined text-[16px]">check</span>
+                    <div className="grid grid-cols-4 gap-2 text-center text-xs relative">
+                      {milestone.steps.map((st, idx) => {
+                        let circleClass = 'w-8 h-8 rounded-full flex items-center justify-center font-bold text-xs transition-all duration-300';
+                        let labelClass = 'text-xs transition-all duration-300';
+
+                        if (st.state === 'delivered_done') {
+                          circleClass += ' bg-emerald-600 text-white shadow-md scale-105';
+                          labelClass += ' font-bold text-emerald-700';
+                        } else if (st.state === 'done') {
+                          circleClass += ' bg-[#4D41DF] text-white shadow-sm';
+                          labelClass += ' font-bold text-[#1B192F]';
+                        } else if (st.state === 'active') {
+                          circleClass += ' bg-[#675DF9] text-white shadow-md ring-4 ring-[#EAE5FF] animate-pulse';
+                          labelClass += ' font-bold text-[#4D41DF]';
+                        } else if (st.state === 'cancelled') {
+                          circleClass += ' bg-red-100 text-red-500 opacity-60';
+                          labelClass += ' text-red-400 opacity-75 line-through';
+                        } else {
+                          // upcoming
+                          circleClass += ' bg-[#EAE5FF] text-[#777587] opacity-60';
+                          labelClass += ' text-[#777587] opacity-75';
+                        }
+
+                        return (
+                          <div key={idx} className="flex flex-col items-center gap-1.5">
+                            <div className={circleClass}>
+                              <span className="material-symbols-outlined text-[16px]">{st.icon}</span>
+                            </div>
+                            <span className={labelClass}>{st.label}</span>
+                          </div>
+                        );
+                      })}
                     </div>
-                    <span className="font-bold text-[#1B192F]">Submitted</span>
-                  </div>
-                  <div className="flex flex-col items-center gap-1">
-                    <div className="w-8 h-8 rounded-full bg-[#4D41DF] text-white flex items-center justify-center font-bold text-xs shadow-sm">
-                      <span className="material-symbols-outlined text-[16px]">check</span>
+
+                    {/* Dynamic Progress Bar */}
+                    <div className="w-full bg-[#EAE5FF] h-2 rounded-full overflow-hidden mt-0.5">
+                      <div
+                        className={`h-full rounded-full transition-all duration-500 ease-out ${
+                          milestone.progress >= 100
+                            ? 'bg-emerald-500'
+                            : milestone.badgeLabel === 'Cancelled'
+                            ? 'bg-red-500'
+                            : 'bg-gradient-to-r from-[#4D41DF] to-[#7B73F8]'
+                        }`}
+                        style={{ width: `${milestone.progress}%` }}
+                      />
                     </div>
-                    <span className="font-bold text-[#1B192F]">In Review</span>
                   </div>
-                  <div className="flex flex-col items-center gap-1">
-                    <div className="w-8 h-8 rounded-full bg-[#675DF9] text-white flex items-center justify-center font-bold text-xs shadow-md animate-pulse">
-                      <span className="material-symbols-outlined text-[16px]">pending</span>
-                    </div>
-                    <span className="font-bold text-[#4D41DF]">Working</span>
-                  </div>
-                  <div className="flex flex-col items-center gap-1 opacity-50">
-                    <div className="w-8 h-8 rounded-full bg-[#EAE5FF] text-[#464555] flex items-center justify-center font-bold text-xs">
-                      <span className="material-symbols-outlined text-[16px]">done_all</span>
-                    </div>
-                    <span className="text-[#464555]">Delivered</span>
-                  </div>
-                </div>
-              </div>
+                );
+              })()}
 
               {/* Key Parameters Grid */}
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 p-4 rounded-3xl bg-[#F6F1FF] clay-pill-inset">
@@ -598,13 +786,24 @@ export function MyRequestsPage() {
                 <div className="flex flex-col">
                   <span className="text-[10px] uppercase font-bold text-[#464555]">Scope / Volume</span>
                   <span className="text-xs sm:text-sm font-bold text-[#1B192F]">
-                    {selectedRequest.serviceSpecific?.numberOfPages || selectedRequest.serviceSpecific?.slideCount || 'Standard Scope'}
+                    {selectedRequest.serviceSpecific?.numberOfPages
+                      ? `${selectedRequest.serviceSpecific.numberOfPages} Pages`
+                      : selectedRequest.serviceSpecific?.slideCount
+                      ? `${selectedRequest.serviceSpecific.slideCount} Slides`
+                      : selectedRequest.serviceSpecific?.techStack
+                      ? selectedRequest.serviceSpecific.techStack
+                      : selectedRequest.serviceSpecific?.domainArea
+                      ? selectedRequest.serviceSpecific.domainArea
+                      : 'Standard Scope'}
                   </span>
                 </div>
                 <div className="flex flex-col">
                   <span className="text-[10px] uppercase font-bold text-[#464555]">Delivery Format</span>
                   <span className="text-xs sm:text-sm font-bold text-[#1B192F]">
-                    {selectedRequest.serviceSpecific?.deliveryFormat || selectedRequest.serviceSpecific?.slideFormat || 'Digital Files'}
+                    {selectedRequest.serviceSpecific?.deliveryFormat ||
+                      selectedRequest.serviceSpecific?.slideFormat ||
+                      selectedRequest.serviceSpecific?.softwareTool ||
+                      'Digital Files'}
                   </span>
                 </div>
                 <div className="flex flex-col">
