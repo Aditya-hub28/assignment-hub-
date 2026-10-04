@@ -13,28 +13,28 @@ class AuthService {
     const normalizedEmail = email.trim().toLowerCase();
     const normalizedMobile = mobile.trim();
 
-    // 1. Check if email is already registered in profiles
-    const { data: existingEmailUser } = await supabaseAdmin
-      .from('profiles')
-      .select('id')
-      .eq('email', normalizedEmail)
-      .maybeSingle();
+    // 1 & 2. Check in parallel if email or mobile are already registered in profiles
+    const [existingEmailRes, existingMobileRes] = await Promise.all([
+      supabaseAdmin
+        .from('profiles')
+        .select('id')
+        .eq('email', normalizedEmail)
+        .maybeSingle(),
+      supabaseAdmin
+        .from('profiles')
+        .select('id')
+        .eq('mobile', normalizedMobile)
+        .maybeSingle()
+    ]);
 
-    if (existingEmailUser) {
+    if (existingEmailRes?.data) {
       const customError = new Error(errorMessages.AUTH.EMAIL_ALREADY_EXISTS);
       customError.statusCode = 409;
       customError.code = 'EMAIL_ALREADY_EXISTS';
       throw customError;
     }
 
-    // 2. Check if mobile number is already registered in profiles
-    const { data: existingMobileUser } = await supabaseAdmin
-      .from('profiles')
-      .select('id')
-      .eq('mobile', normalizedMobile)
-      .maybeSingle();
-
-    if (existingMobileUser) {
+    if (existingMobileRes?.data) {
       const customError = new Error(errorMessages.AUTH.MOBILE_ALREADY_EXISTS);
       customError.statusCode = 409;
       customError.code = 'MOBILE_ALREADY_EXISTS';

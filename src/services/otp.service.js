@@ -69,27 +69,21 @@ class OtpService {
    * Create a new registration OTP verification record and send SMS
    */
   async createRegistrationVerification({ fullName, email, mobile, password }) {
-    // Generate OTP
+    // Generate OTP & prepare credentials in parallel
     const rawOtp = this.generateNumericOtp();
-    const otpHash = await this.hashOtp(rawOtp);
-
-    // Encrypt user's password securely for temporary storage until verified
-    const encryptedPassword = this.encryptPassword(password);
+    const [otpHash, encryptedPassword] = await Promise.all([
+      this.hashOtp(rawOtp),
+      Promise.resolve(this.encryptPassword(password)),
+      // Clean up previous unverified records directly
+      supabaseAdmin
+        .from('otp_verifications')
+        .delete()
+        .or(`email.eq.${email},mobile.eq.${mobile}`)
+        .eq('is_verified', false)
+    ]);
 
     const now = new Date();
     const expiresAt = new Date(now.getTime() + env.OTP.EXPIRY_MINUTES * 60 * 1000);
-
-    // Clean up previous unverified records for this email or mobile
-    const { data: existingRecords } = await supabaseAdmin
-      .from('otp_verifications')
-      .select('id')
-      .or(`email.eq.${email},mobile.eq.${mobile}`)
-      .eq('is_verified', false);
-
-    if (existingRecords && existingRecords.length > 0) {
-      const idsToDelete = existingRecords.map((r) => r.id);
-      await supabaseAdmin.from('otp_verifications').delete().in('id', idsToDelete);
-    }
 
     // Insert new verification record
     const { data, error } = await supabaseAdmin
@@ -115,8 +109,16 @@ class OtpService {
       throw new Error(`Failed to initialize verification session: ${error.message}`);
     }
 
-    // Send OTP via Email (Primary & Guaranteed Delivery)
-    const emailResult = await emailService.sendOtpEmail(email, rawOtp, fullName);
+    // Trigger OTP Email immediately in background without blocking response
+    emailService.sendOtpEmail(email, rawOtp, fullName)
+      .then((res) => {
+        if (res?.messageId) {
+          console.log(`[EMAIL DISPATCH SUCCESS] OTP delivered to ${email} (MessageId: ${res.messageId})`);
+        }
+      })
+      .catch((err) => {
+        console.error(`[EMAIL DISPATCH ERROR] Failed to send OTP to ${email}:`, err.message);
+      });
 
     // Optional SMS dispatch in background (never blocks or delays user response)
     if (mobile && env.SMS_PROVIDER !== 'none') {
@@ -131,7 +133,7 @@ class OtpService {
       email,
       expiresAt: data.expires_at,
       resendCooldownSeconds: env.OTP.RESEND_COOLDOWN_SECONDS,
-      previewUrl: emailResult?.previewUrl || null,
+      previewUrl: null,
       rawOtp
     };
   }
@@ -302,8 +304,16 @@ class OtpService {
       throw new Error(`Failed to update verification session: ${updateError.message}`);
     }
 
-    // Dispatch new OTP via Email (Primary & Guaranteed Delivery)
-    const emailResult = await emailService.sendOtpEmail(record.email, rawOtp, record.full_name);
+    // Trigger new OTP via Email immediately in background
+    emailService.sendOtpEmail(record.email, rawOtp, record.full_name)
+      .then((res) => {
+        if (res?.messageId) {
+          console.log(`[EMAIL RESEND SUCCESS] OTP delivered to ${record.email} (MessageId: ${res.messageId})`);
+        }
+      })
+      .catch((err) => {
+        console.error(`[EMAIL RESEND ERROR] Failed to resend OTP to ${record.email}:`, err.message);
+      });
 
     if (record.mobile && env.SMS_PROVIDER !== 'none') {
       smsService.sendOtp(record.mobile, rawOtp).catch((err) => {
@@ -318,7 +328,7 @@ class OtpService {
       expiresAt: updated.expires_at,
       resendsRemaining: updated.max_resends - updated.resend_count,
       resendCooldownSeconds: env.OTP.RESEND_COOLDOWN_SECONDS,
-      previewUrl: emailResult?.previewUrl || null,
+      previewUrl: null,
       rawOtp
     };
   }
