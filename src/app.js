@@ -40,13 +40,13 @@ if (env.NODE_ENV !== 'test') {
 // Global API rate limiting for API routes
 app.use(env.API_PREFIX, globalLimiter);
 
-// Launch Configuration: 5th October 2026, 2:48 AM IST (02:48:00)
+// Launch Configuration: 5th October 2026, 2:50 AM IST (02:50:00)
 const fs = require('fs');
 const LAUNCH_TIMESTAMP = process.env.LAUNCH_TIMESTAMP
   ? Number(process.env.LAUNCH_TIMESTAMP)
   : (process.env.LAUNCH_TIME
       ? new Date(process.env.LAUNCH_TIME).getTime()
-      : new Date('2026-10-05T02:48:00+05:30').getTime());
+      : new Date('2026-10-05T02:50:00+05:30').getTime());
 
 const isLaunchLive = (req) => {
   if (process.env.FORCE_LIVE === 'true') return true;
@@ -63,7 +63,7 @@ app.get('/api/v1/launch-status', (req, res) => {
   const isLive = isLaunchLive(req);
   res.json({
     isLive,
-    launchTime: '2026-10-05T02:48:00+05:30',
+    launchTime: '2026-10-05T02:50:00+05:30',
     launchTimestamp: LAUNCH_TIMESTAMP,
     currentTime: new Date().toISOString(),
     remainingSeconds: Math.max(0, Math.floor((LAUNCH_TIMESTAMP - Date.now()) / 1000))

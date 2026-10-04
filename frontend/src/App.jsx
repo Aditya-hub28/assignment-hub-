@@ -22,8 +22,8 @@ import { PrivacyPolicyPage } from './pages/PrivacyPolicyPage';
 import { TermsPage } from './pages/TermsPage';
 import { NotFoundPage } from './pages/NotFoundPage';
 
-// Target Launch Time: 5th October 2026, 2:48 AM IST (02:48:00)
-const LAUNCH_TIMESTAMP = new Date('2026-10-05T02:48:00+05:30').getTime();
+// Target Launch Time: 5th October 2026, 2:50 AM IST (02:50:00)
+const LAUNCH_TIMESTAMP = new Date('2026-10-05T02:50:00+05:30').getTime();
 
 function CountdownGate({ children }) {
   const [isLive, setIsLive] = React.useState(() => {
