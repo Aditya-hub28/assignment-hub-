@@ -53,6 +53,20 @@ export function InquiriesPage() {
     }
   };
 
+  const lastHandledQueryRef = useRef(null);
+
+  // Dedicated inquiry selection handler: updates state AND keeps URL in sync
+  const handleSelectInquiry = (inq) => {
+    if (!inq) return;
+    const targetId = inq.id;
+    const targetReqId = inq.requestId || inq.id;
+    lastHandledQueryRef.current = targetReqId;
+    setSelectedInquiryId(targetId);
+    setShowMobileChat(true);
+    // Keep URL parameter in sync with the selected inquiry
+    navigate(`/inquiries?requestId=${targetReqId}`, { replace: true });
+  };
+
   // Fetch inquiries from backend
   const fetchInquiries = async (silent = false) => {
     if (!silent) setIsLoading(true);
@@ -62,32 +76,38 @@ export function InquiriesPage() {
       setInquiries(list);
       setError(null);
 
-      // Auto-select logic
-      if (queryRequestId) {
-        let match = list.find((i) => i.requestId === queryRequestId || i.id === queryRequestId);
-        if (!match) {
-          try {
-            const single = await api.inquiries.getInquiryById(queryRequestId);
-            if (single?.data) {
-              match = single.data;
-              list = [single.data, ...list.filter((x) => x.id !== single.data.id)];
-              setInquiries(list);
-            }
-          } catch (e) {
-            console.warn('Inquiry lookup fallback note:', e.message);
-          }
-        }
-        if (match) {
-          setSelectedInquiryId(match.id);
-          setShowMobileChat(true);
-          return;
-        }
-      }
-
+      // Determine selection: NEVER override if user already has an active selection!
       setSelectedInquiryId((prevSelected) => {
-        if (prevSelected && list.some((i) => i.id === prevSelected)) {
+        // 1. If user already has an inquiry selected AND it exists in list, keep it unconditionally
+        if (
+          prevSelected &&
+          list.some(
+            (i) =>
+              i.id === prevSelected ||
+              i.requestId === prevSelected ||
+              i.id?.toLowerCase() === prevSelected?.toLowerCase() ||
+              i.requestId?.toLowerCase() === prevSelected?.toLowerCase()
+          )
+        ) {
           return prevSelected;
         }
+
+        // 2. If a query parameter was provided (e.g. from My Requests), find it
+        if (queryRequestId) {
+          const match = list.find(
+            (i) =>
+              i.requestId === queryRequestId ||
+              i.id === queryRequestId ||
+              i.requestId?.toLowerCase() === queryRequestId?.toLowerCase() ||
+              i.id?.toLowerCase() === queryRequestId?.toLowerCase()
+          );
+          if (match) {
+            lastHandledQueryRef.current = queryRequestId;
+            return match.id;
+          }
+        }
+
+        // 3. Otherwise default to first inquiry if available
         return list.length > 0 ? list[0].id : null;
       });
     } catch (err) {
@@ -109,24 +129,44 @@ export function InquiriesPage() {
     return () => clearInterval(pollInterval);
   }, [user]);
 
-  // If queryRequestId changes dynamically in URL, select it and reset filters
+  // When queryRequestId in URL changes externally (e.g., clicking a request in My Requests)
   useEffect(() => {
-    if (queryRequestId) {
-      setActiveTab('all');
-      setSearchQuery('');
-      if (inquiries.length > 0) {
-        const match = inquiries.find((i) => i.requestId === queryRequestId || i.id === queryRequestId);
-        if (match) {
-          setSelectedInquiryId(match.id);
-          setShowMobileChat(true);
-        }
+    if (!queryRequestId) return;
+    if (queryRequestId === lastHandledQueryRef.current) return;
+
+    lastHandledQueryRef.current = queryRequestId;
+    setActiveTab('all');
+    setSearchQuery('');
+
+    if (inquiries.length > 0) {
+      const match = inquiries.find(
+        (i) =>
+          i.requestId === queryRequestId ||
+          i.id === queryRequestId ||
+          i.requestId?.toLowerCase() === queryRequestId?.toLowerCase() ||
+          i.id?.toLowerCase() === queryRequestId?.toLowerCase()
+      );
+      if (match) {
+        setSelectedInquiryId(match.id);
+        setShowMobileChat(true);
       }
     }
   }, [queryRequestId, inquiries]);
 
   // The currently selected inquiry object
   const activeInquiry = useMemo(() => {
-    return inquiries.find((i) => i.id === selectedInquiryId) || null;
+    if (!selectedInquiryId) return inquiries[0] || null;
+    return (
+      inquiries.find(
+        (i) =>
+          i.id === selectedInquiryId ||
+          i.requestId === selectedInquiryId ||
+          i.id?.toLowerCase() === selectedInquiryId?.toLowerCase() ||
+          i.requestId?.toLowerCase() === selectedInquiryId?.toLowerCase()
+      ) ||
+      inquiries[0] ||
+      null
+    );
   }, [inquiries, selectedInquiryId]);
 
   // Auto-scroll when active inquiry changes (instant, no user scroll needed)
@@ -633,16 +673,16 @@ export function InquiriesPage() {
               ) : (
                 <div className="flex flex-col gap-2.5 overflow-y-auto pr-1 pb-4 flex-1">
                   {filteredInquiries.map((inq) => {
-                    const isSelected = inq.id === selectedInquiryId;
+                    const isSelected =
+                      inq.id === selectedInquiryId ||
+                      inq.requestId === selectedInquiryId ||
+                      (activeInquiry && (inq.id === activeInquiry.id || inq.requestId === activeInquiry.requestId));
                     const isResolved = inq.status === 'resolved';
 
                     return (
                       <div
                         key={inq.id}
-                        onClick={() => {
-                          setSelectedInquiryId(inq.id);
-                          setShowMobileChat(true);
-                        }}
+                        onClick={() => handleSelectInquiry(inq)}
                         className={`group cursor-pointer p-3.5 rounded-2xl transition-all relative overflow-hidden shrink-0 ${
                           isSelected
                             ? 'bg-white shadow-[12px_16px_32px_rgba(108,99,255,0.14),-8px_-8px_24px_rgba(255,255,255,0.95)] ring-2 ring-[#4D41DF]/40'
