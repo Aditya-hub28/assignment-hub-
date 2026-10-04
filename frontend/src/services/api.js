@@ -116,5 +116,9 @@ export const api = {
     getInquiries: () => request('/inquiries', { method: 'GET' }),
     getInquiryById: (id) => request(`/inquiries/${id}`, { method: 'GET' }),
     sendMessage: (id, body) => request(`/inquiries/${id}/messages`, { method: 'POST', body })
+  },
+  notifications: {
+    getNotifications: () => request('/notifications', { method: 'GET' }),
+    markRead: (body = {}) => request('/notifications/mark-read', { method: 'PUT', body })
   }
 };

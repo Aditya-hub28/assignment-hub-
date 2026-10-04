@@ -4,6 +4,7 @@ const authRoutes = require('./auth.routes');
 const userRoutes = require('./user.routes');
 const serviceRequestRoutes = require('./serviceRequest.routes');
 const inquiryRoutes = require('./inquiry.routes');
+const notificationRoutes = require('./notification.routes');
 
 // Health check endpoint
 router.get('/health', (req, res) => {
@@ -27,5 +28,8 @@ router.use('/requests', serviceRequestRoutes);
 
 // Inquiries routes (Chat & Request inquiries)
 router.use('/inquiries', inquiryRoutes);
+
+// Notifications routes
+router.use('/notifications', notificationRoutes);
 
 module.exports = router;
