@@ -1,9 +1,7 @@
 const path = require('path');
-const fs = require('fs');
 const { supabaseAdmin } = require('../config/supabase');
 
 const BUCKET_NAME = 'service-request-files';
-const LEGACY_STORAGE_DIR = path.resolve(process.cwd(), 'storage', 'uploads', 'service-requests');
 
 const MIME_MAP = {
   pdf: 'application/pdf',
@@ -152,54 +150,10 @@ class StorageService {
   }
 
   /**
-   * Migrate existing local files in storage/uploads/service-requests to Supabase Storage
+   * Legacy file migration helper (Migration to Supabase Storage completed)
    */
-  async migrateLocalFiles(requests = []) {
-    let migratedCount = 0;
-    if (!fs.existsSync(LEGACY_STORAGE_DIR)) {
-      return { migratedCount };
-    }
-
-    for (const req of requests) {
-      if (!req.id || !Array.isArray(req.files) || req.files.length === 0) continue;
-      const reqDir = path.join(LEGACY_STORAGE_DIR, req.id);
-      if (!fs.existsSync(reqDir)) continue;
-
-      for (const file of req.files) {
-        // If file already has a storagePath, skip
-        if (file.storagePath) continue;
-
-        const urlPart = file.url?.split('/').pop();
-        const diskName = urlPart || file.name;
-        const localPath = path.join(reqDir, diskName);
-
-        if (fs.existsSync(localPath)) {
-          try {
-            const buffer = fs.readFileSync(localPath);
-            const userFolder = req.userId ? String(req.userId).trim() : 'unauthenticated';
-            const safeName = path.basename(diskName).replace(/[^a-zA-Z0-9._-]/g, '_');
-            const storagePath = `${userFolder}/${req.id}/${safeName}`;
-
-            const { error } = await supabaseAdmin.storage
-              .from(this.bucketName)
-              .upload(storagePath, buffer, {
-                contentType: file.type || 'application/octet-stream',
-                upsert: true
-              });
-
-            if (!error) {
-              file.storagePath = storagePath;
-              migratedCount++;
-              console.log(`[STORAGE] Migrated local file ${diskName} -> ${storagePath}`);
-            }
-          } catch (err) {
-            console.warn(`[STORAGE] Failed migrating file ${diskName}:`, err.message);
-          }
-        }
-      }
-    }
-
-    return { migratedCount };
+  async migrateLocalFiles() {
+    return { migratedCount: 0 };
   }
 }
 

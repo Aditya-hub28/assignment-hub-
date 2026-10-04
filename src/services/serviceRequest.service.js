@@ -6,14 +6,9 @@ const storageService = require('./storage.service');
 
 const DATA_DIR = path.resolve(process.cwd(), 'data');
 const REQUESTS_FILE = path.join(DATA_DIR, 'service_requests.json');
-const UPLOADS_DIR = path.resolve(process.cwd(), 'storage', 'uploads', 'service-requests');
-
-// Ensure data directories exist
+// Ensure data directory exists
 if (!fs.existsSync(DATA_DIR)) {
   fs.mkdirSync(DATA_DIR, { recursive: true });
-}
-if (!fs.existsSync(UPLOADS_DIR)) {
-  fs.mkdirSync(UPLOADS_DIR, { recursive: true });
 }
 if (!fs.existsSync(REQUESTS_FILE)) {
   fs.writeFileSync(REQUESTS_FILE, JSON.stringify([], null, 2), 'utf-8');
@@ -98,7 +93,7 @@ const processFiles = async (files = [], requestId, user = null) => {
         const base64Data = file.data.includes('base64,') ? file.data.split('base64,')[1] : file.data;
         const buffer = Buffer.from(base64Data, 'base64');
 
-        // Upload to private Supabase Storage bucket: service-request-files
+        // Upload strictly to private Supabase Storage bucket: service-request-files
         const uploadResult = await storageService.uploadFile({
           userId: user?.id,
           requestId,
@@ -109,28 +104,9 @@ const processFiles = async (files = [], requestId, user = null) => {
         });
 
         storagePath = uploadResult.storagePath;
-
-        // Write local backup for offline/legacy compatibility without depending on it
-        try {
-          const targetDir = path.join(UPLOADS_DIR, requestId);
-          if (!fs.existsSync(targetDir)) {
-            fs.mkdirSync(targetDir, { recursive: true });
-          }
-          fs.writeFileSync(path.join(targetDir, fileNameOnDisk), buffer);
-        } catch {}
       } catch (err) {
-        console.warn(`[STORAGE] Upload failed for ${file.name}, trying local fallback:`, err.message);
-        try {
-          const targetDir = path.join(UPLOADS_DIR, requestId);
-          if (!fs.existsSync(targetDir)) {
-            fs.mkdirSync(targetDir, { recursive: true });
-          }
-          const base64Data = file.data.includes('base64,') ? file.data.split('base64,')[1] : file.data;
-          const buffer = Buffer.from(base64Data, 'base64');
-          fs.writeFileSync(path.join(targetDir, fileNameOnDisk), buffer);
-        } catch (localErr) {
-          console.error('[STORAGE] Both Supabase and local save failed:', localErr.message);
-        }
+        console.error(`[STORAGE] Supabase upload failed for ${file.name}:`, err.message);
+        // Do NOT create any local copy
       }
     }
 
@@ -324,7 +300,7 @@ class ServiceRequestService {
     const userFolder = request.userId ? String(request.userId).trim() : 'unauthenticated';
     const storagePath = originalFile.storagePath || `${userFolder}/${requestId}/${safeFileName}`;
 
-    // Prefer Supabase Storage signed URL
+    // Generate Supabase Storage signed URL
     try {
       const { signedUrl, expiresIn } = await storageService.getSignedUrl(storagePath, 300);
       return {
@@ -335,17 +311,6 @@ class ServiceRequestService {
         expiresIn
       };
     } catch (storageErr) {
-      // Backward compatibility fallback: check legacy local storage if file exists on disk
-      const targetDir = path.join(UPLOADS_DIR, requestId);
-      const resolvedPath = path.resolve(targetDir, safeFileName);
-      if (resolvedPath.startsWith(path.resolve(targetDir)) && fs.existsSync(resolvedPath)) {
-        return {
-          type: 'local_file',
-          filePath: resolvedPath,
-          downloadName
-        };
-      }
-
       const err = new Error(`File "${safeFileName}" was not found in secure storage.`);
       err.status = 404;
       err.code = 'NOT_FOUND';

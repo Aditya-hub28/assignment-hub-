@@ -1,3 +1,5 @@
+const fs = require('fs');
+const path = require('path');
 const request = require('supertest');
 const app = require('../src/app');
 
@@ -123,6 +125,35 @@ describe('Security & Production Verification Test Suite', () => {
 
       // Should be rejected by route/basename defense
       expect([400, 404]).toContain(traversalRes.status);
+    });
+
+    it('should confirm NO local file copy was created on filesystem during upload', async () => {
+      const legacyDir = path.resolve(process.cwd(), 'storage', 'uploads', 'service-requests');
+      expect(fs.existsSync(legacyDir)).toBe(false);
+    });
+
+    it('should safely handle missing files with 404 without filesystem fallback', async () => {
+      const nonExistentRes = await request(app)
+        .get(`/api/v1/services/requests/${userARequestId}/files/non_existent_file.pdf?action=url`)
+        .set('Authorization', userAToken);
+
+      expect(nonExistentRes.status).toBe(404);
+      expect(nonExistentRes.body.success).toBe(false);
+    });
+
+    it('should confirm existing migrated files in Supabase Storage remain accessible', async () => {
+      const reqRes = await request(app)
+        .get('/api/v1/services/requests/REQ-20261004-100')
+        .set('Authorization', userAToken);
+
+      expect(reqRes.status).toBe(200);
+      const fileUrl = reqRes.body.data.files[0].url;
+      const fileRes = await request(app)
+        .get(`${fileUrl}?action=url`)
+        .set('Authorization', userAToken);
+
+      expect(fileRes.status).toBe(200);
+      expect(fileRes.body.downloadUrl).toContain('supabase.co/storage/v1/object/sign/service-request-files');
     });
   });
 

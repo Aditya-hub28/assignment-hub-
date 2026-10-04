@@ -85,22 +85,18 @@ class ServiceRequestController {
 
       const fileData = await serviceRequestService.getAuthorizedFile(id, filename, user);
 
-      if (fileData.type === 'signed_url') {
-        // Return signed URL JSON if explicitly requested
-        if (req.query.action === 'url' || req.headers.accept?.includes('application/json')) {
-          return res.status(200).json({
-            success: true,
-            downloadUrl: fileData.signedUrl,
-            filename: fileData.downloadName,
-            expiresIn: fileData.expiresIn
-          });
-        }
-        // Redirect browser to secure short-lived Supabase signed URL
-        return res.redirect(302, fileData.signedUrl);
+      // Return signed URL JSON if explicitly requested
+      if (req.query.action === 'url' || req.headers.accept?.includes('application/json')) {
+        return res.status(200).json({
+          success: true,
+          downloadUrl: fileData.signedUrl,
+          filename: fileData.downloadName,
+          expiresIn: fileData.expiresIn
+        });
       }
 
-      // Legacy fallback for local files
-      return res.download(fileData.filePath, fileData.downloadName);
+      // Redirect browser to secure short-lived Supabase signed URL
+      return res.redirect(302, fileData.signedUrl);
     } catch (error) {
       next(error);
     }
