@@ -8,7 +8,7 @@ const env = require('../config/env');
 class EmailService {
   constructor() {
     this.transporter = null;
-    this.initTransporter();
+    this.initPromise = this.initTransporter();
   }
 
   /**
@@ -20,6 +20,8 @@ class EmailService {
       if (env.EMAIL.SMTP_HOST.includes('gmail')) {
         this.transporter = nodemailer.createTransport({
           service: 'gmail',
+          pool: true,
+          maxConnections: 3,
           auth: {
             user: env.EMAIL.SMTP_USER,
             pass: cleanPass
@@ -30,6 +32,8 @@ class EmailService {
           host: env.EMAIL.SMTP_HOST,
           port: env.EMAIL.SMTP_PORT,
           secure: env.EMAIL.SMTP_SECURE,
+          pool: true,
+          maxConnections: 3,
           auth: {
             user: env.EMAIL.SMTP_USER,
             pass: cleanPass
@@ -122,6 +126,9 @@ class EmailService {
     console.log(`OTP Code: [ ${otp} ]`);
     console.log('=====================================================\n');
 
+    if (!this.transporter && this.initPromise) {
+      await this.initPromise;
+    }
     if (!this.transporter) {
       await this.initTransporter();
     }
@@ -137,8 +144,15 @@ class EmailService {
           to,
           subject,
           text: `Your Assignment Hub verification OTP is ${otp}. Valid for ${env.OTP.EXPIRY_MINUTES} minutes.`,
-          html
+          html,
+          headers: {
+            'X-Priority': '1 (Highest)',
+            'X-MSMail-Priority': 'High',
+            'Importance': 'High'
+          }
         });
+
+        console.log(`[EMAIL SERVICE SUCCESS] OTP email delivered to ${to}. MessageId: ${info.messageId}`);
 
         const previewUrl = nodemailer.getTestMessageUrl(info);
         if (previewUrl) {

@@ -245,7 +245,7 @@ export function SignupPage() {
                 <p className="text-sm text-[#25233A]/70">
                   {step === 1
                     ? 'Step 1 of 2: Fill your basic info. 6-digit Email OTP follows.'
-                    : `Enter the 6-digit verification code sent to ${email}`}
+                    : `Enter the 6-digit verification code sent to ${email}. (Please check your Spam or Promotions folder if not in Primary Inbox)`}
                 </p>
               </div>
 
