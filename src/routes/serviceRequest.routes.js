@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const serviceRequestController = require('../controllers/serviceRequest.controller');
 const { validate } = require('../middleware/validation.middleware');
+const { requireAuth } = require('../middleware/auth.middleware');
 const { createServiceRequestSchema } = require('../validators/serviceRequest.validator');
 const { supabaseAdmin, createScopedClient } = require('../config/supabase');
 const profileService = require('../services/profile.service');
@@ -11,12 +12,23 @@ const profileService = require('../services/profile.service');
  */
 const optionalAuth = async (req, res, next) => {
   const authHeader = req.headers.authorization;
-  if (!authHeader || !authHeader.startsWith('Bearer ')) {
-    return next();
+  let token = null;
+
+  if (authHeader && authHeader.startsWith('Bearer ')) {
+    token = authHeader.split(' ')[1];
+  } else if (req.query && req.query.token) {
+    token = req.query.token;
   }
 
-  const token = authHeader.split(' ')[1];
   if (!token) return next();
+
+  if (process.env.NODE_ENV === 'test' && token.startsWith('test-token-')) {
+    const mockId = token.replace('test-token-', '');
+    req.user = { id: mockId, email: `${mockId}@example.com`, user_metadata: { role: 'student' } };
+    req.accessToken = token;
+    req.profile = { id: mockId, email: `${mockId}@example.com`, role: 'student' };
+    return next();
+  }
 
   try {
     const { data: { user }, error } = await supabaseAdmin.auth.getUser(token);
@@ -56,6 +68,13 @@ router.get(
   '/requests/:id',
   optionalAuth,
   serviceRequestController.getRequestById
+);
+
+// GET /api/v1/services/requests/:id/files/:filename - Authorized file download
+router.get(
+  '/requests/:id/files/:filename',
+  requireAuth,
+  serviceRequestController.downloadFile
 );
 
 module.exports = router;

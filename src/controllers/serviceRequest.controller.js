@@ -73,6 +73,24 @@ class ServiceRequestController {
       next(error);
     }
   }
+
+  /**
+   * GET /api/v1/services/requests/:id/files/:filename
+   * Securely stream/download an authorized request file
+   */
+  async downloadFile(req, res, next) {
+    try {
+      const user = req.user;
+      const { id, filename } = req.params;
+
+      const fileData = await serviceRequestService.getAuthorizedFile(id, filename, user);
+
+      // Securely serve file as attachment
+      return res.download(fileData.filePath, fileData.downloadName);
+    } catch (error) {
+      next(error);
+    }
+  }
 }
 
 module.exports = new ServiceRequestController();

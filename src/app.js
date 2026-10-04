@@ -55,7 +55,7 @@ app.use(env.API_PREFIX, routes);
 
 // SPA client-side routing fallback (for non-API GET requests)
 app.use((req, res, next) => {
-  if (req.method !== 'GET' || req.path.startsWith('/api')) {
+  if (req.method !== 'GET' || req.path.startsWith('/api') || req.path.startsWith('/uploads')) {
     return next();
   }
   const reactIndex = path.join(__dirname, '../frontend/dist/index.html');

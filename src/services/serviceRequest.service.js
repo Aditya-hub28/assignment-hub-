@@ -5,7 +5,7 @@ const inquiryService = require('./inquiry.service');
 
 const DATA_DIR = path.resolve(process.cwd(), 'data');
 const REQUESTS_FILE = path.join(DATA_DIR, 'service_requests.json');
-const UPLOADS_DIR = path.resolve(process.cwd(), 'public', 'uploads', 'service-requests');
+const UPLOADS_DIR = path.resolve(process.cwd(), 'storage', 'uploads', 'service-requests');
 
 // Ensure data directories exist
 if (!fs.existsSync(DATA_DIR)) {
@@ -100,7 +100,7 @@ const processFiles = (files = [], requestId) => {
         const fileNameOnDisk = `${Date.now()}_${idx}_${safeName}`;
         const filePath = path.join(targetDir, fileNameOnDisk);
         fs.writeFileSync(filePath, buffer);
-        relativeUrl = `/uploads/service-requests/${requestId}/${fileNameOnDisk}`;
+        relativeUrl = `/api/v1/services/requests/${requestId}/files/${fileNameOnDisk}`;
       } catch (err) {
         console.warn(`[WARN] Could not write file ${file.name} to disk:`, err.message);
       }
@@ -239,6 +239,71 @@ class ServiceRequestService {
     }
 
     return req;
+  }
+
+  /**
+   * Securely retrieve authorized file path for a service request
+   */
+  async getAuthorizedFile(requestId, filename, user) {
+    if (!user) {
+      const err = new Error('Authentication required to access private request files.');
+      err.status = 401;
+      err.code = 'UNAUTHORIZED';
+      throw err;
+    }
+
+    const all = loadLocalRequests();
+    const request = all.find((r) => r.id === requestId);
+    if (!request) {
+      const err = new Error(`Service request "${requestId}" was not found.`);
+      err.status = 404;
+      err.code = 'NOT_FOUND';
+      throw err;
+    }
+
+    // Check ownership: Must match either userId or userEmail (or admin role)
+    const isOwner = (request.userId && request.userId === user.id) ||
+                    (request.userEmail && user.email && request.userEmail.toLowerCase() === user.email.toLowerCase()) ||
+                    (user.role === 'admin' || user.user_metadata?.role === 'admin');
+
+    if (!isOwner) {
+      const err = new Error('Access denied. You do not have permission to view or download this file.');
+      err.status = 403;
+      err.code = 'FORBIDDEN';
+      throw err;
+    }
+
+    // Path traversal defense
+    const safeFileName = path.basename(filename);
+    const targetDir = path.join(UPLOADS_DIR, requestId);
+    const resolvedPath = path.resolve(targetDir, safeFileName);
+
+    if (!resolvedPath.startsWith(path.resolve(targetDir))) {
+      const err = new Error('Invalid file path traversal detected.');
+      err.status = 400;
+      err.code = 'BAD_REQUEST';
+      throw err;
+    }
+
+    if (!fs.existsSync(resolvedPath)) {
+      const err = new Error(`File "${safeFileName}" was not found for this request.`);
+      err.status = 404;
+      err.code = 'NOT_FOUND';
+      throw err;
+    }
+
+    // Identify original clean filename if recorded
+    const originalFile = (request.files || []).find((f) => {
+      const diskPart = f.url?.split('/').pop();
+      return diskPart === safeFileName || f.name === safeFileName;
+    });
+
+    const downloadName = originalFile?.name || safeFileName.replace(/^\d+_\d+_/, '');
+
+    return {
+      filePath: resolvedPath,
+      downloadName
+    };
   }
 }
 

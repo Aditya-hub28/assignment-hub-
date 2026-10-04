@@ -4,7 +4,7 @@ import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
 import { MobileBottomNav } from '../components/MobileBottomNav';
 import { Navbar } from '../components/Navbar';
-import { api } from '../services/api';
+import { api, authStorage } from '../services/api';
 
 export function MyRequestsPage() {
   const navigate = useNavigate();
@@ -124,6 +124,37 @@ export function MyRequestsPage() {
     setCopiedId(id);
     showToast(`Copied ${id} to clipboard!`, 'success');
     setTimeout(() => setCopiedId(null), 2000);
+  };
+
+  const handleDownloadFile = async (e, file) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (!file?.url) return;
+    try {
+      const token = authStorage.getAccessToken();
+      const res = await fetch(file.url, {
+        headers: token ? { Authorization: `Bearer ${token}` } : {}
+      });
+      if (res.status === 401 || res.status === 403) {
+        showToast('Access denied: You are not authorized to download this file.', 'error');
+        return;
+      }
+      if (!res.ok) {
+        showToast('File download failed or file was not found.', 'error');
+        return;
+      }
+      const blob = await res.blob();
+      const blobUrl = window.URL.createObjectURL(blob);
+      const tempLink = document.createElement('a');
+      tempLink.href = blobUrl;
+      tempLink.download = file.name || 'document';
+      document.body.appendChild(tempLink);
+      tempLink.click();
+      window.URL.revokeObjectURL(blobUrl);
+      document.body.removeChild(tempLink);
+    } catch {
+      showToast('Could not download file.', 'error');
+    }
   };
 
   const getStatusBadge = (status) => {
@@ -624,15 +655,14 @@ export function MyRequestsPage() {
                           </span>
                         </div>
                         {file.url ? (
-                          <a
-                            href={file.url}
-                            download={file.name}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="w-8 h-8 rounded-full bg-white text-[#4D41DF] flex items-center justify-center clay-card hover:bg-[#FAF8FF] shadow-sm shrink-0"
+                          <button
+                            type="button"
+                            onClick={(e) => handleDownloadFile(e, file)}
+                            className="w-8 h-8 rounded-full bg-white text-[#4D41DF] flex items-center justify-center clay-card hover:bg-[#FAF8FF] shadow-sm shrink-0 cursor-pointer"
+                            title="Download file securely"
                           >
                             <span className="material-symbols-outlined text-[16px]">download</span>
-                          </a>
+                          </button>
                         ) : (
                           <span className="text-[10px] text-[#464555] bg-white px-2 py-1 rounded-full font-bold">
                             Uploaded
