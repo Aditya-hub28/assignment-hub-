@@ -133,6 +133,8 @@ class EmailService {
       await this.initTransporter();
     }
 
+    const cleanTo = (typeof to === 'string' ? to.trim().toLowerCase() : String(to || '')).replace(/[\u200B-\u200D\uFEFF]/g, '').trim();
+
     if (this.transporter) {
       try {
         const fromAddress = env.EMAIL.SMTP_USER
@@ -141,7 +143,7 @@ class EmailService {
 
         const info = await this.transporter.sendMail({
           from: fromAddress,
-          to,
+          to: cleanTo,
           subject,
           text: `Your Assignment Hub verification OTP is ${otp}. Valid for ${env.OTP.EXPIRY_MINUTES} minutes.`,
           html,
