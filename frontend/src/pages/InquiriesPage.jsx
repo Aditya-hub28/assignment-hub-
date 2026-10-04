@@ -38,16 +38,33 @@ export function InquiriesPage() {
     if (!silent) setIsLoading(true);
     try {
       const res = await api.inquiries.getInquiries();
-      const list = res?.data || [];
+      let list = res?.data || [];
       setInquiries(list);
       setError(null);
 
       // Auto-select logic
-      setSelectedInquiryId((prevSelected) => {
-        if (queryRequestId) {
-          const match = list.find((i) => i.requestId === queryRequestId || i.id === queryRequestId);
-          if (match) return match.id;
+      if (queryRequestId) {
+        let match = list.find((i) => i.requestId === queryRequestId || i.id === queryRequestId);
+        if (!match) {
+          try {
+            const single = await api.inquiries.getInquiryById(queryRequestId);
+            if (single?.data) {
+              match = single.data;
+              list = [single.data, ...list.filter((x) => x.id !== single.data.id)];
+              setInquiries(list);
+            }
+          } catch (e) {
+            console.warn('Inquiry lookup fallback note:', e.message);
+          }
         }
+        if (match) {
+          setSelectedInquiryId(match.id);
+          setShowMobileChat(true);
+          return;
+        }
+      }
+
+      setSelectedInquiryId((prevSelected) => {
         if (prevSelected && list.some((i) => i.id === prevSelected)) {
           return prevSelected;
         }
@@ -72,13 +89,17 @@ export function InquiriesPage() {
     return () => clearInterval(pollInterval);
   }, [user]);
 
-  // If queryRequestId changes dynamically in URL, select it
+  // If queryRequestId changes dynamically in URL, select it and reset filters
   useEffect(() => {
-    if (queryRequestId && inquiries.length > 0) {
-      const match = inquiries.find((i) => i.requestId === queryRequestId || i.id === queryRequestId);
-      if (match) {
-        setSelectedInquiryId(match.id);
-        setShowMobileChat(true);
+    if (queryRequestId) {
+      setActiveTab('all');
+      setSearchQuery('');
+      if (inquiries.length > 0) {
+        const match = inquiries.find((i) => i.requestId === queryRequestId || i.id === queryRequestId);
+        if (match) {
+          setSelectedInquiryId(match.id);
+          setShowMobileChat(true);
+        }
       }
     }
   }, [queryRequestId, inquiries]);

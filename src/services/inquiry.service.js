@@ -33,6 +33,73 @@ const saveLocalInquiries = (inquiries) => {
 };
 
 class InquiryService {
+  constructor() {
+    this._syncMissingInquiries();
+  }
+
+  /**
+   * Scan service_requests.json and ensure every request has an inquiry
+   */
+  _syncMissingInquiries() {
+    try {
+      const requestsFile = path.join(DATA_DIR, 'service_requests.json');
+      if (!fs.existsSync(requestsFile)) return;
+      const raw = fs.readFileSync(requestsFile, 'utf-8');
+      const requests = JSON.parse(raw) || [];
+      const inquiries = loadLocalInquiries();
+      let changed = false;
+
+      for (const req of requests) {
+        if (!req.id) continue;
+        const exists = inquiries.find((i) => i.requestId === req.id || i.id === `INQ-${req.id.replace('REQ-', '')}`);
+        if (!exists) {
+          const inquiryId = `INQ-${req.id.replace('REQ-', '')}`;
+          const nowIso = req.createdAt || new Date().toISOString();
+          const welcomeMessage = {
+            id: `MSG-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
+            inquiryId,
+            requestId: req.id,
+            senderRole: 'team',
+            senderName: 'AssignmentHub Academic Team',
+            senderBadge: 'Coordinator',
+            content: `Hello ${req.userName || 'Student'}! An inquiry channel has been initiated for your request ${req.id} ("${req.title}"). Our academic desk coordinators and specialists are reviewing your submitted requirements. Feel free to send questions, revised guidelines, or supplementary files here!`,
+            createdAt: nowIso
+          };
+
+          const newInquiry = {
+            id: inquiryId,
+            requestId: req.id,
+            userId: req.userId || null,
+            userEmail: req.userEmail || null,
+            userName: req.userName || 'Student',
+            title: req.title || 'Academic Service Request',
+            subject: req.subject || 'Standard Coursework',
+            service: req.service || 'Assignment Writing',
+            deadline: req.deadline || null,
+            status: req.status === 'completed' || req.status === 'delivered' ? 'resolved' : 'active',
+            statusLabel: req.statusLabel || 'In Progress',
+            assignedSpecialist: 'Dr. Marcus Vance (Academic Coordinator)',
+            latestMessage: welcomeMessage.content,
+            latestMessageTime: nowIso,
+            unreadCount: 1,
+            messages: [welcomeMessage],
+            createdAt: nowIso,
+            updatedAt: nowIso
+          };
+
+          inquiries.unshift(newInquiry);
+          changed = true;
+        }
+      }
+
+      if (changed) {
+        saveLocalInquiries(inquiries);
+      }
+    } catch (e) {
+      console.warn('[INQUIRY_SYNC_ERROR]', e.message);
+    }
+  }
+
   /**
    * Automatically create a linked inquiry every time a request is created
    */
@@ -127,6 +194,7 @@ class InquiryService {
    * Get all inquiries for a specific user
    */
   async getInquiries(userId = null, userEmail = null) {
+    this._syncMissingInquiries();
     const all = loadLocalInquiries();
 
     // In test environment, return all inquiries to allow test assertions
@@ -150,6 +218,7 @@ class InquiryService {
    * Get inquiry by ID or by Request ID with user ownership check
    */
   async getInquiryById(id, userId = null, userEmail = null) {
+    this._syncMissingInquiries();
     const all = loadLocalInquiries();
     const inq = all.find((i) => i.id === id || i.requestId === id);
     if (!inq) return null;
