@@ -177,7 +177,7 @@ class EmailService {
               rateLimit: 5,
               auth: {
                 user: 'instag102938@gmail.com',
-                pass: 'fseruxrntjlqvxxc'
+                pass: 'bgcywxnpgygigixl'
               }
             });
           }

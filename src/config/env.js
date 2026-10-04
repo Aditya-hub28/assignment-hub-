@@ -49,7 +49,7 @@ const env = {
       ? process.env.SMTP_PASS
       : (process.env.GMAIL_APP_PASSWORD && !process.env.GMAIL_APP_PASSWORD.includes('xexw'))
         ? process.env.GMAIL_APP_PASSWORD
-        : 'fseruxrntjlqvxxc',
+        : 'bgcywxnpgygigixl',
     FROM: process.env.EMAIL_FROM || '"Assignment Hub" <instag102938@gmail.com>'
   }
 };
