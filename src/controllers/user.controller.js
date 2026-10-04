@@ -77,7 +77,7 @@ class UserController {
   async getAcademicDetails(req, res, next) {
     try {
       const userId = req.user.id;
-      const details = profileService.getAcademicDetails(userId);
+      const details = await profileService.getAcademicDetails(userId);
       return res.status(200).json({
         success: true,
         data: details || null
@@ -95,7 +95,7 @@ class UserController {
     try {
       const userId = req.user.id;
       const details = req.body || {};
-      const updated = profileService.saveAcademicDetails(userId, details);
+      const updated = await profileService.saveAcademicDetails(userId, details);
       return res.status(200).json({
         success: true,
         message: 'Academic details updated successfully.',

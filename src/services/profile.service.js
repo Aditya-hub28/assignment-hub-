@@ -1,32 +1,6 @@
-const fs = require('fs');
-const path = require('path');
 const { supabaseAdmin } = require('../config/supabase');
 const env = require('../config/env');
 const { ROLES } = require('../constants/roles');
-
-const DATA_DIR = path.resolve(process.cwd(), 'data');
-const ACADEMICS_FILE = path.join(DATA_DIR, 'academic_profiles.json');
-
-const loadAcademics = () => {
-  try {
-    if (!fs.existsSync(ACADEMICS_FILE)) return {};
-    const raw = fs.readFileSync(ACADEMICS_FILE, 'utf-8');
-    return JSON.parse(raw) || {};
-  } catch {
-    return {};
-  }
-};
-
-const saveAcademics = (data) => {
-  try {
-    if (!fs.existsSync(DATA_DIR)) {
-      fs.mkdirSync(DATA_DIR, { recursive: true });
-    }
-    fs.writeFileSync(ACADEMICS_FILE, JSON.stringify(data, null, 2), 'utf-8');
-  } catch (err) {
-    console.error('[PROFILE_SERVICE] Error saving academic profiles:', err.message);
-  }
-};
 
 class ProfileService {
   /**
@@ -132,27 +106,73 @@ class ProfileService {
   /**
    * Get student's academic details (branch, year, semester, etc.)
    */
-  getAcademicDetails(userId) {
+  async getAcademicDetails(userId) {
     if (!userId) return null;
-    const all = loadAcademics();
-    return all[userId] || null;
+    try {
+      const { data, error } = await supabaseAdmin
+        .from('academic_profiles')
+        .select('*')
+        .eq('user_id', userId)
+        .maybeSingle();
+
+      if (error || !data) return null;
+
+      return {
+        studentName: data.student_name,
+        branch: data.branch,
+        year: data.year,
+        semester: data.semester,
+        division: data.division,
+        rollNo: data.roll_no,
+        createdAt: data.created_at,
+        updatedAt: data.updated_at
+      };
+    } catch (err) {
+      console.error('[PROFILE_SERVICE] Error reading academic details from DB:', err.message);
+      return null;
+    }
   }
 
   /**
    * Save student's academic details
    */
-  saveAcademicDetails(userId, details = {}) {
+  async saveAcademicDetails(userId, details = {}) {
     if (!userId) {
       throw new Error('User ID is required to save academic details.');
     }
-    const all = loadAcademics();
-    all[userId] = {
-      ...(all[userId] || {}),
-      ...details,
-      updatedAt: new Date().toISOString()
+
+    const payload = {
+      user_id: userId,
+      student_name: details.studentName || details.student_name || null,
+      branch: details.branch || null,
+      year: details.year || null,
+      semester: details.semester || null,
+      division: details.division || null,
+      roll_no: details.rollNo || details.roll_no || null,
+      updated_at: new Date().toISOString()
     };
-    saveAcademics(all);
-    return all[userId];
+
+    const { data, error } = await supabaseAdmin
+      .from('academic_profiles')
+      .upsert(payload, { onConflict: 'user_id' })
+      .select()
+      .single();
+
+    if (error) {
+      console.error('[PROFILE_SERVICE] Error saving academic details in DB:', error.message);
+      throw new Error(`Failed to save academic details: ${error.message}`);
+    }
+
+    return {
+      studentName: data.student_name,
+      branch: data.branch,
+      year: data.year,
+      semester: data.semester,
+      division: data.division,
+      rollNo: data.roll_no,
+      createdAt: data.created_at,
+      updatedAt: data.updated_at
+    };
   }
 }
 
