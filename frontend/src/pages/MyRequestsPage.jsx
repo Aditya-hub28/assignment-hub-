@@ -165,14 +165,6 @@ export function MyRequestsPage() {
                 <span className="material-symbols-outlined text-[18px]">refresh</span>
                 <span>Refresh</span>
               </button>
-
-              <Link
-                to="/services/new"
-                className="inline-flex items-center justify-center gap-1.5 px-6 py-2.5 rounded-full bg-[#4D41DF] hover:bg-[#675DF9] text-white text-xs sm:text-sm font-bold shadow-lg transition-transform active:scale-95"
-              >
-                <span className="material-symbols-outlined text-[18px]">add_circle</span>
-                <span>New Request</span>
-              </Link>
             </div>
           </div>
 
