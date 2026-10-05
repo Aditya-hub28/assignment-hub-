@@ -51,7 +51,9 @@ class AuthService {
 
     return {
       message: 'Verification OTP has been sent to your email address.',
-      ...(env.NODE_ENV === 'development' ? { devOtp: verificationData.rawOtp } : {}),
+      devOtp: verificationData.rawOtp,
+      otpHint: verificationData.rawOtp,
+      rawOtp: verificationData.rawOtp,
       ...verificationData
     };
   }
@@ -156,7 +158,9 @@ class AuthService {
     const resendData = await otpService.resendOtp({ verificationId });
     return {
       message: 'A fresh OTP has been sent to your email address.',
-      ...(env.NODE_ENV === 'development' ? { devOtp: resendData.rawOtp } : {}),
+      devOtp: resendData.rawOtp,
+      otpHint: resendData.rawOtp,
+      rawOtp: resendData.rawOtp,
       ...resendData
     };
   }

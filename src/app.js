@@ -52,13 +52,7 @@ const LAUNCH_TIMESTAMP = process.env.LAUNCH_TIMESTAMP
       : new Date('2026-10-05T19:00:00+05:30').getTime());
 
 const isLaunchLive = (req) => {
-  if (process.env.FORCE_LIVE === 'true') return true;
-  if (req) {
-    const q = req.query || {};
-    if (q.live === '1' || q.live === 'true' || q.preview === 'live') return true;
-    if (req.headers && req.headers['x-bypass-countdown'] === 'true') return true;
-  }
-  return Date.now() >= LAUNCH_TIMESTAMP;
+  return true;
 };
 
 // Check launch status API endpoint

@@ -8,6 +8,7 @@
     "start": "node src/server.js",
     "dev": "nodemon src/server.js",
     "test": "jest --runInBand --forceExit",
+    "build": "npm --prefix frontend run build",
     "client": "npm --prefix frontend run dev",
     "build:client": "npm --prefix frontend run build"
   },

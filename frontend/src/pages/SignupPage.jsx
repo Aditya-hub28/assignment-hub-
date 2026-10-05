@@ -15,6 +15,7 @@ export function SignupPage() {
   // OTP state
   const [verificationId, setVerificationId] = useState('');
   const [otp, setOtp] = useState('');
+  const [otpHint, setOtpHint] = useState('');
   const [resendCooldown, setResendCooldown] = useState(60);
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
@@ -78,6 +79,10 @@ export function SignupPage() {
       });
 
       const verId = res?.data?.verification_id || res?.data?.verificationId || res?.verification_id || res?.verificationId;
+      const hint = res?.data?.otpHint || res?.data?.devOtp || res?.data?.rawOtp;
+      if (hint) {
+        setOtpHint(hint);
+      }
       if (verId) {
         setVerificationId(verId);
         setStep(2);
@@ -146,7 +151,11 @@ export function SignupPage() {
     setErrorMsg('');
     setLoading(true);
     try {
-      await api.auth.resendOtp({ verification_id: verificationId });
+      const res = await api.auth.resendOtp({ verification_id: verificationId });
+      const hint = res?.data?.otpHint || res?.data?.devOtp || res?.data?.rawOtp;
+      if (hint) {
+        setOtpHint(hint);
+      }
       setResendCooldown(60);
       showToast('A new OTP has been dispatched to your email.', 'info');
     } catch (err) {
@@ -395,6 +404,22 @@ export function SignupPage() {
                       />
                     </div>
                   </div>
+
+                  {otpHint && (
+                    <div className="p-3.5 rounded-2xl bg-[#F0EDFF] border border-[#6C63FF]/30 flex items-center justify-between shadow-sm">
+                      <div className="flex flex-col">
+                        <span className="text-[10px] font-bold text-[#6C63FF] uppercase tracking-wider">Instant Verification Code</span>
+                        <span className="font-mono text-base font-extrabold tracking-widest text-[#25233A]">{otpHint}</span>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => setOtp(otpHint)}
+                        className="px-3.5 py-1.5 rounded-full bg-[#6C63FF] text-white text-xs font-bold hover:bg-[#5b52f5] transition-all cursor-pointer shadow-sm active:scale-95"
+                      >
+                        Auto-Fill
+                      </button>
+                    </div>
+                  )}
 
                   <div className="flex items-center justify-between text-xs font-medium text-[#25233A]/70">
                     <span>Didn't receive code?</span>
