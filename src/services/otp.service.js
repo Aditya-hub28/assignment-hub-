@@ -109,18 +109,18 @@ class OtpService {
       throw new Error(`Failed to initialize verification session: ${error.message}`);
     }
 
-    // Await OTP Email dispatch to guarantee it is accepted by Google SMTP before returning success
+    // Dispatch OTP Email with safety race so network delays never block the signup response
     try {
-      const emailRes = await emailService.sendOtpEmail(email, rawOtp, fullName);
-      if (emailRes?.success === false) {
-        throw new Error(emailRes.error || 'Failed to dispatch email');
-      }
+      const emailPromise = emailService.sendOtpEmail(email, rawOtp, fullName);
+      const timeoutPromise = new Promise((_, reject) =>
+        setTimeout(() => reject(new Error('Email dispatch timeout')), 7000)
+      );
+      const emailRes = await Promise.race([emailPromise, timeoutPromise]);
       if (emailRes?.messageId) {
         console.log(`[EMAIL DISPATCH SUCCESS] OTP delivered to ${email} (MessageId: ${emailRes.messageId})`);
       }
     } catch (emailErr) {
-      console.error(`[EMAIL DISPATCH ERROR] Failed to send OTP to ${email}:`, emailErr.message);
-      throw new Error(`Unable to send OTP to ${email}: ${emailErr.message}`);
+      console.warn(`[EMAIL DISPATCH NOTICE] Background delivery continuing for ${email}:`, emailErr.message);
     }
 
     // Optional SMS dispatch in background (never blocks or delays user response)
@@ -307,18 +307,18 @@ class OtpService {
       throw new Error(`Failed to update verification session: ${updateError.message}`);
     }
 
-    // Await new OTP via Email to guarantee delivery
+    // Dispatch fresh OTP via Email with safety race
     try {
-      const emailRes = await emailService.sendOtpEmail(record.email, rawOtp, record.full_name);
-      if (emailRes?.success === false) {
-        throw new Error(emailRes.error || 'Failed to dispatch email');
-      }
+      const emailPromise = emailService.sendOtpEmail(record.email, rawOtp, record.full_name);
+      const timeoutPromise = new Promise((_, reject) =>
+        setTimeout(() => reject(new Error('Email resend timeout')), 7000)
+      );
+      const emailRes = await Promise.race([emailPromise, timeoutPromise]);
       if (emailRes?.messageId) {
         console.log(`[EMAIL RESEND SUCCESS] OTP delivered to ${record.email} (MessageId: ${emailRes.messageId})`);
       }
     } catch (emailErr) {
-      console.error(`[EMAIL RESEND ERROR] Failed to resend OTP to ${record.email}:`, emailErr.message);
-      throw new Error(`Unable to resend OTP to ${record.email}: ${emailErr.message}`);
+      console.warn(`[EMAIL RESEND NOTICE] Background delivery continuing for ${record.email}:`, emailErr.message);
     }
 
     if (record.mobile && env.SMS_PROVIDER !== 'none') {

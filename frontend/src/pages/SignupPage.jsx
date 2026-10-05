@@ -20,7 +20,7 @@ export function SignupPage() {
   const [errorMsg, setErrorMsg] = useState('');
 
   const { showToast } = useToast();
-  const { refreshProfile } = useAuth();
+  const { setSession, login: authLogin } = useAuth();
   const navigate = useNavigate();
 
   // Cooldown countdown for OTP
@@ -115,15 +115,13 @@ export function SignupPage() {
       });
 
       if (res?.data?.session) {
-        authStorage.setSession(res.data);
-        await refreshProfile();
+        setSession(res.data);
         showToast('Registration successful! Welcome to Assignment Hub.', 'success');
         navigate('/dashboard');
       } else {
         // Fallback: If session not included in response, login automatically with form credentials
         try {
-          await api.auth.login({ email: email.trim(), password });
-          await refreshProfile();
+          await authLogin(email.trim(), password);
           showToast('Registration successful! Welcome to Assignment Hub.', 'success');
           navigate('/dashboard');
         } catch {

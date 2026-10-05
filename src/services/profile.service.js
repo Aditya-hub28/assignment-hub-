@@ -28,6 +28,46 @@ class ProfileService {
       .single();
 
     if (error || !profile) {
+      // Auto-heal: If user is authenticated in Supabase Auth but profile row is missing
+      try {
+        const { data: authUserData } = await supabaseAdmin.auth.admin.getUserById(userId);
+        if (authUserData?.user) {
+          const u = authUserData.user;
+          const meta = u.user_metadata || {};
+          const fullName = meta.full_name || meta.fullName || u.email.split('@')[0];
+          const mobile = meta.mobile || null;
+          const role = meta.role || ROLES.STUDENT;
+
+          const { data: createdProf, error: createErr } = await supabaseAdmin
+            .from('profiles')
+            .upsert({
+              id: userId,
+              full_name: fullName,
+              email: u.email,
+              mobile: mobile,
+              role: role,
+              college_id: env.DEFAULT_COLLEGE_ID
+            })
+            .select()
+            .single();
+
+          if (createdProf && !createErr) {
+            return {
+              id: createdProf.id,
+              fullName: createdProf.full_name,
+              email: createdProf.email,
+              mobile: createdProf.mobile,
+              role: createdProf.role,
+              college: null,
+              createdAt: createdProf.created_at,
+              updatedAt: createdProf.updated_at
+            };
+          }
+        }
+      } catch (healErr) {
+        console.warn('[PROFILE AUTO-HEAL FAILED]:', healErr.message);
+      }
+
       const customError = new Error('User profile not found.');
       customError.statusCode = 404;
       customError.code = 'PROFILE_NOT_FOUND';

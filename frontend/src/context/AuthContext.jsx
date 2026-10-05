@@ -11,18 +11,33 @@ export function AuthProvider({ children }) {
   const [isLoading, setIsLoading] = useState(true);
   const { showToast } = useToast();
 
+  const setSession = (sessionData = {}) => {
+    authStorage.setSession(sessionData);
+    const session = sessionData.session || sessionData;
+    const token = session?.accessToken || session?.access_token || authStorage.getAccessToken();
+    const authUser = sessionData.user || authStorage.getUser();
+    const userProfile = sessionData.profile || authStorage.getProfile();
+
+    if (token) setAccessToken(token);
+    if (authUser) setUser(authUser);
+    if (userProfile) setProfile(userProfile);
+  };
+
   const fetchLiveProfile = useCallback(async () => {
-    if (!authStorage.getAccessToken()) {
+    const token = authStorage.getAccessToken();
+    if (!token) {
       setIsLoading(false);
       return;
     }
+    setAccessToken(token);
+    setUser(authStorage.getUser());
     try {
       const res = await api.user.getProfile();
       if (res?.data?.profile) {
         setProfile(res.data.profile);
         authStorage.setSession({
           session: {
-            accessToken: authStorage.getAccessToken(),
+            accessToken: token,
             refreshToken: authStorage.getRefreshToken()
           },
           user: authStorage.getUser(),
@@ -47,10 +62,7 @@ export function AuthProvider({ children }) {
     const res = await api.auth.login({ email, password });
     if (res?.data?.session) {
       const { session, user: authUser, profile: userProfile } = res.data;
-      authStorage.setSession({ session, user: authUser, profile: userProfile });
-      setAccessToken(session.accessToken);
-      setUser(authUser);
-      setProfile(userProfile);
+      setSession({ session, user: authUser, profile: userProfile });
       showToast('Logged in successfully! Welcome back.', 'success');
       return res.data;
     }
@@ -102,6 +114,7 @@ export function AuthProvider({ children }) {
         isLoading,
         login,
         logout,
+        setSession,
         updateProfile,
         refreshProfile: fetchLiveProfile
       }}

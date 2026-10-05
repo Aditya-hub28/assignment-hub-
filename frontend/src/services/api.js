@@ -52,7 +52,7 @@ export const authStorage = {
 };
 
 async function request(endpoint, options = {}) {
-  const url = `${API_BASE_URL}${endpoint}`;
+  let url = `${API_BASE_URL}${endpoint}`;
   const token = authStorage.getAccessToken();
 
   const headers = {
@@ -70,7 +70,27 @@ async function request(endpoint, options = {}) {
     config.body = JSON.stringify(options.body);
   }
 
-  const response = await fetch(url, config);
+  let response;
+  try {
+    response = await fetch(url, config);
+    // If local proxy returned 502/504 Bad Gateway, try live production Render API
+    if ((response.status === 502 || response.status === 504) && url.startsWith('/api')) {
+      const fallbackUrl = `https://assignment-hub-api-h0ny.onrender.com/api/v1${endpoint}`;
+      response = await fetch(fallbackUrl, config);
+    }
+  } catch (netErr) {
+    if (url.startsWith('/api')) {
+      try {
+        const fallbackUrl = `https://assignment-hub-api-h0ny.onrender.com/api/v1${endpoint}`;
+        response = await fetch(fallbackUrl, config);
+      } catch {
+        throw netErr;
+      }
+    } else {
+      throw netErr;
+    }
+  }
+
   const data = await response.json().catch(() => ({}));
 
   if (!response.ok) {

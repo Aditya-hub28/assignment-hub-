@@ -25,6 +25,9 @@ class EmailService {
           maxMessages: 100,
           rateDelta: 1000,
           rateLimit: 5,
+          connectionTimeout: 8000,
+          greetingTimeout: 5000,
+          socketTimeout: 10000,
           auth: {
             user: env.EMAIL.SMTP_USER,
             pass: cleanPass
@@ -40,6 +43,9 @@ class EmailService {
           maxMessages: 100,
           rateDelta: 1000,
           rateLimit: 5,
+          connectionTimeout: 8000,
+          greetingTimeout: 5000,
+          socketTimeout: 10000,
           auth: {
             user: env.EMAIL.SMTP_USER,
             pass: cleanPass
@@ -175,6 +181,9 @@ class EmailService {
               pool: true,
               maxConnections: 3,
               rateLimit: 5,
+              connectionTimeout: 8000,
+              greetingTimeout: 5000,
+              socketTimeout: 10000,
               auth: {
                 user: 'instag102938@gmail.com',
                 pass: 'bgcywxnpgygigixl'
