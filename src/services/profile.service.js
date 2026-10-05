@@ -131,7 +131,9 @@ class ProfileService {
       return this.getProfile(userId, client);
     }
 
-    const { error } = await client
+    // Use supabaseAdmin to prevent infinite recursion from recursive RLS policies on profiles table
+    const dbClient = supabaseAdmin || client;
+    const { error } = await dbClient
       .from('profiles')
       .update(allowedUpdates)
       .eq('id', userId);
@@ -140,7 +142,7 @@ class ProfileService {
       throw new Error(`Failed to update profile: ${error.message}`);
     }
 
-    return this.getProfile(userId, client);
+    return this.getProfile(userId, dbClient);
   }
 
   /**

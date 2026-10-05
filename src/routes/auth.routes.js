@@ -6,6 +6,7 @@ const { requireAuth } = require('../middleware/auth.middleware');
 const { authLimiter, otpRequestLimiter } = require('../middleware/rateLimiter.middleware');
 const {
   registerInitiateSchema,
+  registerSchema,
   registerVerifyOtpSchema,
   resendOtpSchema,
   loginSchema,
@@ -13,7 +14,15 @@ const {
   resetPasswordSchema
 } = require('../validators/auth.validator');
 
-// Step 1: Initiate Registration & send mobile OTP
+// Direct OTP-Free Registration (Primary)
+router.post(
+  ['/register', '/signup'],
+  authLimiter,
+  validate(registerSchema),
+  authController.register
+);
+
+// Step 1: Initiate Registration & send mobile OTP (Backward compatible)
 router.post(
   '/register/initiate',
   otpRequestLimiter,

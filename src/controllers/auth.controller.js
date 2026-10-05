@@ -2,6 +2,29 @@ const authService = require('../services/auth.service');
 
 class AuthController {
   /**
+   * POST /api/v1/auth/register
+   * Direct OTP-Free Registration: Creates user, profile & issues session
+   */
+  async register(req, res, next) {
+    try {
+      const { full_name, email, mobile, password } = req.body;
+      const result = await authService.register({
+        fullName: full_name,
+        email,
+        mobile,
+        password
+      });
+
+      return res.status(201).json({
+        success: true,
+        data: result
+      });
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  /**
    * POST /api/v1/auth/register/initiate
    * Validates full_name, email, mobile, password and sends mobile OTP
    */

@@ -143,6 +143,44 @@ describe('Assignment Hub Backend - Authentication & Validation Test Suite', () =
     });
   });
 
+  describe('POST /api/v1/auth/register - Direct Registration Validation', () => {
+    const basePayload = {
+      full_name: 'Aditya Direct User',
+      email: 'aditya.direct@example.com',
+      mobile: '9876543210'
+    };
+
+    it('should reject direct register with invalid email typo', async () => {
+      const res = await request(app)
+        .post('/api/v1/auth/register')
+        .send({ ...basePayload, email: 'aditya@gamil.com', password: 'Password123' });
+
+      expect(res.status).toBe(400);
+      expect(res.body.success).toBe(false);
+      expect(res.body.error.code).toBe('VALIDATION_ERROR');
+    });
+
+    it('should reject direct register with invalid mobile number', async () => {
+      const res = await request(app)
+        .post('/api/v1/auth/register')
+        .send({ ...basePayload, mobile: '12345', password: 'Password123' });
+
+      expect(res.status).toBe(400);
+      expect(res.body.success).toBe(false);
+      expect(res.body.error.code).toBe('VALIDATION_ERROR');
+    });
+
+    it('should reject direct register with weak password', async () => {
+      const res = await request(app)
+        .post('/api/v1/auth/register')
+        .send({ ...basePayload, password: 'weak' });
+
+      expect(res.status).toBe(400);
+      expect(res.body.success).toBe(false);
+      expect(res.body.error.code).toBe('VALIDATION_ERROR');
+    });
+  });
+
   describe('POST /api/v1/auth/login - Login Validation', () => {
     it('should reject missing email or password', async () => {
       const res = await request(app)

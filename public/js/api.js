@@ -99,6 +99,12 @@ async function apiRequest(endpoint, options = {}) {
 
 const api = {
   auth: {
+    register(data) {
+      return apiRequest('/auth/register', {
+        method: 'POST',
+        body: JSON.stringify(data)
+      });
+    },
     initiateRegistration(data) {
       return apiRequest('/auth/register/initiate', {
         method: 'POST',

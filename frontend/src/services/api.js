@@ -121,6 +121,7 @@ async function request(endpoint, options = {}) {
 
 export const api = {
   auth: {
+    register: (body) => request('/auth/register', { method: 'POST', body }),
     initiateRegister: (body) => request('/auth/register/initiate', { method: 'POST', body }),
     verifyOtp: (body) => request('/auth/register/verify-otp', { method: 'POST', body }),
     resendOtp: (body) => request('/auth/register/resend-otp', { method: 'POST', body }),

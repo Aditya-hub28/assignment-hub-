@@ -7,6 +7,133 @@ const errorMessages = require('../constants/errorMessages');
 
 class AuthService {
   /**
+   * Direct OTP-Free Registration: Creates Supabase Auth user & profile immediately
+   */
+  async register({ fullName, email, mobile, password }) {
+    const normalizedEmail = email.trim().toLowerCase();
+    const normalizedMobile = mobile.trim();
+
+    // 1. Check in parallel if email or mobile are already registered in profiles
+    const [existingEmailRes, existingMobileRes] = await Promise.all([
+      supabaseAdmin
+        .from('profiles')
+        .select('id')
+        .eq('email', normalizedEmail)
+        .maybeSingle(),
+      supabaseAdmin
+        .from('profiles')
+        .select('id')
+        .eq('mobile', normalizedMobile)
+        .maybeSingle()
+    ]);
+
+    if (existingEmailRes?.data) {
+      const customError = new Error(errorMessages.AUTH.EMAIL_ALREADY_EXISTS);
+      customError.statusCode = 409;
+      customError.code = 'EMAIL_ALREADY_EXISTS';
+      throw customError;
+    }
+
+    if (existingMobileRes?.data) {
+      const customError = new Error(errorMessages.AUTH.MOBILE_ALREADY_EXISTS);
+      customError.statusCode = 409;
+      customError.code = 'MOBILE_ALREADY_EXISTS';
+      throw customError;
+    }
+
+    let authUserId;
+
+    // 2. Create user in Supabase Auth via Admin API with auto-confirmed email
+    const { data: newAuthUser, error: authError } = await supabaseAdmin.auth.admin.createUser({
+      email: normalizedEmail,
+      password,
+      email_confirm: true,
+      user_metadata: {
+        full_name: fullName.trim(),
+        mobile: normalizedMobile,
+        role: ROLES.STUDENT
+      }
+    });
+
+    if (authError) {
+      if (authError.message?.toLowerCase().includes('already') || authError.status === 422) {
+        const { data: existingAuthUsers } = await supabaseAdmin.auth.admin.listUsers();
+        const emailConflict = existingAuthUsers?.users?.find(
+          (u) => u.email?.toLowerCase() === normalizedEmail
+        );
+        if (emailConflict) {
+          authUserId = emailConflict.id;
+          await supabaseAdmin.auth.admin.updateUserById(authUserId, {
+            password,
+            email_confirm: true,
+            user_metadata: {
+              full_name: fullName.trim(),
+              mobile: normalizedMobile,
+              role: ROLES.STUDENT
+            }
+          });
+        } else {
+          const customError = new Error(errorMessages.AUTH.EMAIL_ALREADY_EXISTS);
+          customError.statusCode = 409;
+          customError.code = 'EMAIL_ALREADY_EXISTS';
+          throw customError;
+        }
+      } else {
+        throw new Error(`Failed to create authentication user: ${authError.message}`);
+      }
+    } else {
+      authUserId = newAuthUser.user.id;
+    }
+
+    // 3. Create or fetch profile record in database
+    let profile;
+    try {
+      profile = await profileService.createProfile({
+        userId: authUserId,
+        fullName: fullName.trim(),
+        email: normalizedEmail,
+        mobile: normalizedMobile,
+        role: ROLES.STUDENT
+      });
+    } catch (profileErr) {
+      profile = await profileService.getProfile(authUserId);
+    }
+
+    // 4. Generate active session so user is immediately logged in
+    let session = null;
+    try {
+      const { data: signInData } = await supabase.auth.signInWithPassword({
+        email: normalizedEmail,
+        password
+      });
+
+      if (signInData?.session) {
+        session = {
+          accessToken: signInData.session.access_token,
+          refreshToken: signInData.session.refresh_token,
+          expiresIn: signInData.session.expires_in,
+          tokenType: signInData.session.token_type
+        };
+      }
+    } catch (e) {
+      // Sign-in will fall back to manual login if needed
+    }
+
+    return {
+      message: 'Registration completed successfully.',
+      session,
+      user: {
+        id: authUserId,
+        email: normalizedEmail,
+        fullName: fullName.trim(),
+        mobile: normalizedMobile,
+        role: ROLES.STUDENT
+      },
+      profile
+    };
+  }
+
+  /**
    * Step 1: Initiate user registration and send Mobile OTP
    */
   async initiateRegistration({ fullName, email, mobile, password }) {

@@ -318,39 +318,36 @@
 
       // UI Loading state
       btn.disabled = true;
-      btnText.textContent = 'Sending OTP...';
+      btnText.textContent = 'Creating account...';
       btnIcon.classList.add('hidden');
       btnSpinner.classList.remove('hidden');
 
       try {
-        const response = await api.auth.initiateRegistration({
+        const response = await api.auth.register({
           full_name: fullName,
           email: email.toLowerCase(),
           mobile,
           password
         });
 
-        // Store verification context
-        sessionStorage.setItem('ah_verification_id', response.data.verificationId);
-        sessionStorage.setItem('ah_reg_mobile', mobile);
-        sessionStorage.setItem('ah_reg_email', email);
-        if (response.data.devOtp) {
-          sessionStorage.setItem('ah_dev_otp', response.data.devOtp);
+        if (response.data?.session) {
+          authStore.setSession(response.data);
+          showToast('Account created successfully!', 'success');
+          setTimeout(() => {
+            window.location.href = './dashboard.html';
+          }, 600);
+        } else {
+          showToast('Account created! Please sign in.', 'success');
+          setTimeout(() => {
+            window.location.href = './login.html?registered=true';
+          }, 800);
         }
-        if (response.data.previewUrl) {
-          sessionStorage.setItem('ah_preview_url', response.data.previewUrl);
-        }
-
-        showToast('Verification code sent to your email!', 'success');
-        setTimeout(() => {
-          window.location.href = './verify-otp.html';
-        }, 800);
       } catch (err) {
-        alertMsg.textContent = err.message || 'Failed to send OTP. Please try again.';
+        alertMsg.textContent = err.message || 'Registration failed. Please try again.';
         alertBox.classList.remove('hidden');
       } finally {
         btn.disabled = false;
-        btnText.textContent = 'Send Verification Code';
+        btnText.textContent = 'Create Account';
         btnIcon.classList.remove('hidden');
         btnSpinner.classList.add('hidden');
       }

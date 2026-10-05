@@ -184,6 +184,7 @@ const updateProfileSchema = Joi.object({
 
 module.exports = {
   registerInitiateSchema,
+  registerSchema: registerInitiateSchema,
   registerVerifyOtpSchema,
   resendOtpSchema,
   loginSchema,

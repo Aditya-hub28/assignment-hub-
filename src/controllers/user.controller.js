@@ -13,6 +13,7 @@ class UserController {
       return res.status(200).json({
         success: true,
         data: {
+          ...profile,
           profile
         }
       });
@@ -40,6 +41,7 @@ class UserController {
         success: true,
         message: 'Profile updated successfully.',
         data: {
+          ...updatedProfile,
           profile: updatedProfile
         }
       });
