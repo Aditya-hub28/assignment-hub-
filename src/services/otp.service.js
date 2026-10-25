@@ -338,6 +338,151 @@ class OtpService {
       rawOtp
     };
   }
+
+  /**
+   * Create Password Reset OTP verification record and send email
+   */
+  async createPasswordResetOtp({ email }) {
+    const normalizedEmail = email.trim().toLowerCase();
+
+    // Look up user profile
+    const { data: profile } = await supabaseAdmin
+      .from('profiles')
+      .select('id, full_name, email')
+      .eq('email', normalizedEmail)
+      .maybeSingle();
+
+    const fullName = profile?.full_name || 'Student';
+    const rawOtp = this.generateNumericOtp();
+    const otpHash = await this.hashOtp(rawOtp);
+
+    // Clean up any unverified reset records for this email
+    await supabaseAdmin
+      .from('otp_verifications')
+      .delete()
+      .eq('email', normalizedEmail)
+      .eq('is_verified', false);
+
+    const now = new Date();
+    const expiresAt = new Date(now.getTime() + env.OTP.EXPIRY_MINUTES * 60 * 1000);
+
+    const { data, error } = await supabaseAdmin
+      .from('otp_verifications')
+      .insert({
+        full_name: fullName,
+        email: normalizedEmail,
+        mobile: '0000000000',
+        password_hash: '',
+        otp_hash: otpHash,
+        attempts: 0,
+        max_attempts: env.OTP.MAX_ATTEMPTS,
+        resend_count: 0,
+        max_resends: env.OTP.MAX_RESENDS,
+        last_sent_at: now.toISOString(),
+        expires_at: expiresAt.toISOString(),
+        is_verified: false
+      })
+      .select('id, expires_at')
+      .single();
+
+    if (error) {
+      throw new Error(`Failed to initialize password reset: ${error.message}`);
+    }
+
+    // Dispatch OTP via Email with safety race
+    try {
+      const emailPromise = emailService.sendPasswordResetEmail(normalizedEmail, rawOtp, fullName);
+      const timeoutPromise = new Promise((_, reject) =>
+        setTimeout(() => reject(new Error('Email dispatch timeout')), 7000)
+      );
+      const emailRes = await Promise.race([emailPromise, timeoutPromise]);
+      if (emailRes?.messageId) {
+        console.log(`[PASSWORD RESET EMAIL] Sent to ${normalizedEmail} (MessageId: ${emailRes.messageId})`);
+      }
+    } catch (err) {
+      console.warn(`[PASSWORD RESET EMAIL NOTICE] Background delivery continuing for ${normalizedEmail}:`, err.message);
+    }
+
+    return {
+      message: 'Password reset code has been sent to your email address.',
+      verificationId: data.id,
+      email: normalizedEmail,
+      rawOtp
+    };
+  }
+
+  /**
+   * Verify Password Reset OTP
+   */
+  async verifyPasswordResetOtp({ email, otp }) {
+    const normalizedEmail = email.trim().toLowerCase();
+
+    const { data: record, error } = await supabaseAdmin
+      .from('otp_verifications')
+      .select('*')
+      .eq('email', normalizedEmail)
+      .eq('is_verified', false)
+      .order('created_at', { ascending: false })
+      .limit(1)
+      .maybeSingle();
+
+    if (error || !record) {
+      const customError = new Error('No active password reset request found for this email. Please request a new code.');
+      customError.statusCode = 400;
+      customError.code = 'RESET_OTP_NOT_FOUND';
+      throw customError;
+    }
+
+    const now = new Date();
+
+    if (record.locked_until && new Date(record.locked_until) > now) {
+      const remainingSeconds = Math.ceil((new Date(record.locked_until).getTime() - now.getTime()) / 1000);
+      const customError = new Error(`Too many incorrect attempts. Please try again in ${Math.ceil(remainingSeconds / 60)} minutes.`);
+      customError.statusCode = 429;
+      customError.code = 'OTP_LOCKED';
+      throw customError;
+    }
+
+    if (new Date(record.expires_at) < now) {
+      const customError = new Error('The password reset code has expired. Please request a new code.');
+      customError.statusCode = 400;
+      customError.code = 'OTP_EXPIRED';
+      throw customError;
+    }
+
+    const isMatch = await this.compareOtp(otp, record.otp_hash);
+
+    if (!isMatch) {
+      const newAttempts = record.attempts + 1;
+      const updates = { attempts: newAttempts };
+      if (newAttempts >= record.max_attempts) {
+        updates.locked_until = new Date(now.getTime() + env.OTP.LOCKOUT_MINUTES * 60 * 1000).toISOString();
+      }
+
+      await supabaseAdmin
+        .from('otp_verifications')
+        .update(updates)
+        .eq('id', record.id);
+
+      const remaining = record.max_attempts - newAttempts;
+      if (remaining <= 0) {
+        const customError = new Error('Too many incorrect attempts. Please try again later.');
+        customError.statusCode = 429;
+        throw customError;
+      }
+      const customError = new Error(`Invalid reset code. ${remaining} attempt(s) remaining.`);
+      customError.statusCode = 400;
+      throw customError;
+    }
+
+    // Mark verification as complete
+    await supabaseAdmin
+      .from('otp_verifications')
+      .update({ is_verified: true })
+      .eq('id', record.id);
+
+    return true;
+  }
 }
 
 module.exports = new OtpService();

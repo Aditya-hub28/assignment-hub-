@@ -231,6 +231,67 @@ class EmailService {
 
     return { success: true, messageId: `dev-${Date.now()}` };
   }
+
+  /**
+   * Send 6-digit Password Reset OTP code to user's email
+   */
+  async sendPasswordResetEmail(to, otp, name = 'Student') {
+    const subject = `${otp} is your Assignment Hub password reset code`;
+    const cleanTo = (typeof to === 'string' ? to.trim().toLowerCase() : String(to || '')).replace(/[\u200B-\u200D\uFEFF]/g, '').trim();
+
+    console.log('\n================== [PASSWORD RESET EMAIL] ==================');
+    console.log(`To: ${cleanTo} (${name})`);
+    console.log(`Subject: ${subject}`);
+    console.log(`Reset OTP Code: [ ${otp} ]`);
+    console.log('============================================================\n');
+
+    if (!this.transporter && this.initPromise) {
+      await this.initPromise;
+    }
+    if (!this.transporter) {
+      await this.initTransporter();
+    }
+
+    const html = `<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>${subject}</title>
+</head>
+<body style="font-family: Arial, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; color: #222222; max-width: 500px; margin: 0 auto; padding: 20px;">
+  <div style="border: 1px solid #e2e8f0; border-radius: 8px; padding: 24px; background-color: #ffffff;">
+    <h2 style="color: #6c63ff; margin: 0 0 16px 0; font-size: 20px;">Assignment Hub</h2>
+    <p style="font-size: 15px; margin: 0 0 12px 0;">Hello ${name},</p>
+    <p style="font-size: 14px; margin: 0 0 16px 0;">We received a request to reset your Assignment Hub password. Your 6-digit verification code is:</p>
+    <div style="font-size: 32px; font-weight: bold; letter-spacing: 6px; color: #6c63ff; background-color: #f8f7ff; border: 1px solid #e2dcff; padding: 16px 20px; border-radius: 8px; text-align: center; margin-bottom: 18px; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, monospace;">${otp}</div>
+    <p style="font-size: 13px; color: #64748b; margin: 0 0 16px 0;">This code will expire in ${env.OTP.EXPIRY_MINUTES} minutes. If you did not request a password reset, you can safely ignore this email.</p>
+    <p style="font-size: 12px; color: #94a3b8; margin: 20px 0 0 0; border-top: 1px solid #f1f5f9; padding-top: 12px;">Assignment Hub Student Portal</p>
+  </div>
+</body>
+</html>`;
+
+    if (this.transporter) {
+      try {
+        const fromAddress = env.EMAIL.SMTP_USER
+          ? `Assignment Hub <${env.EMAIL.SMTP_USER}>`
+          : env.EMAIL.FROM;
+
+        const info = await this.transporter.sendMail({
+          from: fromAddress,
+          replyTo: env.EMAIL.SMTP_USER || 'instag102938@gmail.com',
+          to: cleanTo,
+          subject,
+          text: `Hello ${name},\n\nYour Assignment Hub password reset verification code is: ${otp}\n\nThis code will expire in ${env.OTP.EXPIRY_MINUTES} minutes.\n\nBest regards,\nAssignment Hub Team`,
+          html
+        });
+        console.log(`[EMAIL SERVICE SUCCESS] Password reset email delivered to ${cleanTo}. MessageId: ${info.messageId}`);
+        return { success: true, messageId: info.messageId };
+      } catch (err) {
+        console.error('[EMAIL ERROR] Failed to send password reset email:', err.message);
+      }
+    }
+    return { success: true, messageId: `dev-${Date.now()}` };
+  }
 }
 
 module.exports = new EmailService();

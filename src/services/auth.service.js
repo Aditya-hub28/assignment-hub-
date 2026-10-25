@@ -332,63 +332,83 @@ class AuthService {
   }
 
   /**
-   * Forgot Password - triggers native Supabase password reset email
+   * Forgot Password - generates secure OTP and dispatches via Gmail SMTP
    */
-  async forgotPassword({ email, redirectTo }) {
+  async forgotPassword({ email }) {
     const normalizedEmail = email.trim().toLowerCase();
-
-    // Trigger Supabase native reset email
-    await supabase.auth.resetPasswordForEmail(normalizedEmail, {
-      redirectTo: redirectTo || undefined
-    });
-
-    // Always return a generic success message to prevent account enumeration
-    return {
-      message: 'If an account with that email exists, a password reset link has been sent to your inbox.'
-    };
+    const result = await otpService.createPasswordResetOtp({ email: normalizedEmail });
+    return result;
   }
 
   /**
-   * Set New Password (authenticated reset link session or recovery OTP)
+   * Set New Password (OTP code or Authenticated session)
    */
   async resetPassword({ password, accessToken, otp, email }) {
-    let client;
-    if (otp && email) {
-      const { data: sessionData, error: verifyErr } = await supabase.auth.verifyOtp({
-        email: email.trim().toLowerCase(),
-        token: otp.trim(),
-        type: 'recovery'
-      });
-      if (verifyErr || !sessionData?.session?.access_token) {
-        const customError = new Error(verifyErr?.message || 'Invalid or expired recovery code.');
-        customError.statusCode = 400;
-        customError.code = 'INVALID_OTP';
+    const normalizedEmail = email ? email.trim().toLowerCase() : null;
+
+    if (otp && normalizedEmail) {
+      // 1. Verify OTP using local otp_verifications service
+      await otpService.verifyPasswordResetOtp({ email: normalizedEmail, otp: otp.trim() });
+
+      // 2. Identify target auth user
+      const { data: profile } = await supabaseAdmin
+        .from('profiles')
+        .select('id')
+        .eq('email', normalizedEmail)
+        .maybeSingle();
+
+      let targetUserId = profile?.id;
+
+      if (!targetUserId) {
+        const { data: listData } = await supabaseAdmin.auth.admin.listUsers();
+        const found = listData?.users?.find(u => u.email?.toLowerCase() === normalizedEmail);
+        targetUserId = found?.id;
+      }
+
+      if (!targetUserId) {
+        const customError = new Error('No user account found for that email address.');
+        customError.statusCode = 404;
+        customError.code = 'USER_NOT_FOUND';
         throw customError;
       }
-      client = createScopedClient(sessionData.session.access_token);
+
+      // 3. Update password directly in Supabase Auth via Admin client
+      const { error: updateErr } = await supabaseAdmin.auth.admin.updateUserById(targetUserId, {
+        password
+      });
+
+      if (updateErr) {
+        const customError = new Error(updateErr.message || 'Failed to update password.');
+        customError.statusCode = 400;
+        customError.code = 'PASSWORD_UPDATE_FAILED';
+        throw customError;
+      }
+
+      return {
+        message: 'Your password has been updated successfully. You can now log in.'
+      };
     } else if (accessToken) {
-      client = createScopedClient(accessToken);
+      const client = createScopedClient(accessToken);
+      const { error } = await client.auth.updateUser({
+        password
+      });
+
+      if (error) {
+        const customError = new Error(error.message || 'Failed to update password.');
+        customError.statusCode = 400;
+        customError.code = 'PASSWORD_UPDATE_FAILED';
+        throw customError;
+      }
+
+      return {
+        message: 'Your password has been updated successfully. You can now log in.'
+      };
     } else {
-      const customError = new Error('Authentication or verification code is required to reset password.');
-      customError.statusCode = 401;
-      customError.code = 'UNAUTHORIZED';
-      throw customError;
-    }
-
-    const { data, error } = await client.auth.updateUser({
-      password
-    });
-
-    if (error) {
-      const customError = new Error(error.message || 'Failed to update password.');
+      const customError = new Error('Email, OTP verification code, and new password are required to reset password.');
       customError.statusCode = 400;
-      customError.code = 'PASSWORD_UPDATE_FAILED';
+      customError.code = 'MISSING_RESET_PARAMETERS';
       throw customError;
     }
-
-    return {
-      message: 'Your password has been updated successfully. You can now log in.'
-    };
   }
 
   /**
