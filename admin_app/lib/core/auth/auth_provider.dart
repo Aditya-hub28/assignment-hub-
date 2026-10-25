@@ -35,10 +35,23 @@ class AuthProvider extends ChangeNotifier {
         final token = session.accessToken;
         final user = session.user;
 
+        // Fetch official role from profiles table
+        String role = user.userMetadata?['role']?.toString() ?? 'admin';
+        try {
+          final profileRes = await Supabase.instance.client
+              .from('profiles')
+              .select('role')
+              .eq('id', user.id)
+              .maybeSingle();
+          if (profileRes != null && profileRes['role'] != null) {
+            role = profileRes['role'].toString();
+          }
+        } catch (_) {}
+
         final adminUser = AdminUser(
           id: user.id,
           email: user.email ?? '',
-          role: 'admin',
+          role: role,
           fullName: user.userMetadata?['full_name']?.toString() ??
               user.userMetadata?['name']?.toString() ??
               user.email?.split('@').first ??
@@ -48,13 +61,20 @@ class AuthProvider extends ChangeNotifier {
           refreshToken: session.refreshToken,
         );
 
-        await _apiClient.saveSession(
-          accessToken: token,
-          refreshToken: session.refreshToken,
-          userData: adminUser.toJson(),
-        );
+        if (adminUser.isAdmin) {
+          await _apiClient.saveSession(
+            accessToken: token,
+            refreshToken: session.refreshToken,
+            userData: adminUser.toJson(),
+          );
+          _currentUser = adminUser;
+          _errorMessage = null;
+        } else {
+          _errorMessage = 'Access denied: ${adminUser.email} has student role. Admin privileges required.';
+          _currentUser = null;
+          await _apiClient.clearSession();
+        }
 
-        _currentUser = adminUser;
         _isLoading = false;
         notifyListeners();
       }
@@ -64,7 +84,45 @@ class AuthProvider extends ChangeNotifier {
   Future<void> initialize() async {
     try {
       await _apiClient.init();
-      if (_apiClient.token != null) {
+
+      // Check active Supabase session
+      final supaSession = Supabase.instance.client.auth.currentSession;
+      if (supaSession != null) {
+        final supaUser = supaSession.user;
+        String role = supaUser.userMetadata?['role']?.toString() ?? 'admin';
+        try {
+          final res = await Supabase.instance.client
+              .from('profiles')
+              .select('role')
+              .eq('id', supaUser.id)
+              .maybeSingle();
+          if (res != null && res['role'] != null) {
+            role = res['role'].toString();
+          }
+        } catch (_) {}
+
+        final adminUser = AdminUser(
+          id: supaUser.id,
+          email: supaUser.email ?? '',
+          role: role,
+          fullName: supaUser.userMetadata?['full_name']?.toString() ??
+              supaUser.userMetadata?['name']?.toString() ??
+              supaUser.email?.split('@').first ??
+              'Admin User',
+          mobile: supaUser.userMetadata?['mobile']?.toString(),
+          accessToken: supaSession.accessToken,
+          refreshToken: supaSession.refreshToken,
+        );
+
+        if (adminUser.isAdmin) {
+          await _apiClient.saveSession(
+            accessToken: supaSession.accessToken,
+            refreshToken: supaSession.refreshToken,
+            userData: adminUser.toJson(),
+          );
+          _currentUser = adminUser;
+        }
+      } else if (_apiClient.token != null) {
         final savedData = await _apiClient.getSavedUserData();
         if (savedData != null) {
           final user = AdminUser.fromJson(savedData, token: _apiClient.token);
