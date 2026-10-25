@@ -406,10 +406,7 @@ class OtpService {
     return {
       message: 'Password reset code has been sent to your email address.',
       verificationId: data.id,
-      email: normalizedEmail,
-      rawOtp,
-      otpHint: rawOtp,
-      devOtp: rawOtp
+      email: normalizedEmail
     };
   }
 

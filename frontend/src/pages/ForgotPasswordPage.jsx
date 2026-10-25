@@ -1,32 +1,45 @@
-import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { api } from '../services/api';
 import { useToast } from '../context/ToastContext';
 
 export function ForgotPasswordPage() {
-  const [step, setStep] = useState(1); // 1: Request OTP, 2: Reset with OTP & New Password
-  const [email, setEmail] = useState('');
-  const [otp, setOtp] = useState('');
-  const [otpHint, setOtpHint] = useState('');
+  const location = useLocation();
+  const navigate = useNavigate();
+  const { showToast } = useToast();
+
+  // Parse query parameters
+  const searchParams = new URLSearchParams(location.search);
+  const initialEmail = searchParams.get('email') || '';
+  const initialOtp = searchParams.get('code') || searchParams.get('otp') || '';
+  const isResetPath = location.pathname.includes('reset') || searchParams.get('step') === '2';
+
+  const [step, setStep] = useState(isResetPath || initialOtp ? 2 : 1);
+  const [email, setEmail] = useState(initialEmail);
+  const [otp, setOtp] = useState(initialOtp);
   const [newPassword, setNewPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
 
-  const { showToast } = useToast();
-  const navigate = useNavigate();
+  useEffect(() => {
+    if (initialEmail && !email) setEmail(initialEmail);
+    if (initialOtp && !otp) setOtp(initialOtp);
+  }, [initialEmail, initialOtp]);
 
   const handleRequestOtp = async (e) => {
     e.preventDefault();
     setErrorMsg('');
+
+    if (!email.trim()) {
+      setErrorMsg('Please enter your registered email address.');
+      return;
+    }
+
     setLoading(true);
 
     try {
-      const res = await api.auth.forgotPassword({ email: email.trim() });
-      const hint = res?.data?.otpHint || res?.data?.rawOtp || res?.data?.devOtp || res?.otpHint || res?.rawOtp;
-      if (hint) {
-        setOtpHint(hint);
-      }
+      await api.auth.forgotPassword({ email: email.trim() });
       setStep(2);
       showToast('Password reset code sent to your email!', 'success');
     } catch (err) {
@@ -44,6 +57,16 @@ export function ForgotPasswordPage() {
     e.preventDefault();
     setErrorMsg('');
 
+    if (!email.trim()) {
+      setErrorMsg('Please enter your registered email address.');
+      return;
+    }
+
+    if (!otp.trim() || otp.trim().length !== 6) {
+      setErrorMsg('Please enter the 6-digit verification code from your email.');
+      return;
+    }
+
     if (newPassword.length < 6 || !/[A-Z]/.test(newPassword) || !/[a-z]/.test(newPassword) || !/\d/.test(newPassword)) {
       setErrorMsg('Password must be at least 6 characters with uppercase, lowercase, and a number.');
       return;
@@ -57,7 +80,7 @@ export function ForgotPasswordPage() {
         new_password: newPassword
       });
       showToast('Password reset successfully! Please sign in with your new password.', 'success');
-      navigate('/login');
+      navigate('/login', { state: { email: email.trim() } });
     } catch (err) {
       const msg = typeof err === 'string'
         ? err
@@ -135,7 +158,7 @@ export function ForgotPasswordPage() {
 
           {/* Right Column: Recovery Form Card */}
           <div className="lg:col-span-6 w-full max-w-md mx-auto">
-            <div className="clay-surface rounded-3xl p-5 sm:p-7 md:p-9">
+            <div className="clay-surface rounded-3xl p-5 sm:p-7 md:p-9 shadow-lg">
               
               <div className="flex flex-col items-center text-center space-y-2 mb-6">
                 <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-[#6C63FF] to-[#8B7CFF] flex items-center justify-center text-white shadow-[0_8px_20px_rgba(108,99,255,0.35)]">
@@ -147,8 +170,34 @@ export function ForgotPasswordPage() {
                 <p className="text-xs sm:text-sm text-[#25233A]/70">
                   {step === 1
                     ? 'Enter your registered email and we will send you a reset code.'
-                    : `Enter the code sent to ${email} and your new password.`}
+                    : 'Enter your email, the 6-digit code received, and your new password.'}
                 </p>
+              </div>
+
+              {/* Step Navigation Tabs */}
+              <div className="grid grid-cols-2 p-1 bg-[#FAF8FF] rounded-2xl border border-[#E2DCFF] mb-6">
+                <button
+                  type="button"
+                  onClick={() => { setStep(1); setErrorMsg(''); }}
+                  className={`py-2 text-xs font-bold rounded-xl transition-all cursor-pointer ${
+                    step === 1
+                      ? 'bg-white text-[#6C63FF] shadow-sm'
+                      : 'text-[#25233A]/60 hover:text-[#25233A]'
+                  }`}
+                >
+                  1. Get Reset Code
+                </button>
+                <button
+                  type="button"
+                  onClick={() => { setStep(2); setErrorMsg(''); }}
+                  className={`py-2 text-xs font-bold rounded-xl transition-all cursor-pointer ${
+                    step === 2
+                      ? 'bg-white text-[#6C63FF] shadow-sm'
+                      : 'text-[#25233A]/60 hover:text-[#25233A]'
+                  }`}
+                >
+                  2. Enter Code & Reset
+                </button>
               </div>
 
               {/* Error Alert */}
@@ -181,17 +230,28 @@ export function ForgotPasswordPage() {
                   <button
                     type="submit"
                     disabled={loading || !email}
-                    className="w-full py-4 rounded-full bg-[#6C63FF] text-white text-sm font-bold clay-btn-primary hover:bg-[#5b52f5] transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-60 shadow-lg shadow-[#6C63FF]/30"
+                    className="w-full py-4 rounded-full bg-[#6C63FF] text-white text-sm font-bold clay-btn-primary hover:bg-[#5b52f5] transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-60 shadow-lg shadow-[#6C63FF]/30 active:scale-95"
                   >
                     {loading ? (
                       <span className="animate-spin rounded-full h-5 w-5 border-2 border-white border-t-transparent" />
                     ) : (
                       <>
-                        <span>Send Recovery Code</span>
+                        <span>Send 6-Digit Code</span>
                         <span className="material-symbols-outlined text-[18px]">send</span>
                       </>
                     )}
                   </button>
+
+                  <div className="pt-2 text-center">
+                    <button
+                      type="button"
+                      onClick={() => { setStep(2); setErrorMsg(''); }}
+                      className="text-xs font-bold text-[#6C63FF] hover:underline inline-flex items-center gap-1 cursor-pointer"
+                    >
+                      <span>Already have a 6-digit code? Enter it here</span>
+                      <span className="material-symbols-outlined text-[15px]">arrow_forward</span>
+                    </button>
+                  </div>
                 </form>
               )}
 
@@ -199,7 +259,22 @@ export function ForgotPasswordPage() {
               {step === 2 && (
                 <form onSubmit={handleResetPassword} className="space-y-4">
                   <div>
-                    <label className="block text-xs font-bold text-[#25233A]/70 mb-1.5">6-Digit Reset Code</label>
+                    <label className="block text-xs font-bold text-[#25233A]/70 mb-1.5">Registered Email</label>
+                    <div className="p-3.5 rounded-2xl bg-white border border-[#E2DCFF] flex items-center gap-2.5 shadow-sm focus-within:border-[#6C63FF]">
+                      <span className="material-symbols-outlined text-[20px] text-[#6C63FF]">mail</span>
+                      <input
+                        type="email"
+                        placeholder="student@college.edu"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        className="w-full bg-transparent text-sm font-semibold text-[#25233A] outline-none placeholder-[#25233A]/40"
+                        required
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-bold text-[#25233A]/70 mb-1.5">6-Digit Reset Code (from email)</label>
                     <div className="p-3.5 rounded-2xl bg-white border border-[#E2DCFF] flex items-center gap-2.5 shadow-sm focus-within:border-[#6C63FF]">
                       <span className="material-symbols-outlined text-[20px] text-[#6C63FF]">pin</span>
                       <input
@@ -210,26 +285,10 @@ export function ForgotPasswordPage() {
                         onChange={(e) => setOtp(e.target.value.replace(/\D/g, ''))}
                         className="w-full bg-transparent text-lg font-mono font-bold tracking-[0.25em] text-[#25233A] outline-none placeholder:tracking-normal placeholder-[#25233A]/40"
                         required
-                        autoFocus
+                        autoFocus={!otp}
                       />
                     </div>
                   </div>
-
-                  {otpHint && (
-                    <div className="p-3.5 rounded-2xl bg-[#F0EDFF] border border-[#6C63FF]/30 flex items-center justify-between shadow-sm">
-                      <div className="flex flex-col">
-                        <span className="text-[10px] font-bold text-[#6C63FF] uppercase tracking-wider">Instant Reset Code</span>
-                        <span className="font-mono text-base font-extrabold tracking-widest text-[#25233A]">{otpHint}</span>
-                      </div>
-                      <button
-                        type="button"
-                        onClick={() => setOtp(otpHint)}
-                        className="px-3.5 py-1.5 rounded-full bg-[#6C63FF] text-white text-xs font-bold hover:bg-[#5b52f5] transition-all cursor-pointer shadow-sm active:scale-95"
-                      >
-                        Auto-Fill
-                      </button>
-                    </div>
-                  )}
 
                   <div>
                     <label className="block text-xs font-bold text-[#25233A]/70 mb-1.5">New Password</label>
@@ -260,8 +319,8 @@ export function ForgotPasswordPage() {
 
                   <button
                     type="submit"
-                    disabled={loading || otp.length !== 6 || !newPassword}
-                    className="w-full py-4 rounded-full bg-[#6C63FF] text-white text-sm font-bold clay-btn-primary hover:bg-[#5b52f5] transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-60 shadow-lg shadow-[#6C63FF]/30"
+                    disabled={loading || otp.length !== 6 || !newPassword || !email}
+                    className="w-full py-4 rounded-full bg-[#6C63FF] text-white text-sm font-bold clay-btn-primary hover:bg-[#5b52f5] transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-60 shadow-lg shadow-[#6C63FF]/30 active:scale-95"
                   >
                     {loading ? (
                       <span className="animate-spin rounded-full h-5 w-5 border-2 border-white border-t-transparent" />
@@ -273,19 +332,16 @@ export function ForgotPasswordPage() {
                     )}
                   </button>
 
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setStep(1);
-                      setOtp('');
-                      setNewPassword('');
-                      setErrorMsg('');
-                    }}
-                    className="w-full py-2.5 rounded-full text-xs font-bold text-[#25233A]/70 hover:text-[#25233A] bg-white border border-[#E2DCFF] transition-all flex items-center justify-center gap-1.5 cursor-pointer"
-                  >
-                    <span className="material-symbols-outlined text-[16px]">arrow_back</span>
-                    <span>Use a Different Email</span>
-                  </button>
+                  <div className="pt-2 text-center">
+                    <button
+                      type="button"
+                      onClick={() => { setStep(1); setErrorMsg(''); }}
+                      className="text-xs font-bold text-[#6C63FF] hover:underline inline-flex items-center gap-1 cursor-pointer"
+                    >
+                      <span className="material-symbols-outlined text-[15px]">arrow_back</span>
+                      <span>Didn't receive a code? Request again</span>
+                    </button>
+                  </div>
                 </form>
               )}
 
