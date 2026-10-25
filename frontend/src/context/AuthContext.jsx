@@ -48,7 +48,10 @@ export function AuthProvider({ children }) {
     } catch (err) {
       console.warn('Profile sync:', err.message);
       if (err.status === 401) {
-        logout(false);
+        authStorage.clearSession();
+        setUser(null);
+        setProfile(null);
+        setAccessToken(null);
       }
     } finally {
       setIsLoading(false);
@@ -57,42 +60,54 @@ export function AuthProvider({ children }) {
 
   // Sync Supabase Auth state (including Google OAuth redirect logins)
   useEffect(() => {
+    let isSubscribed = true;
+
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
-      if (session?.access_token) {
-        const token = session.access_token;
-        const authUser = session.user;
-        const fallbackProfile = {
-          id: authUser.id,
-          fullName: authUser.user_metadata?.full_name || authUser.user_metadata?.name || authUser.email?.split('@')[0],
-          email: authUser.email,
-          role: authUser.user_metadata?.role || 'student',
-          avatarUrl: authUser.user_metadata?.avatar_url || null
-        };
+      if (!isSubscribed) return;
 
-        setSession({
-          session: { accessToken: token, refreshToken: session.refresh_token },
-          user: { id: authUser.id, email: authUser.email, role: fallbackProfile.role },
-          profile: authStorage.getProfile() || fallbackProfile
-        });
+      if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED' || (event === 'INITIAL_SESSION' && session)) {
+        if (session?.access_token) {
+          const token = session.access_token;
+          const authUser = session.user;
+          const fallbackProfile = {
+            id: authUser.id,
+            fullName: authUser.user_metadata?.full_name || authUser.user_metadata?.name || authUser.email?.split('@')[0],
+            email: authUser.email,
+            role: authUser.user_metadata?.role || 'student',
+            avatarUrl: authUser.user_metadata?.avatar_url || null
+          };
 
-        // Sync live profile from backend if available
-        try {
-          const res = await api.user.getProfile();
-          if (res?.data?.profile) {
-            setProfile(res.data.profile);
-          }
-        } catch (e) {
-          console.warn('OAuth profile sync notice:', e.message);
+          setSession({
+            session: { accessToken: token, refreshToken: session.refresh_token },
+            user: { id: authUser.id, email: authUser.email, role: fallbackProfile.role },
+            profile: authStorage.getProfile() || fallbackProfile
+          });
+
+          // Sync live profile from backend if available (non-blocking)
+          api.user.getProfile()
+            .then((res) => {
+              if (isSubscribed && res?.data?.profile) {
+                setProfile(res.data.profile);
+              }
+            })
+            .catch((e) => {
+              console.warn('OAuth profile sync notice:', e.message);
+            });
         }
       } else if (event === 'SIGNED_OUT') {
-        logout(false);
+        authStorage.clearSession();
+        setUser(null);
+        setProfile(null);
+        setAccessToken(null);
       }
+
       setIsLoading(false);
     });
 
     fetchLiveProfile();
 
     return () => {
+      isSubscribed = false;
       subscription?.unsubscribe();
     };
   }, [fetchLiveProfile]);
@@ -133,7 +148,7 @@ export function AuthProvider({ children }) {
       }
     }
     try {
-      await supabase.auth.signOut();
+      await supabase.auth.signOut({ scope: 'local' });
     } catch (e) {
       // ignore
     }
