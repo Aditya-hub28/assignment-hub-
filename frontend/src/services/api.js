@@ -61,9 +61,13 @@ async function request(endpoint, options = {}) {
     ...(options.headers || {})
   };
 
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 6000);
+
   const config = {
     ...options,
-    headers
+    headers,
+    signal: options.signal || controller.signal
   };
 
   if (options.body && typeof options.body === 'object') {
@@ -73,16 +77,18 @@ async function request(endpoint, options = {}) {
   let response;
   try {
     response = await fetch(url, config);
+    clearTimeout(timeoutId);
     // If local proxy returned 502/504 Bad Gateway, try live production Render API
     if ((response.status === 502 || response.status === 504) && url.startsWith('/api')) {
       const fallbackUrl = `https://assignment-hub-api-h0ny.onrender.com/api/v1${endpoint}`;
-      response = await fetch(fallbackUrl, config);
+      response = await fetch(fallbackUrl, { ...config, signal: AbortSignal.timeout(6000) });
     }
   } catch (netErr) {
+    clearTimeout(timeoutId);
     if (url.startsWith('/api')) {
       try {
         const fallbackUrl = `https://assignment-hub-api-h0ny.onrender.com/api/v1${endpoint}`;
-        response = await fetch(fallbackUrl, config);
+        response = await fetch(fallbackUrl, { ...config, signal: AbortSignal.timeout(6000) });
       } catch {
         throw netErr;
       }

@@ -6,10 +6,15 @@ import { useToast } from './ToastContext';
 const AuthContext = createContext(null);
 
 export function AuthProvider({ children }) {
+  const hasPendingOAuth = typeof window !== 'undefined' && (
+    window.location.hash.includes('access_token') ||
+    window.location.search.includes('code=')
+  );
+
   const [user, setUser] = useState(authStorage.getUser());
   const [profile, setProfile] = useState(authStorage.getProfile());
   const [accessToken, setAccessToken] = useState(authStorage.getAccessToken());
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(hasPendingOAuth);
   const { showToast } = useToast();
 
   const setSession = (sessionData = {}) => {
@@ -26,36 +31,35 @@ export function AuthProvider({ children }) {
 
   const fetchLiveProfile = useCallback(async () => {
     const token = authStorage.getAccessToken();
-    if (!token) {
-      setIsLoading(false);
-      return;
-    }
+    if (!token) return;
+
     setAccessToken(token);
     setUser(authStorage.getUser());
-    try {
-      const res = await api.user.getProfile();
-      if (res?.data?.profile) {
-        setProfile(res.data.profile);
-        authStorage.setSession({
-          session: {
-            accessToken: token,
-            refreshToken: authStorage.getRefreshToken()
-          },
-          user: authStorage.getUser(),
-          profile: res.data.profile
-        });
-      }
-    } catch (err) {
-      console.warn('Profile sync:', err.message);
-      if (err.status === 401) {
-        authStorage.clearSession();
-        setUser(null);
-        setProfile(null);
-        setAccessToken(null);
-      }
-    } finally {
-      setIsLoading(false);
-    }
+
+    // Non-blocking background sync
+    api.user.getProfile()
+      .then((res) => {
+        if (res?.data?.profile) {
+          setProfile(res.data.profile);
+          authStorage.setSession({
+            session: {
+              accessToken: token,
+              refreshToken: authStorage.getRefreshToken()
+            },
+            user: authStorage.getUser(),
+            profile: res.data.profile
+          });
+        }
+      })
+      .catch((err) => {
+        console.warn('Background profile sync:', err.message);
+        if (err.status === 401) {
+          authStorage.clearSession();
+          setUser(null);
+          setProfile(null);
+          setAccessToken(null);
+        }
+      });
   }, []);
 
   // Sync Supabase Auth state (including Google OAuth redirect logins)
