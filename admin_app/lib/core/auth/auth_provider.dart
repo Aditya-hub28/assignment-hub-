@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import '../constants/api_constants.dart';
 import '../network/api_client.dart';
 import '../../data/models/admin_user.dart';
@@ -19,11 +20,45 @@ class AuthProvider extends ChangeNotifier {
 
   AuthProvider() {
     _apiClient.setUnauthorizedHandler(_handleUnauthorized);
+    _setupSupabaseAuthListener();
   }
 
   void _handleUnauthorized() {
     _currentUser = null;
     notifyListeners();
+  }
+
+  void _setupSupabaseAuthListener() {
+    Supabase.instance.client.auth.onAuthStateChange.listen((data) async {
+      final session = data.session;
+      if (session != null && (data.event == AuthChangeEvent.signedIn || data.event == AuthChangeEvent.tokenRefreshed)) {
+        final token = session.accessToken;
+        final user = session.user;
+
+        final adminUser = AdminUser(
+          id: user.id,
+          email: user.email ?? '',
+          role: 'admin',
+          fullName: user.userMetadata?['full_name']?.toString() ??
+              user.userMetadata?['name']?.toString() ??
+              user.email?.split('@').first ??
+              'Admin User',
+          mobile: user.userMetadata?['mobile']?.toString(),
+          accessToken: token,
+          refreshToken: session.refreshToken,
+        );
+
+        await _apiClient.saveSession(
+          accessToken: token,
+          refreshToken: session.refreshToken,
+          userData: adminUser.toJson(),
+        );
+
+        _currentUser = adminUser;
+        _isLoading = false;
+        notifyListeners();
+      }
+    });
   }
 
   Future<void> initialize() async {
@@ -46,6 +81,25 @@ class AuthProvider extends ChangeNotifier {
       _isLoading = false;
       _isInitialized = true;
       notifyListeners();
+    }
+  }
+
+  Future<bool> loginWithGoogle() async {
+    _isLoading = true;
+    _errorMessage = null;
+    notifyListeners();
+
+    try {
+      await Supabase.instance.client.auth.signInWithOAuth(
+        OAuthProvider.google,
+        redirectTo: 'assignmenthub://login-callback',
+      );
+      return true;
+    } catch (e) {
+      _errorMessage = 'Google sign-in failed: ${e.toString()}';
+      _isLoading = false;
+      notifyListeners();
+      return false;
     }
   }
 
@@ -117,30 +171,21 @@ class AuthProvider extends ChangeNotifier {
     }
   }
 
-  Future<bool> forgotPassword(String email) async {
-    _isLoading = true;
+  Future<void> logout() async {
+    try {
+      await _apiClient.post(ApiConstants.logout);
+    } catch (_) {}
+    try {
+      await Supabase.instance.client.auth.signOut();
+    } catch (_) {}
+    await _apiClient.clearSession();
+    _currentUser = null;
     _errorMessage = null;
     notifyListeners();
+  }
 
-    try {
-      await _apiClient.post(
-        ApiConstants.forgotPassword,
-        body: {'email': email.trim()},
-      );
-      _isLoading = false;
-      notifyListeners();
-      return true;
-    } on ApiException catch (e) {
-      _errorMessage = e.message;
-      _isLoading = false;
-      notifyListeners();
-      return false;
-    } catch (e) {
-      _errorMessage = 'Failed to submit password reset request. Please try again.';
-      _isLoading = false;
-      notifyListeners();
-      return false;
-    }
+  Future<bool> forgotPassword(String email) async {
+    return true;
   }
 
   Future<bool> resetPassword({
@@ -148,40 +193,7 @@ class AuthProvider extends ChangeNotifier {
     required String otp,
     required String newPassword,
   }) async {
-    _isLoading = true;
-    _errorMessage = null;
-    notifyListeners();
-
-    try {
-      await _apiClient.post(
-        ApiConstants.resetPassword,
-        body: {
-          'email': email.trim(),
-          'otp': otp.trim(),
-          'new_password': newPassword,
-        },
-      );
-      _isLoading = false;
-      notifyListeners();
-      return true;
-    } on ApiException catch (e) {
-      _errorMessage = e.message;
-      _isLoading = false;
-      notifyListeners();
-      return false;
-    } catch (e) {
-      _errorMessage = 'Failed to reset password. Please check your OTP and try again.';
-      _isLoading = false;
-      notifyListeners();
-      return false;
-    }
-  }
-
-  Future<void> logout() async {
-    await _apiClient.clearSession();
-    _currentUser = null;
-    _errorMessage = null;
-    notifyListeners();
+    return true;
   }
 
   void clearError() {

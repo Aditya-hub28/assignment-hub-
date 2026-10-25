@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import 'core/auth/auth_provider.dart';
 import 'core/theme/clay_colors.dart';
 import 'core/theme/clay_theme.dart';
 import 'features/auth/login_screen.dart';
 import 'features/shell/admin_shell.dart';
 
-void main() {
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   // Set system UI overlay style
@@ -19,8 +20,15 @@ void main() {
     ),
   );
 
+  // Initialize Supabase SDK for 1-Click Google OAuth
+  await Supabase.initialize(
+    url: 'https://zgiinylfcemvemgyvkbv.supabase.co',
+    // ignore: deprecated_member_use
+    anonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpnaWlueWxmY2VtdmVtZ3l2a2J2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI5MTE1MTMsImV4cCI6MjEwODQ4NzUxM30.NzRGoXj0_6tne97lfcpoE5tpTbIFO5WyBoUz6PImDvI',
+  );
+
   final authProvider = AuthProvider();
-  authProvider.initialize();
+  await authProvider.initialize();
 
   runApp(AssignmentHubAdminApp(authProvider: authProvider));
 }
@@ -42,7 +50,11 @@ class AssignmentHubAdminApp extends StatelessWidget {
           if (!authProvider.isInitialized) {
             return const Scaffold(
               backgroundColor: ClayColors.background,
-              body: SizedBox.shrink(),
+              body: Center(
+                child: CircularProgressIndicator(
+                  color: ClayColors.primary,
+                ),
+              ),
             );
           }
 

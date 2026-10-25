@@ -1,10 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../core/auth/auth_provider.dart';
 import '../../core/theme/clay_colors.dart';
-import '../../core/widgets/clay_button.dart';
 import '../../core/widgets/clay_card.dart';
-import '../../core/widgets/clay_text_field.dart';
-import 'forgot_password_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   final AuthProvider authProvider;
@@ -16,41 +13,14 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  final TextEditingController _emailController = TextEditingController();
-  final TextEditingController _passwordController = TextEditingController();
-  bool _obscurePassword = true;
   String? _localError;
 
-  @override
-  void dispose() {
-    _emailController.dispose;
-    _passwordController.dispose;
-    super.dispose();
-  }
-
-  Future<void> _handleLogin() async {
-    final email = _emailController.text.trim();
-    final password = _passwordController.text;
-
-    if (email.isEmpty) {
-      setState(() => _localError = 'Please enter your email address.');
-      return;
-    }
-    if (!RegExp(r'^[^@]+@[^@]+\.[^@]+').hasMatch(email)) {
-      setState(() => _localError = 'Please enter a valid email address.');
-      return;
-    }
-    if (password.isEmpty) {
-      setState(() => _localError = 'Please enter your password.');
-      return;
-    }
-
+  Future<void> _handleGoogleSignIn() async {
     setState(() => _localError = null);
-
-    final success = await widget.authProvider.login(email, password);
+    final success = await widget.authProvider.loginWithGoogle();
     if (!success && mounted) {
       setState(() {
-        _localError = widget.authProvider.errorMessage ?? 'Invalid email or password.';
+        _localError = widget.authProvider.errorMessage ?? 'Google sign-in could not be completed.';
       });
     }
   }
@@ -72,15 +42,15 @@ class _LoginScreenState extends State<LoginScreen> {
                 children: [
                   // App Icon / Logo
                   Container(
-                    width: 72,
-                    height: 72,
+                    width: 76,
+                    height: 76,
                     decoration: BoxDecoration(
                       gradient: const LinearGradient(
                         colors: [ClayColors.primaryGradientStart, ClayColors.primaryGradientEnd],
                         begin: Alignment.topLeft,
                         end: Alignment.bottomRight,
                       ),
-                      borderRadius: BorderRadius.circular(22),
+                      borderRadius: BorderRadius.circular(24),
                       boxShadow: const [
                         BoxShadow(
                           color: Color(0x354D41DF),
@@ -90,9 +60,9 @@ class _LoginScreenState extends State<LoginScreen> {
                       ],
                     ),
                     child: const Icon(
-                      Icons.shield_outlined,
+                      Icons.school_rounded,
                       color: Colors.white,
-                      size: 38,
+                      size: 40,
                     ),
                   ),
                   const SizedBox(height: 20),
@@ -101,22 +71,22 @@ class _LoginScreenState extends State<LoginScreen> {
                   const Text(
                     'AssignmentHub',
                     style: TextStyle(
-                      fontSize: 26,
+                      fontSize: 28,
                       fontWeight: FontWeight.w800,
                       color: ClayColors.textDark,
                       letterSpacing: -0.5,
                     ),
                   ),
-                  const SizedBox(height: 6),
+                  const SizedBox(height: 8),
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
                     decoration: BoxDecoration(
                       color: ClayColors.surfaceInset,
                       borderRadius: BorderRadius.circular(20),
                       border: Border.all(color: ClayColors.borderLight),
                     ),
                     child: const Text(
-                      'ADMIN PORTAL',
+                      'STUDENT & ADMIN ACCESS',
                       style: TextStyle(
                         fontSize: 11,
                         fontWeight: FontWeight.w700,
@@ -127,7 +97,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                   const SizedBox(height: 12),
                   const Text(
-                    'Enter your administrator credentials to manage requests and students',
+                    'Sign in instantly with your Google account. Zero passwords, zero waiting.',
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       fontSize: 14,
@@ -139,7 +109,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
                   // Main Clay Form Card
                   ClayCard(
-                    padding: const EdgeInsets.all(24),
+                    padding: const EdgeInsets.all(28),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
@@ -171,73 +141,93 @@ class _LoginScreenState extends State<LoginScreen> {
                           const SizedBox(height: 20),
                         ],
 
-                        // Email Field
-                        ClayTextField(
-                          controller: _emailController,
-                          label: 'Admin Email',
-                          hintText: 'admin@assignmenthub.com',
-                          keyboardType: TextInputType.emailAddress,
-                          prefixIcon: const Icon(Icons.alternate_email, size: 20, color: ClayColors.textSubtle),
-                          enabled: !isLoading,
-                        ),
-                        const SizedBox(height: 18),
-
-                        // Password Field
-                        ClayTextField(
-                          controller: _passwordController,
-                          label: 'Password',
-                          hintText: '••••••••••••',
-                          obscureText: _obscurePassword,
-                          textInputAction: TextInputAction.done,
-                          prefixIcon: const Icon(Icons.lock_outline, size: 20, color: ClayColors.textSubtle),
-                          suffixIcon: IconButton(
-                            icon: Icon(
-                              _obscurePassword ? Icons.visibility_outlined : Icons.visibility_off_outlined,
-                              size: 20,
-                              color: ClayColors.textSubtle,
-                            ),
-                            onPressed: () {
-                              setState(() => _obscurePassword = !_obscurePassword);
-                            },
-                          ),
-                          enabled: !isLoading,
-                          onSubmitted: (_) => _handleLogin(),
-                        ),
-                        const SizedBox(height: 12),
-
-                        // Forgot Password Link
-                        Align(
-                          alignment: Alignment.centerRight,
-                          child: GestureDetector(
-                            onTap: isLoading
-                                ? null
-                                : () {
-                                    Navigator.of(context).push(
-                                      MaterialPageRoute(
-                                        builder: (_) => ForgotPasswordScreen(
-                                          authProvider: widget.authProvider,
+                        // 1-Click Continue with Google Button
+                        Material(
+                          color: Colors.transparent,
+                          child: InkWell(
+                            onTap: isLoading ? null : _handleGoogleSignIn,
+                            borderRadius: BorderRadius.circular(16),
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 20),
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(16),
+                                border: Border.all(color: const Color(0xFFE2DCFF), width: 1.5),
+                                boxShadow: const [
+                                  BoxShadow(
+                                    color: Color(0x10000000),
+                                    offset: Offset(0, 4),
+                                    blurRadius: 12,
+                                  ),
+                                ],
+                              ),
+                              child: isLoading
+                                  ? const Center(
+                                      child: SizedBox(
+                                        width: 22,
+                                        height: 22,
+                                        child: CircularProgressIndicator(
+                                          strokeWidth: 2.5,
+                                          color: ClayColors.primary,
                                         ),
                                       ),
-                                    );
-                                  },
-                            child: const Text(
-                              'Forgot Password?',
-                              style: TextStyle(
-                                fontSize: 13,
-                                fontWeight: FontWeight.w600,
-                                color: ClayColors.primary,
-                              ),
+                                    )
+                                  : Row(
+                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      children: [
+                                        // Google colored G icon
+                                        Container(
+                                          width: 24,
+                                          height: 24,
+                                          decoration: const BoxDecoration(
+                                            shape: BoxShape.circle,
+                                            color: Colors.white,
+                                          ),
+                                          child: Image.network(
+                                            'https://www.gstatic.com/images/branding/product/2x/googleg_48dp.png',
+                                            errorBuilder: (context, error, stackTrace) => const Icon(
+                                              Icons.g_mobiledata,
+                                              size: 26,
+                                              color: Color(0xFF4285F4),
+                                            ),
+                                          ),
+                                        ),
+                                        const SizedBox(width: 12),
+                                        const Text(
+                                          'Continue with Google',
+                                          style: TextStyle(
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.w700,
+                                            color: Color(0xFF25233A),
+                                            letterSpacing: -0.2,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
                             ),
                           ),
                         ),
+
                         const SizedBox(height: 24),
 
-                        // Submit Button
-                        ClayButton(
-                          text: 'Sign In to Admin Portal',
-                          isLoading: isLoading,
-                          icon: const Icon(Icons.login, size: 18, color: Colors.white),
-                          onPressed: _handleLogin,
+                        // Security Perks
+                        Container(
+                          padding: const EdgeInsets.all(14),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFFFAF8FF),
+                            borderRadius: BorderRadius.circular(14),
+                            border: Border.all(color: const Color(0xFFE2DCFF)),
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: const [
+                              _PerkItem(text: '1-Click instant authentication'),
+                              SizedBox(height: 8),
+                              _PerkItem(text: 'No passwords or OTP codes required'),
+                              SizedBox(height: 8),
+                              _PerkItem(text: '100% Secure & encrypted connection'),
+                            ],
+                          ),
                         ),
                       ],
                     ),
@@ -248,10 +238,10 @@ class _LoginScreenState extends State<LoginScreen> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: const [
-                      Icon(Icons.lock_clock_outlined, size: 14, color: ClayColors.textSubtle),
+                      Icon(Icons.shield_outlined, size: 14, color: ClayColors.textSubtle),
                       SizedBox(width: 6),
                       Text(
-                        'Authorized Personnel Only • AssignmentHub Security',
+                        'AssignmentHub • Secure Mobile Portal',
                         style: TextStyle(
                           fontSize: 12,
                           color: ClayColors.textSubtle,
@@ -266,6 +256,32 @@ class _LoginScreenState extends State<LoginScreen> {
           ),
         ),
       ),
+    );
+  }
+}
+
+class _PerkItem extends StatelessWidget {
+  final String text;
+
+  const _PerkItem({required this.text});
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        const Icon(Icons.check_circle_rounded, size: 16, color: Color(0xFF55C595)),
+        const SizedBox(width: 8),
+        Expanded(
+          child: Text(
+            text,
+            style: const TextStyle(
+              fontSize: 12,
+              fontWeight: FontWeight.w600,
+              color: Color(0xFF25233A),
+            ),
+          ),
+        ),
+      ],
     );
   }
 }
