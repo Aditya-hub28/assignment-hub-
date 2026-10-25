@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { api, authStorage } from '../services/api';
+import { supabase } from '../services/supabase';
 import { useToast } from './ToastContext';
 
 const AuthContext = createContext(null);
@@ -54,9 +55,63 @@ export function AuthProvider({ children }) {
     }
   }, []);
 
+  // Sync Supabase Auth state (including Google OAuth redirect logins)
   useEffect(() => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+      if (session?.access_token) {
+        const token = session.access_token;
+        const authUser = session.user;
+        const fallbackProfile = {
+          id: authUser.id,
+          fullName: authUser.user_metadata?.full_name || authUser.user_metadata?.name || authUser.email?.split('@')[0],
+          email: authUser.email,
+          role: authUser.user_metadata?.role || 'student',
+          avatarUrl: authUser.user_metadata?.avatar_url || null
+        };
+
+        setSession({
+          session: { accessToken: token, refreshToken: session.refresh_token },
+          user: { id: authUser.id, email: authUser.email, role: fallbackProfile.role },
+          profile: authStorage.getProfile() || fallbackProfile
+        });
+
+        // Sync live profile from backend if available
+        try {
+          const res = await api.user.getProfile();
+          if (res?.data?.profile) {
+            setProfile(res.data.profile);
+          }
+        } catch (e) {
+          console.warn('OAuth profile sync notice:', e.message);
+        }
+      } else if (event === 'SIGNED_OUT') {
+        logout(false);
+      }
+      setIsLoading(false);
+    });
+
     fetchLiveProfile();
+
+    return () => {
+      subscription?.unsubscribe();
+    };
   }, [fetchLiveProfile]);
+
+  const loginWithGoogle = async () => {
+    try {
+      const { data, error } = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+          redirectTo: `${window.location.origin}/dashboard`
+        }
+      });
+      if (error) throw error;
+      return data;
+    } catch (err) {
+      showToast(err.message || 'Google authentication failed.', 'error');
+      throw err;
+    }
+  };
 
   const login = async (email, password) => {
     const res = await api.auth.login({ email, password });
@@ -76,6 +131,11 @@ export function AuthProvider({ children }) {
       } catch (err) {
         console.warn('Logout api call:', err.message);
       }
+    }
+    try {
+      await supabase.auth.signOut();
+    } catch (e) {
+      // ignore
     }
     authStorage.clearSession();
     setUser(null);
@@ -113,6 +173,7 @@ export function AuthProvider({ children }) {
         isAuthenticated,
         isLoading,
         login,
+        loginWithGoogle,
         logout,
         setSession,
         updateProfile,

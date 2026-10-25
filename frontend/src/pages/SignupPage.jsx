@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { api } from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
+import { GoogleSignInButton } from '../components/GoogleSignInButton';
 
 export function SignupPage() {
   const [fullName, setFullName] = useState('');
@@ -192,6 +193,19 @@ export function SignupPage() {
                   <span className="text-sm font-semibold">{errorMsg}</span>
                 </div>
               )}
+
+              {/* Instant 1-Click Google Sign Up */}
+              <div className="mb-5">
+                <GoogleSignInButton text="Sign up with Google (Instant)" />
+                <div className="relative my-4">
+                  <div className="absolute inset-0 flex items-center">
+                    <div className="w-full border-t border-[#E2DCFF]"></div>
+                  </div>
+                  <div className="relative flex justify-center text-[11px] uppercase tracking-wider">
+                    <span className="bg-[#FAF8FF] px-3 font-bold text-[#25233A]/50">Or create account manually</span>
+                  </div>
+                </div>
+              </div>
 
               {/* Registration Form */}
               <form onSubmit={handleRegister} className="flex flex-col gap-4">

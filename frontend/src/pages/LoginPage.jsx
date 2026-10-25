@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
+import { GoogleSignInButton } from '../components/GoogleSignInButton';
 
 export function LoginPage() {
   const [email, setEmail] = useState('');
@@ -139,6 +140,19 @@ export function LoginPage() {
                   <span>{errorMsg}</span>
                 </div>
               )}
+
+              {/* Instant 1-Click Google Sign In */}
+              <div className="mb-5">
+                <GoogleSignInButton text="Sign in with Google" />
+                <div className="relative my-4">
+                  <div className="absolute inset-0 flex items-center">
+                    <div className="w-full border-t border-[#E2DCFF]"></div>
+                  </div>
+                  <div className="relative flex justify-center text-[11px] uppercase tracking-wider">
+                    <span className="bg-[#FAF8FF] px-3 font-bold text-[#25233A]/50">Or continue with email</span>
+                  </div>
+                </div>
+              </div>
 
               {/* Form */}
               <form onSubmit={handleSubmit} className="space-y-4">
