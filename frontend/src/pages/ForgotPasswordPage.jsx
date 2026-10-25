@@ -7,6 +7,7 @@ export function ForgotPasswordPage() {
   const [step, setStep] = useState(1); // 1: Request OTP, 2: Reset with OTP & New Password
   const [email, setEmail] = useState('');
   const [otp, setOtp] = useState('');
+  const [otpHint, setOtpHint] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -21,7 +22,11 @@ export function ForgotPasswordPage() {
     setLoading(true);
 
     try {
-      await api.auth.forgotPassword({ email: email.trim() });
+      const res = await api.auth.forgotPassword({ email: email.trim() });
+      const hint = res?.data?.otpHint || res?.data?.rawOtp || res?.data?.devOtp || res?.otpHint || res?.rawOtp;
+      if (hint) {
+        setOtpHint(hint);
+      }
       setStep(2);
       showToast('Password reset code sent to your email!', 'success');
     } catch (err) {
@@ -209,6 +214,22 @@ export function ForgotPasswordPage() {
                       />
                     </div>
                   </div>
+
+                  {otpHint && (
+                    <div className="p-3.5 rounded-2xl bg-[#F0EDFF] border border-[#6C63FF]/30 flex items-center justify-between shadow-sm">
+                      <div className="flex flex-col">
+                        <span className="text-[10px] font-bold text-[#6C63FF] uppercase tracking-wider">Instant Reset Code</span>
+                        <span className="font-mono text-base font-extrabold tracking-widest text-[#25233A]">{otpHint}</span>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => setOtp(otpHint)}
+                        className="px-3.5 py-1.5 rounded-full bg-[#6C63FF] text-white text-xs font-bold hover:bg-[#5b52f5] transition-all cursor-pointer shadow-sm active:scale-95"
+                      >
+                        Auto-Fill
+                      </button>
+                    </div>
+                  )}
 
                   <div>
                     <label className="block text-xs font-bold text-[#25233A]/70 mb-1.5">New Password</label>
