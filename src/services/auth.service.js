@@ -336,6 +336,16 @@ class AuthService {
    */
   async forgotPassword({ email }) {
     const normalizedEmail = email.trim().toLowerCase();
+
+    // 1. Trigger Supabase's native recovery email dispatch (over HTTPS Port 443 - never blocked by Render)
+    try {
+      await supabaseAdmin.auth.resetPasswordForEmail(normalizedEmail);
+      console.log(`[SUPABASE RECOVERY DISPATCH] Triggered for ${normalizedEmail}`);
+    } catch (supabaseErr) {
+      console.warn(`[SUPABASE RECOVERY NOTICE] ${supabaseErr.message}`);
+    }
+
+    // 2. Generate local OTP and attempt direct delivery
     const result = await otpService.createPasswordResetOtp({ email: normalizedEmail });
     return result;
   }
