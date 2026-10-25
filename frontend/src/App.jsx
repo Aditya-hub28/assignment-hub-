@@ -43,9 +43,9 @@ function App() {
                 <Route path="/preview" element={<Navigate to="/" replace />} />
                 <Route path="/login" element={<LoginPage />} />
                 <Route path="/signup" element={<SignupPage />} />
-                <Route path="/forgot-password" element={<ForgotPasswordPage />} />
-                <Route path="/reset-password" element={<ForgotPasswordPage />} />
-                <Route path="/password/reset" element={<ForgotPasswordPage />} />
+                <Route path="/forgot-password" element={<Navigate to="/login" replace />} />
+                <Route path="/reset-password" element={<Navigate to="/login" replace />} />
+                <Route path="/password/reset" element={<Navigate to="/login" replace />} />
               
               {/* Student Dashboard Route (Home view) */}
               <Route
