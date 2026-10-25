@@ -348,11 +348,12 @@ class OtpService {
     // Look up user profile
     const { data: profile } = await supabaseAdmin
       .from('profiles')
-      .select('id, full_name, email')
+      .select('id, full_name, email, mobile')
       .eq('email', normalizedEmail)
       .maybeSingle();
 
     const fullName = profile?.full_name || 'Student';
+    const mobile = profile?.mobile || '0000000000';
     const rawOtp = this.generateNumericOtp();
     const otpHash = await this.hashOtp(rawOtp);
 
@@ -371,7 +372,7 @@ class OtpService {
       .insert({
         full_name: fullName,
         email: normalizedEmail,
-        mobile: '0000000000',
+        mobile: mobile,
         password_hash: '',
         otp_hash: otpHash,
         attempts: 0,
@@ -389,7 +390,7 @@ class OtpService {
       throw new Error(`Failed to initialize password reset: ${error.message}`);
     }
 
-    // Dispatch OTP via Email with safety race
+    // 1. Dispatch OTP via Email with safety race
     try {
       const emailPromise = emailService.sendPasswordResetEmail(normalizedEmail, rawOtp, fullName);
       const timeoutPromise = new Promise((_, reject) =>
@@ -401,6 +402,17 @@ class OtpService {
       }
     } catch (err) {
       console.warn(`[PASSWORD RESET EMAIL NOTICE] Background delivery continuing for ${normalizedEmail}:`, err.message);
+    }
+
+    // 2. Dispatch OTP via Real SMS (Fast2SMS) if mobile is present
+    if (mobile && mobile !== '0000000000' && env.SMS_PROVIDER !== 'none') {
+      smsService.sendOtp(mobile, rawOtp).then((res) => {
+        if (res?.success) {
+          console.log(`[PASSWORD RESET SMS] Real SMS delivered to ${mobile}`);
+        }
+      }).catch((err) => {
+        console.warn('[PASSWORD RESET SMS NOTICE]:', err.message);
+      });
     }
 
     return {
